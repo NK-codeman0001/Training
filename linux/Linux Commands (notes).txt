@@ -1,0 +1,1125 @@
+﻿
+1. sudo command
+*Superuser do*
+root is the superuser and normal user can’t acesss it directly
+sudo turns normal user to super user
+normal user can’t make changes to system but super user can;
+when we do sudo for first time it will ask for password;
+when we use sudo comman again it will not ask for password (for 15 min)
+to overcome this feature we use sudo -k (to revoke sudo right to user)
+to permanent give user sudo right use sudo -s
+this command will turn username to root and $ to #.
+To install : sudo apt install <dep name>
+To do authentication of user
+
+2. pwd command
+*path of your current working directory*
+To fetch current location 
+cmd: pwd || pwd -L or -logical (for env variable) || pwd -P or -physical (actual path)
+
+3. cd command
+*Change directory*
+To move to new user || back || previous direvtory (<--)
+cmd: cd ~[username] || cd .. || cd -
+cmd: cd - // to go to your last directory 
+cmd:  cd ~   // to go to home directory of current user
+cmd: cd ~username  // to go to home directory of other user “username”
+cmd: cd                     // to go to home dir of curr user
+cm : cd Exercise\ File  or “Exercise File”    // if dir name contains space or dir name is of more than 1 word
+4. ls command
+*listing files*
+To show list of files and directory of current path || specific path
+cmd: ls || ls [path]        //it must be start from beginging eg. home/beryl/Neeraj
+
+cmd: ls -R Neeraj     // it will recursivley call ls for all items inside Neeraj Folder 
+option: ls -l     // to show more information about listed items
+List of file in a directory with mathcing name
+ls ch*.doc   // it will return file with names like  ch01-1.doc,ch090.doc etc
+*  ===  %  in sql
+?  ===  _  in sql
+eg. if we want to fetch list of .doc file we can use cmd :  ls  *.doc
+
+to list invisible file:
+cmd:  ls -a   
+
+Note:    Single dot (.) − This represents the current directory.
+    • Double dot (..) − This represents the parent directory.
+
+5. cat command
+*concatenate*
+Create new file || merge two or more files  in a current path
+cmd: cat > filename.text || cat file1.text file2.text > file3.text 
+cmd : tac filename.text            // to display text in vertically reverse order
+6. cp command
+*copy*
+Copy file || files || directory from current to another path
+cmd: cp file.txt [path] || cp file1.txt file2.txt [path] || cp -R [path]
+note : if we don’t provide path it will make the copy in current path
+copy a file with new filename
+cmd: cp filename copyfile  //it will create a copy of filename in current path with name copyfile
+
+7. mv command
+*move*
+To move || rename
+cmd: mv file.txt [path] || mv oldname.txt newname.txt
+cmd:  mv [path]/file.txt   .                 // . denote the current path    (it will move the file from a 						given path to current path)
+cmd:  mv marketing/market/*   .    // to move everything in market folder to current folder
+cmd: mv *.txt  marketing/market  // to move all file with .txt to another folder
+8. mkdir command
+*make directory*
+To make new diretories
+cmd : mkdir FolderName   // to create new folder in curreny directory
+cmd: mkdir /tmp/test-dir    //This command creates the directory test-dir in the /tmp directory.
+cmd: mkdir Folder1/NewFolder  // to create NewFolder in Folder1 where Folder1 already exist.
+Cmd: mkdir -p Folder1/ New1F/ New2F    // to create New2F inside New1F which will create inside Folder1 where only Folder1 already exist.  //creating parent directory
+
+ 9. rmdir command
+*remove diretory*
+To remove a folder (folder must be empty)
+cmd:  rmdir FolderName  // remove folder FolderName in current path
+cmd: rmdir -p folder1/folder2   //remove folder2 with parent folder folder1 (only if folder 2 is empty)
+10. rm command
+*remove file*  (not for folder)
+To remove one || multiple files in current path
+cmd: rm filename.txt || rm file1.txt file2.txt file3.txt
+//-i to ask permission before delete (safe)
+// -f to delete without asking for permission (unsafe)
+// -r to delete files and directories recursively.
+
+11. touch command
+To create an empty file
+cmd: touch /home/beryl/Test/Web.html
+12. locate command
+ To find a file in the database system
+cmd : locate -i school*not  // -i will make the search key word case insensitive and * will allow two search a file which contains both the keyword school and note
+13. find command
+To find a file in current || in a given path.
+Cmd: find -name filename.txt || find [path] -name file.text (-name || -size || -date)
+ cmd: find ./ -type d -name directoryname to look for directories.
+Cmd: find . -name “poe*”     	//it will find file or folder with name starting with poe 							inside current dir.
+Cmd: find ~/Document -name “*d*”           //it will find location of any file or folder containg “d” in its name inside Document
+
+14. grep command
+*global regex || global regular expression*
+To search a word in a txt file and return the line which contains that word (case sensitive)
+cmd: grep keyword file.txt
+The grep command searches a file or files for lines that have a certain pattern. The syntax is −
+$grep pattern file(s)
+cmd: grep -E “\w{6,}” file.txt      //it will print lines which contains of word 							length more than 6 in file.txt
+cmd:  grep -E “[hijk]” file.txt      // it will return lines which contains word 							having character h, r, e or f.
+
+The name "grep" comes from the ed (a Unix line editor) command g/re/p which means “globally search for a regular expression and print all lines containing it”.
+$ls -l | grep "Aug"
+-rw-rw-rw-   1 john  doc     11008 Aug  6 14:10 ch02
+-rw-rw-rw-   1 john  doc      8515 Aug  6 15:30 ch07
+-rw-rw-r--   1 john  doc      2488 Aug 15 10:51 intro
+-rw-rw-r--   1 carol doc      1605 Aug 23 07:35 macros
+$
+
+15. df command
+*diskSpace of Filesystem*
+To fetch system’s disk space usage in KB
+cmd: df
+cmd : df -h //disk space usage in a human-readable format
+cmd: df -m // displays information in MBs. 
+Cmd : df -k      // in KBs. 
+Cmd : df -T 	//shows the file system type in a new column.
+eg. df -h -m -T  //diplay storage in human readable format in MB with type of system
+16. du command
+To check space information of a file or specific folder
+cmd: du [path]  // without path it will take current pathe
+cmd: du -s //total size of a specified folder. 
+cmd: du -m //file information in MB 
+cmd: du -k  // information in KB. 
+cmd: du -h //informs the last modification date of the displayed folders and files + human readable folder. 
+eg. du -s -h -m   //diplay space information in human readable format in MB with last modified info
+17. head command
+To view first 10 line of text of one or multiple files
+cmd: head file1.txt file2.txt 
+cmd: head -n 5 or –lines 5 file.txt //to show the first five lines of file.text 
+cmd: head -c 10 or –bytes 10 file.text //prints the first 10 bytes of each file. 
+cmd: head -file1.text q or –quiet file2.txt  //will not print headers of file2.txt
+18. tail command
+To view last 10 line of text of one or multiple files
+cmd: tail file1.txt file2.txt 
+19. diff command
+*difference*
+It will display the parts that do not match in two files.
+Cmd: diff file1.txt file2.txt
+Cmd: diff  -c file1.txt file2.txt  //displays the difference in a context form with redundent info. 
+Cmd: diff -u file1.txt file2.txt  // without redundant information. 
+Cmd: diff -i file1.txt file2.txt    //makes the diff command case insensitive. 
+________________________________________________________
+
+20. tar command
+*Tape Archive*
+archives multiple files into a TAR file
+ cmd: tar -cvf newTarFile.tar /home/beryl/Test  //create a new TAR archive named newTarFile.tar in the /home/beryl/Test directory
+options: :
+    • -x extracts a file. (require -f with -x) (eg. tar -x -f  or -xf testTar.tar)
+    • -t lists the content of a file. (require -f with -x) (eg. tar -t -f or -tf testTar.tar)
+    • -u archives and adds to an existing archive file. 
+    • -c : Creates Archive 
+-x : Extract the archive 
+-f : creates archive with given filename 
+-t : displays or lists files in archived file 
+-u : archives and adds to an existing archive file 
+-v : Displays Verbose Information 
+-A : Concatenates the archive files 
+-z : zip, tells tar command that creates tar file using gzip 
+-j : filter archive tar file using tbzip 
+-W : Verify a archive file 
+-r : update or add file or directory in already existed .tar file 
+    • $ tar cvf file.tar *.c
+	Output : 
+	os2.c
+	os3.c
+	os4.c
+      
+21. chmod command
+*change modification*
+To modifies a file or directory’s read, write, and execute permissions.
+-rwxrwxrwx === 777
+cmd : chmod 777 file.txt
+options :
+    • -c or –changes displays information when a change is made. 
+    • -f or –silent suppresses the error messages. 
+    • -v or –verbose displays a diagnostic for each processed file. 
+22. chown command
+*change ownership*
+To change the ownership of a file, directory,etc to other user
+cmd: chown linuxuser2 filename.txt  // make linuxuser2 the owner of filename.txt
+23. jobs command
+To display all the running processes along with their statuses
+cmd : jobs [options] jobID
+options:
+    • -l lists process IDs along with their information. 
+    • -n lists jobs whose statuses have changed since the last notification. 
+    • -p lists process IDs only. 
+24. kill command
+To terminate an unresponsive program manually
+//know the PID === cmd: ps ux,
+cmd: kill [signal_option] pid
+signal options:
+    • SIGTERM requests a program to stop running and gives it some time to save all of its progress. The system will use this by default if you don’t specify the signal when entering the kill command. 
+    • SIGKILL forces programs to stop, and you will lose unsaved progress. 
+
+Eg:  kill SIGKILL 63773
+25. ping command
+ To check whether a network or a server is reachable
+cmd: ping fb.com
+26. wget command
+To download files from the internet
+cmd: wget [url]
+27. uname command
+To print detailed information about your Linux system and hardware.
+Cmd: uname [options]
+options:
+    • -a prints all the system information. 
+    • -s prints the kernel name. 
+    • -n prints the system’s node hostname. 
+28. top command
+To display all the running processes and a dynamic real-time view of the current system
+cmd :  top
+29. history command
+To list up to 500 previously executed commands, allowing you to reuse them without re-entering (with sudo permission require)
+cmd: history [options] 
+options:
+    • -c clears the complete history list. 
+    • -d offset deletes the history entry at the OFFSET position. 
+    • -a appends history lines. 
+30. man command
+To display the complete manual of a command
+cmd: man [command_name]
+eg. man ls //to access the manual for the ls command.
+man 2 ls   //to see section 2 of the ls command manual:
+31. echo command
+To displays a line of text or string
+cmd: echo “Hello world”
+options:
+    • -n displays the output without the trailing newline. 
+    • -e enables the interpretation of the following backslash escapes: 
+    • \a plays sound alert. 
+    • \b removes spaces in between a text. 
+    • \c produces no further output. 
+    • -E displays the default option and disables the interpretation of backslash escapes. 
+32. zip, unzip commands
+To compress your files into a ZIP file
+cmd : zip [options] zipfile file1 file2….
+Eg: zip archive.zip note.txt
+
+To extracts the zipped files from an archive. 
+Cmd: unzip [option] file_name.zip
+eg: unzip archive.zip
+33. hostname command
+To know the system’s hostname.
+Cmd: hostname [option]
+option:
+    • -a or –alias displays the hostname’s alias. 
+    • -A or –all-fqdns displays the machine’s Fully Qualified Domain Name (FQDN). 
+    • -i or –ip-address displays the machine’s IP address. 
+
+34. useradd, userdel commands
+Cmd: useradd [option] username
+To set the password: passwd the_password_combination
+
+eg: useradd John
+passwd 123456789
+
+To delete a user account: userdel username
+35. apt-get command
+Advanced Package Tool (APT)
+To update, remove, and install software and its dependencies.
+Cmd: apt-get [options] (command)
+options:
+    • update synchronizes the package files from their sources. 
+    • upgrade installs the latest version of all installed packages. 
+    • check updates the package cache and checks broken dependencies. 
+36. nano, vi, jed commands
+To edit and manage files via a text editor, such as nano, vi, or jed. nano and vi come with the operating system, while jed has to be installed.
+Cmd:  nano [filename]
+vi [filename]
+jed has drop-down menu interface
+37. alias, unalias commands
+To allows you to create a shortcut with the same functionality as a command, file name, or text.
+Cmd: alias Name=String
+eg: alias k=’kill’
+
+unalias command deletes an existing alias.
+Cmd: unalias [alias_name]
+eg: unalias k
+
+38. su command
+Switch user: allows you to run a program as a different user.
+Cmd: su [options] [username [argument]]
+
+options:
+    • -p or –preserve-environment keeps the same shell environment, consisting HOME, SHELL, USER, and LOGNAME. 
+    • -s or –shell lets you specify a different shell environment to run. 
+    • -l or –login runs a login script to switch to a different username. Executing it requires you to enter the user’s password. 
+
+39. htop command
+To monitors system resources and server processes in real time.
+Cmd: htop [options]
+options:
+    • -d or –delay shows the delay between updates in tenths of seconds. 
+    • -C or –no-color enables the monochrome mode. 
+    • -h or –help displays the help message and exit. 
+40. ps command
+To list all running processes
+cmd: ps [options]
+options:
+    • -T displays all processes associated with the current shell session. 
+    • -u username lists processes associated with a specific user. 
+    • -A or -e shows all the running processes. 
+
+40. help command
+To get list and information related to all linux command
+cmd : help
+_________________________________________
+41. login: to login
+cmd sudo login
+
+42 passwd: to change password
+cmd sudo passwd
+
+43. whoami: to know who am i (username)
+cmd : whoami
+
+44. who: to know who is logged in
+cmd: who
+cmd: users
+cmd: w
+
+45.  logout : to log out
+cmd: logout
+
+46. system shutdown commands
+cmd: 
+1. halt   //immediate shutdown
+2. init 0   // clean up system before shutdown
+3. init 6   // reboot
+4. poweroff     // poweroff
+5. reboot      // reboot
+6. shutdown    // shutdown
+
+47. hidden files  === files whoes name start with ‘.’
+eg.     .profile === sh initialisation script
+to list invisible file:
+cmd:  ls -a   
+
+48. creating files using vi
+vi filename  (filename does not exist before)
+
+press the key i to come into the edit mode
+Press the key esc to come out of the edit mode.
+Press two keys Shift + ZZ together to come out of the file completely.
+
+
+
+49. Editing Files using vi
+vi filename  (filename already exist)
+
+    1. press the key i to come into the edit mode
+    2. If you want to move here and there inside a file, then first you need to come out of the edit mode.
+    3. Press the key esc to come out of the edit mode.
+    4. After this, you can use the following keys to move inside a file −
+    • l key to move to the right side.
+    • h key to move to the left side.
+    • k key to move upside in the file.
+    • j key to move downside in the file.
+       
+    1. using the above keys, you can position your cursor wherever you want to edit.
+    2. use the i key to come in the edit mode.
+    3. press Esc and
+    4. Press two keys Shift + ZZ together to come out of the file completely.
+
+
+50. To see content of a file cat
+cmd: cat file name  
+cmd:  cat -b filename //to display file with numbering of lines in vertical
+ 
+51. Counting words in a file
+cmd:  wc filename
+cmd: wc filename1 filename2 filename3  // for multple files
+
+Output will be in four columns −
+    • First Column − Represents the total number of lines in the file.
+    • Second Column − Represents the total number of words in the file.
+    • Third Column − Represents the total number of bytes in the file. This is the actual size of the file.
+    • Fourth Column − Represents the file name.
+52. Absolute/Relatuve Pathnames
+Absolute Pathnames: A pathname is absolute, if it is described in relation to root, thus absolute pathnames always begin with a /.
+eg. /users/sjones/chem/notes
+Relative Pathnames: Relative pathnames never begin with /. Relative to user amrood's home directory, some pathnames might look like this −
+chem/notes
+53. Every file in Unix has the following attributes −
+    • Owner permissions − The owner's permissions determine what actions the owner of the file can perform on the file.
+    • Group permissions − The group's permissions determine what actions a user, who is a member of the group that a file belongs to, can perform on the file.
+    • Other (world) permissions − The permissions for others indicate what action all other users can perform on the file.
+The Permission Indicators
+While using ls -l command, it displays various information related to file permission as follows −
+$ls -l /home/amrood
+-rwxr-xr--  1 amrood   users 1024  Nov 2 00:10  myfile
+drwxr-xr--- 1 amrood   users 1024  Nov 2 00:10  mydir
+Here, the first column represents different access modes, i.e., the permission associated with a file or a directory.
+The permissions are broken into groups of threes, and each position in the group denotes a specific permission, in this order: read (r), write (w), execute (x) −
+    • The first three characters (2-4) represent the permissions for the file's owner. For example, -rwxr-xr-- represents that the owner has read (r), write (w) and execute (x) permission.
+    • The second group of three characters (5-7) consists of the permissions for the group to which the file belongs. For example, -rwxr-xr-- represents that the group has read (r) and execute (x) permission, but no write permission.
+    • The last group of three characters (8-10) represents the permissions for everyone else. For example, -rwxr-xr-- represents that there is read (r) only permission.
+
+
+54. Changing Permissions
+Using chmod in Symbolic Mode
+
+Here's an example using testfile. Running ls -1 on the testfile shows that the file's permissions are as follows −
+$ls -l testfile
+-rwxrwxr--  1 amrood   users 1024  Nov 2 00:10  testfile
+Then each example chmod command from the preceding table is run on the testfile, followed by ls –l, so you can see the permission changes −
+$chmod o+wx testfile
+$ls -l testfile
+-rwxrwxrwx  1 amrood   users 1024  Nov 2 00:10  testfile
+
+$chmod u-x testfile
+$ls -l testfile
+-rw-rwxrwx  1 amrood   users 1024  Nov 2 00:10  testfile
+
+$chmod g = rx testfile
+$ls -l testfile
+-rw-r-xrwx  1 amrood   users 1024  Nov 2 00:10  testfile
+Here's how you can combine these commands on a single line −
+$chmod o+wx,u-x,g = rx testfile
+$ls -l testfile
+-rw-r-xrwx  1 amrood   users 1024  Nov 2 00:10  testfile
+
+Using chmod with Absolute Permissions
+
+Here's an example using the testfile. Running ls -1 on the testfile shows that the file's permissions are as follows −
+$ls -l testfile
+-rwxrwxr--  1 amrood   users 1024  Nov 2 00:10  testfile
+Then each example chmod command from the preceding table is run on the testfile, followed by ls –l, so you can see the permission changes −
+$ chmod 755 testfile
+$ls -l testfile
+-rwxr-xr-x  1 amrood   users 1024  Nov 2 00:10  testfile
+
+$chmod 743 testfile
+$ls -l testfile
+-rwxr---wx  1 amrood   users 1024  Nov 2 00:10  testfile
+
+$chmod 043 testfile
+$ls -l testfile
+----r---wx  1 amrood   users 1024  Nov 2 00:10  testfile
+
+55. Changing Owners and Groups
+While creating an account on Unix, it assigns a owner ID and a group ID to each user. All the permissions mentioned above are also assigned based on the Owner and the Groups.
+Two commands are available to change the owner and the group of files −
+    • chown − The chown command stands for "change owner" and is used to change the owner of a file.
+    • chgrp − The chgrp command stands for "change group" and is used to change the group of a file.
+Changing Ownership
+The chown command changes the ownership of a file. The basic syntax is as follows −
+$ chown user filelist
+The value of the user can be either the name of a user on the system or the user id (uid) of a user on the system.
+The following example will help you understand the concept −
+$ chown amrood testfile
+$
+Changes the owner of the given file to the user amrood.
+NOTE − The super user, root, has the unrestricted capability to change the ownership of any file but normal users can change the ownership of only those files that they own.
+Changing Group Ownership
+The chgrp command changes the group ownership of a file. The basic syntax is as follows −
+$ chgrp group filelist
+The value of group can be the name of a group on the system or the group ID (GID) of a group on the system.
+Following example helps you understand the concept −
+$ chgrp special testfile
+$
+Changes the group of the given file to special group.
+
+56. The simplest way to start a background process is to add an ampersand (&) at the end of the command.
+$ls ch*.doc &
+
+57.________________________________
+Bonus Tips and Tricks:
+    • Enter the clear command to clean the Terminal screen. 
+    • Press the Tab button to autofill after entering a command with an argument. 
+    • Use Ctrl + C to terminate a running command. 
+    • Press Ctrl + Z to pause a working command. 
+    • Use Ctrl + S to freeze your Terminal temporarily. 
+    • Press Ctrl + Q to undo the Terminal freeze. 
+    • Use Ctrl + A to move to the beginning of the line. 
+    • Press Ctrl + E to bring you to the end of the line. 
+    • When executing multiple commands in a single line, use (;) to separate them. Alternatively, use && to only allow the next command to run if the previous one is successful. 
+
+
+
+
+
+
+
+
+__________________________________________________________________
+
+rwx == read write execute   (execute== to run the program)
+d= directory
+     drwerwerwe
+     directory    user        group       others
+
+
+
+
+soft link: if cmd: ln -s filename linkname
+if link file move: 
+		in case of relative path ==> linkfile will not work          
+		in case of abosulte path==> linkfile will work
+if mainfile is lost then link will break;
+
+in hard link         cmd: ln filename linkname
+if link file move:  ==> linkfile will work
+if mainfile is lost then==> link will break;
+______________________________________________________________________________
+rev will print in horizontal reverse (mirror image) (Neeraj == jareeN)
+tac will print in vertical reverse  (first line will become last line)
+
+How to get confirmation prompt before every removal of a dir
+You need to pass the -i option to the rm command:
+rm -ir foo
+
+How to get visual confirmation about deleting directory
+Pass the -v to the rm command:
+rm -vrf dir1
+rm -vrf dir1 dir2
+
+We use the rm command to delete a directory that is not empty. The syntax is:
+rm -rf dir-name
+rm -rf /path/to/dir/name
+Be careful when you use the rm command with -r and -f options. The -r option remove directories and their contents recursively including all files. The -f option to rm command ignore nonexistent files and arguments, never prompt for anything. There is no undo option. So you have to be very careful with rm -rf command. Let us see some examples.
+
+Cmd: rm -d foldername     ///  to remove empty directory
+
+We can use the "cd ~ or cd $HOME" commands as well, to do the same. Consider the below commands:
+    1. cd ~
+    2. cd $Home 
+
+Procedure
+    1. To create a new group, use the groupadd command. 
+       Type the following command: 
+       groupadd -g group-ID group-name
+    • where group-ID is the numeric identifier of the group, and group-name is the name of the group. 
+    • To add a member to a supplementary group, use the usermod command to list the supplementary groups that the user is currently a member of, and the supplementary groups that the user is to become a member of. 
+For example, if the user is already a member of the group groupa, and is to become a member of groupb, use the following command: 
+usermod -G groupa,groupb user-name
+    • where user-name is the user name. 
+    • To display who is a member of a group, use the getent command. 
+Type the following command: 
+getent group group-name
+    • where group-name is the name of the group. 
+    • To remove a member from a supplementary group, use the usermod command to list the supplementary groups that you want the user to remain a member of. 
+For example, if the user's primary group is users and the user is also a member of the groups mqm, groupa and groupb, to remove the user from the mqm group, use the following command: 
+usermod -G groupa,groupb user-name
+where user-name is the user name. 
+
+
+Linux ls command options
+ls option
+Description
+ls -a
+In Linux, hidden files start with . (dot) symbol and they are not visible in the regular directory. The (ls -a) command will enlist the whole list of the current directory including the hidden files.
+ls -l
+It will show the list in a long list format.
+ls -lh
+This command will show you the file sizes in human readable format. Size of the file is very difficult to read when displayed in terms of byte. The (ls -lh)command will give you the data in terms of Mb, Gb, Tb, etc.
+ls -lhS
+If you want to display your files in descending order (highest at the top) according to their size, then you can use (ls -lhS) command.
+ls -l - -block-size=[SIZE]
+It is used to display the files in a specific size format. Here, in [SIZE] you can assign size according to your requirement.
+ls -d */
+It is used to display only subdirectories.
+ls -g or ls -lG
+With this you can exclude column of group information and owner.
+ls -n
+It is used to print group ID and owner ID instead of their names.
+ls --color=[VALUE]
+This command is used to print list as colored or discolored.
+ls -li
+This command prints the index number if file is in the first column.
+ls -p
+It is used to identify the directory easily by marking the directories with a slash (/) line sign.
+ls -r
+It is used to print the list in reverse order.
+ls -R
+It will display the content of the sub-directories also.
+ls -lX
+It will group the files with same extensions together in the list.
+ls -lt
+It will sort the list by displaying recently modified filed at top.
+ls ~
+It gives the contents of home directory.
+ls ../
+It give the contents of parent directory.
+ls --version
+It checks the version of ls command.
+
+version of ls in current system:  8.30
+
+
+
+
+
+
+
+
+
+
+Linux Directory Commands
+1. pwd Command
+The pwd command is used to display the location of the current working directory.
+Syntax:
+    1. pwd  
+Output:
+ 
+2. mkdir Command
+The mkdir command is used to create a new directory under any directory.
+Syntax:
+    1. mkdir <directory name>  
+Output:
+ 
+3. rmdir Command
+The rmdir command is used to delete a directory.
+Syntax:
+    1. rmdir <directory name>  
+Output:
+ 
+4. ls Command
+The ls command is used to display a list of content of a directory.
+Syntax:
+    1. ls  
+Output:
+ 
+5. cd Command
+The cd command is used to change the current directory.
+Syntax:
+    1. cd <directory name>  
+Output:
+ 
+Linux File commands
+6. touch Command
+The touch command is used to create empty files. We can create multiple empty files by executing it once.
+Syntax:
+    1. touch <file name>  
+    2. touch <file1>  <file2> ....  
+Output:
+ 
+7. cat Command
+The cat command is a multi-purpose utility in the Linux system. It can be used to create a file, display content of the file, copy the content of one file to another file, and more.
+Syntax:
+    1. cat [OPTION]... [FILE]..  
+To create a file, execute it as follows:
+    1. cat > <file name>  
+    2. // Enter file content  
+Press "CTRL+ D" keys to save the file. To display the content of the file, execute it as follows:
+    1. cat <file name>  
+Output:
+ 
+8. rm Command
+The rm command is used to remove a file.
+Syntax:
+rm <file name>
+Output:
+ 
+9. cp Command
+The cp command is used to copy a file or directory.
+Syntax:
+To copy in the same directory:
+    1. cp <existing file name> <new file name>  
+To copy in a different directory:
+Output:
+ 
+10. mv Command
+The mv command is used to move a file or a directory form one location to another location.
+Syntax:
+    1. mv <file name> <directory path>  
+Output:
+ 
+11. rename Command
+The rename command is used to rename files. It is useful for renaming a large group of files.
+Syntax:
+    1. rename 's/old-name/new-name/' files  
+For example, to convert all the text files into pdf files, execute the below command:
+    1. rename 's/\.txt$/\.pdf/' *.txt  
+Output:
+ 
+Linux File Content Commands
+12. head Command
+The head command is used to display the content of a file. It displays the first 10 lines of a file.
+Syntax:
+    1. head <file name>  
+Output:
+ 
+13. tail Command
+The tail command is similar to the head command. The difference between both commands is that it displays the last ten lines of the file content. It is useful for reading the error message.
+Syntax:
+    1. tail <file name>  
+Output:
+ 
+14. tac Command
+The tac command is the reverse of cat command, as its name specified. It displays the file content in reverse order (from the last line).
+Syntax:
+    1. tac <file name>  
+Output:
+ 
+15. more command
+The more command is quite similar to the cat command, as it is used to display the file content in the same way that the cat command does. The only difference between both commands is that, in case of larger files, the more command displays screenful output at a time.
+In more command, the following keys are used to scroll the page:
+ENTER key: To scroll down page by line.
+Space bar: To move to the next page.
+b key: To move to the previous page.
+/ key: To search the string.
+Syntax:
+    1. more <file name>  
+Output:
+ 
+16. less Command
+The less command is similar to the more command. It also includes some extra features such as 'adjustment in width and height of the terminal.' Comparatively, the more command cuts the output in the width of the terminal.
+Syntax:
+    1. less <file name>  
+Output:
+ 
+Linux User Commands
+17. su Command
+The su command provides administrative access to another user. In other words, it allows access of the Linux shell to another user.
+Syntax:
+    1. su <user name>  
+Output:
+ 
+18. id Command
+The id command is used to display the user ID (UID) and group ID (GID).
+Syntax:
+    1. id  
+Output:
+ 
+19. useradd Command
+The useradd command is used to add or remove a user on a Linux server.
+Syntax:
+    1. useradd  username  
+Output:
+ 
+20. passwd Command
+The passwd command is used to create and change the password for a user.
+Syntax:
+    1. passwd <username>  
+Output:
+ 
+21. groupadd Command
+The groupadd command is used to create a user group.
+Syntax:
+    1. groupadd <group name>  
+Output:
+ 
+Linux Filter Commands
+22. cat Command
+The cat command is also used as a filter. To filter a file, it is used inside pipes.
+Syntax:
+    1. cat <fileName> | cat or tac | cat or tac |. . .   
+Output:
+ 
+23. cut Command
+The cut command is used to select a specific column of a file. The '-d' option is used as a delimiter, and it can be a space (' '), a slash (/), a hyphen (-), or anything else. And, the '-f' option is used to specify a column number.
+Syntax:
+    1. cut -d(delimiter) -f(columnNumber) <fileName>  
+Output:
+ 
+24. grep Command
+The grep is the most powerful and used filter in a Linux system. The 'grep' stands for "global regular expression print." It is useful for searching the content from a file. Generally, it is used with the pipe.
+Syntax:
+    1. command | grep <searchWord>  
+Output:
+ 
+25. comm Command
+The 'comm' command is used to compare two files or streams. By default, it displays three columns, first displays non-matching items of the first file, second indicates the non-matching item of the second file, and the third column displays the matching items of both files.
+Syntax:
+    1. comm <file1> <file2>  
+Output:
+ 
+26. sed command
+The sed command is also known as stream editor. It is used to edit files using a regular expression. It does not permanently edit files; instead, the edited content remains only on display. It does not affect the actual file.
+Syntax:
+    1. command | sed 's/<oldWord>/<newWord>/'  
+Output:
+ 
+27. tee command
+The tee command is quite similar to the cat command. The only difference between both filters is that it puts standard input on standard output and also write them into a file.
+Syntax:
+    1. cat <fileName> | tee <newFile> |  cat or tac |.....  
+Output:
+ 
+28. tr Command
+The tr command is used to translate the file content like from lower case to upper case.
+Syntax:
+    1. command | tr <'old'> <'new'>  
+Output:
+ 
+29. uniq Command
+The uniq command is used to form a sorted list in which every word will occur only once.
+Syntax:
+    1. command <fileName> | uniq  
+Output:
+ 
+30. wc Command
+The wc command is used to count the lines, words, and characters in a file.
+Syntax:
+    1. wc <file name>  
+Output:
+ 
+31. od Command
+The od command is used to display the content of a file in different s, such as hexadecimal, octal, and ASCII characters.
+Syntax:
+    1. od -b <fileName>      // Octal format  
+    2. od -t x1 <fileName>   // Hexa decimal format  
+    3. od -c <fileName>     // ASCII character format  
+Output:
+ 
+32. sort Command
+The sort command is used to sort files in alphabetical order.
+Syntax:
+    1. sort <file name>  
+Output:
+ 
+33. gzip Command
+The gzip command is used to truncate the file size. It is a compressing tool. It replaces the original file by the compressed file having '.gz' extension.
+Syntax:
+    1. gzip <file1> <file2> <file3>...  
+Output:
+ 
+34. gunzip Command
+The gunzip command is used to decompress a file. It is a reverse operation of gzip command.
+Syntax:
+    1. gunzip <file1> <file2> <file3>. .  
+Output:
+ 
+Linux Utility Commands
+35. find Command
+The find command is used to find a particular file within a directory. It also supports various options to find a file such as byname, by type, by date, and more.
+The following symbols are used after the find command:
+(.) : For current directory name
+(/) : For root
+Syntax:
+    1. find . -name "*.pdf"  
+Output:
+ 
+36. locate Command
+The locate command is used to search a file by file name. It is quite similar to find command; the difference is that it is a background process. It searches the file in the database, whereas the find command searches in the file system. It is faster than the find command. To find the file with the locates command, keep your database updated.
+Syntax:
+    1. locate <file name>  
+Output:
+ 
+37. date Command
+The date command is used to display date, time, time zone, and more.
+Syntax:
+    1. date  
+Output:
+ 
+38. cal Command
+The cal command is used to display the current month's calendar with the current date highlighted.
+Syntax:
+    1. cal<  
+Output:
+ 
+39. sleep Command
+The sleep command is used to hold the terminal by the specified amount of time. By default, it takes time in seconds.
+Syntax:
+    1. sleep <time>  
+Output:
+ 
+40. time Command
+The time command is used to display the time to execute a command.
+Syntax:
+    1. time  
+Output:
+ 
+41. zcat Command
+The zcat command is used to display the compressed files.
+Syntax:
+    1. zcat <file name>  
+Output:
+ 
+42. df Command
+The df command is used to display the disk space used in the file system. It displays the output as in the number of used blocks, available blocks, and the mounted directory.
+Syntax:
+    1. df  
+Output:
+ 
+43. mount Command
+The mount command is used to connect an external device file system to the system's file system.
+Syntax:
+    1. mount -t type <device> <directory>  
+Output:
+ 
+44. exit Command
+Linux exit command is used to exit from the current shell. It takes a parameter as a number and exits the shell with a return of status number.
+Syntax:
+    1. exit  
+Output:
+ 
+After pressing the ENTER key, it will exit the terminal.
+45. clear Command
+Linux clear command is used to clear the terminal screen.
+Syntax:
+    1. clear  
+Output:
+ 
+After pressing the ENTER key, it will clear the terminal screen.
+Linux Networking Commands
+46. ip Command
+Linux ip command is an updated version of the ipconfig command. It is used to assign an IP address, initialize an interface, disable an interface.
+Syntax:
+    1. ip a or ip addr  
+Output:
+ 
+47. ssh Command
+Linux ssh command is used to create a remote connection through the ssh protocol.
+Syntax:
+    1. ssh user_name@host(IP/Domain_name)</p>  
+48. mail Command
+The mail command is used to send emails from the command line.
+Syntax:
+    1. mail -s "Subject" <recipient address>  
+Output:
+ 
+49. ping Command
+The ping command is used to check the connectivity between two nodes, that is whether the server is connected. It is a short form of "Packet Internet Groper."
+Syntax:
+    1. ping <destination>  
+Output:
+ 
+50. host Command
+The host command is used to display the IP address for a given domain name and vice versa. It performs the DNS lookups for the DNS Query.
+Syntax:
+    1. host <domain name> or <ip address>  
+Output:
+ 
+
+
+
+vi:
+If you want to quit without saving the file, use :q. This command will only work when you have not made any changes in the file.
+ 
+Look at the above snapshot, this file is modified and hence on typing :q it displays this message at bottom left corner.
+The above file can be saved with the command :!q. It discards the changes made in the file and save it.
+ 
+Look at the above snapshot, we have typed :!q, it will save our file by discarding the changes made.
+
+
+To switch from command to insert mode:
+Command 
+Action
+i
+Start typing before the current character
+I
+Start typing at the start of current line
+a
+Start typing after the current character
+A
+Start typing at the end of current line
+o
+Start typing on a new line after the current line
+O
+Start typing on a new line before the current line
+To delete:
+Commands
+Action
+x
+Delete the current character
+X
+Delete the character before the cursor
+r
+Replace the current character
+xp
+Switch two characters
+dd
+Delete the current line
+D
+Delete the current line from current character to the end of the line
+dG
+delete from the current line to the end of the file
+To repeat and undo:
+Commands 
+Action 
+u 
+Undo the last command
+.
+Repeat the last command
+Command to cut, copy and paste:
+Commands 
+Action
+dd
+Delete a line
+yy
+(yank yank) copy a line 
+p
+Paste after the current line
+P 
+Paste before the current line
+Command to cut, copy and paste in blocks:
+Commands
+Action 
+<n>dd
+Delete the specified n number of lines
+<n>yy
+Copy the specified n number of lines
+Start and end of line:
+Commands
+Action
+θ
+Bring at the start of the current line
+^
+Bring at the start of the current line 
+$
+Bring at the end of the current line 
+dθ 
+Delete till start of a line 
+d$ 
+Delete till end of a line 
+
+Search a string:
+Commands
+Action
+/string
+Forward search for given string
+?string
+Backward search for given string
+/^string 
+Forward search string at beginning of a line
+/string$
+Forward search string at end of a line
+n
+Go to next occurrence of searched string
+/\<he\>
+Search for the word he (and not for there, here, etc.)
+/pl[abc]ce
+Search for place, plbce, and plcce
+
+
+Replace all
+Syntax:
+    1. :<startLine,endLine> s/<oldString>/<newString>/g  
+Example:
+Commands
+Action 
+:1,$ s/readable/changed/
+Replace forward with backward from first line to the last line
+:3,6 s/letters/neww/g 
+Replace forward with backward from third line to the ninth line 
+
+
+system commands Following are some of the important system commands in Linux. 
+uname
+This will display the system information. 
+In the following example we are getting the name of the system. 
+$ uname
+Linux
+uname -o
+This will display the OS information. 
+In the following example we are getting the OS information. 
+$ uname -o
+GNU/Linux
+uname -m
+This will display the machine hardware information. 
+In the following example we are getting the machine hardware information. 
+$ uname -m
+x86_64
+uname -v
+This will display the kernel release information. 
+In the following example we are getting the OS kernel information. 
+$ uname -v
+#21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018
+uname -n
+This will display the network node hostname. 
+In the following example we are getting the network node hostname. 
+$ uname -n
+yusufshakeel-ubuntu
+uname -a
+This will display all the system related information. 
+In the following example we are getting all the system information. 
+$ uname -a
+Linux yusufshakeel-ubuntu 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+cat /etc/os-release
+This will print the version of OS installed. 
+I have installed Ubuntu 18.04 LTS so I am getting the related information. 
+$ cat /etc/os-release 
+NAME="Ubuntu"
+VERSION="18.04 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+uptime
+This command tells us how long the system has been running. 
+In the following example we can see that the system has been running for the past 55 minutes. 
+$ uptime
+08:37:55 up 55 min,  1 user,  load average: 0.00, 0.02, 0.06
+reboot
+This will reboot the system. 
+$ reboot
+shutdown
+This will shutdown the system. 
+$ shutdown
+whoami
+This command will print the current user. 
+In the following example we are getting the current user. 
+$ whoami
+yusufshakeel
+hostname
+This command will print the current hostname. 
+In the following example we are getting the current hostname. 
+$ hostname
+yusufshakeel-ubuntu
+hostname -i
+This command will print the current hostname IP address. 
+In the following example we are getting the current hostname IP address. 
+$ hostname -i
+127.0.1.1
+
