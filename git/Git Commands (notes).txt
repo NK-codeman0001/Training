@@ -606,7 +606,7 @@ Code with Harry Notes:
     • git push -u origin master
 ________________________________________________________________________________
 Connect PC with github (SSH)
-    1. ssh -keygen -t rsa -b 4096 -c “neeraj.kumar@berylsystems.com”  (let passphrase  empty)
+    1. ssh -keygen -t rsa -b 4096 -C “neeraj.kumar@berylsystems.com”  (let passphrase  empty)
     2. eval $(ssh-agent -s)
     3. ssh-add   ~/.ssh/id_rsa
     4. tail ~/.ssh/id_rsa.pub             (copy this token)
