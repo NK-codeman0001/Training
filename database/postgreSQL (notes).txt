@@ -1860,10 +1860,42 @@ Execute a sql file in PostgreSQL:
 
 
 
+Convert date to int (USING);
+alter from date to varchar  -> varchar to int by “USING” keyword;
+
 PostgreSQL allows you to convert the values of a column to the new ones while changing its data type by adding a USING clause as follows:
 ALTER TABLE table_name
 ALTER COLUMN column_name TYPE new_data_type USING expression;
 The expression after the USING keyword can be as simple as column_name::new_data_type such as price::numeric or as complex as a custom function.
+
+ADD COMMENT ON COLUMNS:
+create table session_log 
+( 
+   userid int not null, 
+   phonenumber int
+); 
+comment on column session_log.userid is 'The user ID';
+comment on column session_log.phonenumber is 'The phone number including the area code';
+
+
+You can also add a comment to the table:
+comment on table session_log is 'Our session logs';
+
+TO VIEW ADDITIONAL DETAIL OF TABLE OR DATABASE US + SIGN:
+\d+ 
+\l+  
+
+handling sequnces:
+
+to get sequence name if BIGSERIAL USE \d table_name;
+
+SELECT nextval('car_car_id_seq'::regclass);
+SELECT currval('car_car_id_seq'::regclass);
+SELECT * from car_car_id_seq;
+
+ALTER SEQUENCE car_car_id_seq RESTART;
+ALTER SEQUENCE car_car_id_seq RESTART WITH 10;
+
 
 
 ________________________________________________________________________________
