@@ -116,7 +116,7 @@ SUM: SELECT make, SUM(price) FROM car GROUP BY make;
     •  Handling Null Values: 
 SELECT email FROM person;  //it will print values all records on email col and if it is 						NULL	blank will be print.
 SELECT  COALESCE(email, “<Default Value>”) FROM person;  //it will print Default in 										place of NULL.
-    •  Handling Divide by 0 Error:  
+    •  Handling Divide by 0 Error:  (NULLIF and COALESCE)
 
       
 
@@ -1897,6 +1897,49 @@ ALTER SEQUENCE car_car_id_seq RESTART;
 ALTER SEQUENCE car_car_id_seq RESTART WITH 10;
 
 
+
+https://commandprompt.com/education/how-to-find-and-delete-duplicate-rows-in-postgresql/
+
+
+● How to Find Duplicate Rows in PostgreSQL?
+SELECT language, COUNT(language)
+FROM programming_languages
+GROUP BY language
+HAVING COUNT(language)> 1;
+
+
+
+● How to Delete Duplicates in Postgres Using a DELETE USING Statement?
+DELETE FROM
+programming_languages dup_lang
+USING programming_languages dist_lang
+WHERE dup_lang.id < dist_lang.id
+AND dup_lang.language = dist_lang.language;
+
+//The above snippet performs the following tasks:
+- Joined the programming_languages table to itself.
+- Checked if two records (dup_lan.id < dist_lang.id) have the same value in the language column.
+- If yes, then the duplicated record will be deleted.
+
+● How to Delete Duplicates Using Subquery?
+DELETE FROM programming_languages
+WHERE id IN (SELECT id FROM 
+(SELECT id, 
+ROW_NUMBER() OVER(PARTITION BY language
+ORDER BY id ASC) AS row_num
+FROM programming_languages) lang
+WHERE lang.row_num > 1 );
+
+● How to Delete Duplicates Using Immediate Tables in Postgres?
+INSERT INTO temp_table(id, language)
+SELECT DISTINCT ON (language) id, language
+FROM programming_languages;
+
+Introduction to PostgreSQL CAST operator
+CAST ( expression AS target_type );
+
+How to Use ABS() Function (ABSOLUTE):
+ABS(numeric_expression);
 
 ________________________________________________________________________________
 
