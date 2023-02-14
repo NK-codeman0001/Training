@@ -1,0 +1,174 @@
+Assignment Solution
+
+                                             List of relations
+ Schema |       Name        |   Type   |  Owner   | Persistence | Access method |    Size    | Description 
+--------+-------------------+----------+----------+-------------+---------------+------------+-------------
+ public | aircraft          | table    | postgres | permanent   | heap          | 16 kB      | 
+ public | aircraft_aid_seq  | sequence | postgres | permanent   |               | 8192 bytes | 
+ public | certified         | table    | postgres | permanent   | heap          | 48 kB      | 
+ public | employees         | table    | postgres | permanent   | heap          | 16 kB      | 
+ public | employees_eid_seq | sequence | postgres | permanent   |               | 8192 bytes | 
+ public | flights           | table    | postgres | permanent   | heap          | 8192 bytes | 
+ public | flights_flno_seq  | sequence | postgres | permanent   |               | 8192 bytes | 
+(7 rows)
+
+[Note that the Employees relation describes pilots and other kinds of employees aswell; every pilot is certified for some aircraft, and only pilots are certified to fly.Write each of the following queries in SQL.]
+__________________________________________________________________________________________________________________________________________
+
+
+                                                         Table "public.aircraft"
+    Column     |       Type        | Collation | Nullable |                Default                | Storage  | Stats target | Description 
+---------------+-------------------+-----------+----------+---------------------------------------+----------+--------------+-------------
+ aid           | bigint            |           | not null | nextval('aircraft_aid_seq'::regclass) | plain    |              | 
+ aname         | character varying |           |          |                                       | extended |              | 
+ cruisingrange | integer           |           |          |                                       | plain    |              | 
+Indexes:
+    "aircraft_pkey" PRIMARY KEY, btree (aid)
+Access method: heap
+
+__________________________________________________________________________________________________________________________________________
+
+
+                                                         Table "public.flights"
+  Column  |         Type          | Collation | Nullable |                Default                | Storage  | Stats target | Description 
+----------+-----------------------+-----------+----------+---------------------------------------+----------+--------------+-------------
+ flno     | bigint                |           | not null | nextval('flights_flno_seq'::regclass) | plain    |              | 
+ from     | character varying(25) |           |          |                                       | extended |              | 
+ to       | character varying(25) |           |          |                                       | extended |              | 
+ distance | integer               |           |          |                                       | plain    |              | 
+ departs  | character varying(15) |           |          |                                       | extended |              | 
+ arrives  | character varying(15) |           |          |                                       | extended |              | 
+ price    | integer               |           |          |                                       | plain    |              | 
+Indexes:
+    "flights_pkey" PRIMARY KEY, btree (flno)
+Access method: heap
+
+__________________________________________________________________________________________________________________________________________
+
+                                                      Table "public.employees"
+ Column |       Type        | Collation | Nullable |                Default                 | Storage  | Stats target | Description 
+--------+-------------------+-----------+----------+----------------------------------------+----------+--------------+-------------
+ eid    | bigint            |           | not null | nextval('employees_eid_seq'::regclass) | plain    |              | 
+ ename  | character varying |           |          |                                        | extended |              | 
+ salary | integer           |           |          |                                        | plain    |              | 
+Indexes:
+    "employees_pkey" PRIMARY KEY, btree (eid)
+Referenced by:
+    TABLE "certified" CONSTRAINT "certified_eid_fkey" FOREIGN KEY (eid) REFERENCES employees(eid)
+Access method: heap
+__________________________________________________________________________________________________________________________________________
+
+                                 Table "public.certified"
+ Column |  Type   | Collation | Nullable | Default | Storage | Stats target | Description 
+--------+---------+-----------+----------+---------+---------+--------------+-------------
+ eid    | integer |           | not null |         | plain   |              | 
+ aid    | integer |           | not null |         | plain   |              | 
+Indexes:
+    "certified_pkey" PRIMARY KEY, btree (eid, aid)
+Foreign-key constraints:
+    "certified_eid_fkey" FOREIGN KEY (eid) REFERENCES employees(eid)
+Access method: heap
+
+
+
+Select * from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid order by A.aname;
+
+___________________________________________________________________________________________________________________________________________
+a) Find the names of aircraft such that all pilots certified to operate them earn more than $80,000.
+Ans=> Select A.aname, E.salary from aircraft as A, employees as E, certified as C where E.eid = C.eid  and E.eid not in (select eid from employees where salary <= 80000) group by A.aname;
+
+
+__________________________________________________________________________________________________________________________________________
+b) For each pilot who is certified for more than three aircraft, find the eid and the maximum cruisingrange of the aircraft for which she or he is certified.
+Ans=> 
+airline_flight_info=# Select C.eid, MAX(A.cruisingrange) from certified as C join aircraft as A on C.aid = A.aid Group by C.eid Having count(*)>3 order by C.eid ;
+ eid | max  
+-----+------
+  30 | 3636
+  31 | 3995
+  32 | 2425
+  49 | 3206
+  50 | 3636
+  67 | 3255
+(6 rows)
+__________________________________________________________________________________________________________________________________________
+c) Find the names of pilots whose salary is less than the price of the cheapest route from Los Angeles to Honolulu.
+Ans=>
+airline_flight_info=# Select E.eid, E.ename, E.salary from employees as E where E.salary < (Select MIN(F.price) from flights as F where "from"='Los Angeles' AND "to"='Honolulu');
+ eid |        ename        | salary 
+-----+---------------------+--------
+  21 | Cordey Pounsett     |  71437
+  41 | Madelaine Atton     |  70370
+  49 | Butch Cahalin       |  71299
+  52 | Barby Extal         |  70000
+  65 | Gabrielle Cauderlie |  70264
+(5 rows)
+
+__________________________________________________________________________________________________________________________________________
+d) For all aircraft with cruisingrange over 1000 miles, find the name of the aircraft and the average salary of all pilots certified for this aircraft.
+Ans=>
+airline_flight_info=# Select A.aname as "Aircraft Name", ROUND(AVG(E.salary),2) as "Average Salary" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid  where A.cruisingrange>1000 Group by A.aname; 
+ Aircraft Name | Average Salary 
+---------------+----------------
+ Locheed 44    |       77398.00
+ Locheed 94    |       96589.00
+ Airbus 54     |       90257.50
+ Airbus 74     |      101895.00
+ Locheed 84    |       96385.00
+ Locheed 54    |       79506.50
+ Boeing 04     |       79422.00
+ Airbus 84     |       96050.00
+ Boeing 34     |       85742.00
+ Airbus 14     |       83810.00
+ Airbus 04     |       92186.33
+ Boeing 94     |       86125.75
+ Boeing 64     |       88801.00
+ Airbus 94     |       95649.17
+ Boeing 84     |      104940.50
+ Airbus 24     |      113038.00
+ Locheed 14    |       93079.18
+ Boeing 44     |       87806.57
+ Airbus 34     |       98249.00
+ Locheed 04    |       97986.33
+ Locheed 24    |       93137.30
+ Boeing 54     |       93690.67
+ Locheed 64    |       87716.00
+ Boeing 14     |       97848.67
+ Locheed 74    |       91389.60
+ Locheed 34    |       87223.25
+(26 rows)
+
+__________________________________________________________________________________________________________________________________________
+e)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+f)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+g)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+h)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+i)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+j)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+k)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+l)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+m)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+n)
+Ans=>
+__________________________________________________________________________________________________________________________________________
+
+
+
