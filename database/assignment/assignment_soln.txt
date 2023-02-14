@@ -139,35 +139,169 @@ airline_flight_info=# Select A.aname as "Aircraft Name", ROUND(AVG(E.salary),2) 
 (26 rows)
 
 __________________________________________________________________________________________________________________________________________
-e)
+e) Find the names of pilots certified for some Boeing aircraft.
+Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Pilot Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.aname LIKE 'Boeing%';
+      Pilot Name      
+----------------------
+ Connie Lisciardelli
+ Dalis Lembrick
+ Yolanthe Woolley
+ Irita Willisch
+ Ardella McGarvey
+ Eldon Epps
+ Bette Yurlov
+ Ralph Kembrey
+ Leticia Hunter
+ Ellette Rainville
+ Madelaine Atton
+ Tymothy Cearley
+ Edita Briiginshaw
+ Elsinore Craigheid
+ Rochester Bartosik
+ Pippo Fogel
+ Kayne Brook
+ Cordey Pounsett
+ Hyacinthie Buttery
+ Jessalyn Meadowcraft
+ Barby Extal
+ Edita Dumingos
+ Klara Vatcher
+ Brandy Bowmer
+(24 rows)
+
+__________________________________________________________________________________________________________________________________________
+f)Find the aids of all aircraft that can be used on routes from Los Angeles to Chicago.
 Ans=>
 __________________________________________________________________________________________________________________________________________
-f)
+g) Identify the routes that can be piloted by every pilot who makes more than $100,000.
 Ans=>
 __________________________________________________________________________________________________________________________________________
-g)
+h)Print the enames of pilots who can operate planes with cruisingrange greater than 3000 miles but are not certified on any Boeing aircraft.
 Ans=>
 __________________________________________________________________________________________________________________________________________
-h)
+i)A customer wants to travel from Madison to New York with no more than two changes of flight. List the choice of departure times from Madison if the customer wants to arrive in New York by 6 p.m.
 Ans=>
 __________________________________________________________________________________________________________________________________________
-i)
+j)Compute the difference between the average salary of a pilot and the average salary of all employees (including pilots).
 Ans=>
 __________________________________________________________________________________________________________________________________________
-j)
+k)Print the name and salary of every nonpilot whose salary is more than the average salary for pilots.
 Ans=>
 __________________________________________________________________________________________________________________________________________
-k)
-Ans=>
+l)Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles.
+Ans=> 
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 );
+
+    Employee Name     
+----------------------
+ Lucienne Janczak
+ Lilian Brideaux
+ Dalis Lembrick
+ Rakel Warwicker
+ Kristian Forsey
+ Butch Cahalin
+ Ardella McGarvey
+ Tam Loseke
+ Freeman Manser
+ Harlene Waud
+ Leticia Hunter
+ Ellette Rainville
+ Christi Eyton
+ Edita Briiginshaw
+ Elsinore Craigheid
+ Baxie Guerin
+ Rochester Bartosik
+ Pippo Fogel
+ Hyacinthie Buttery
+ Matthiew Arnholtz
+ Barby Extal
+ Gay MacTrustie
+ Edita Dumingos
+ Ulrikaumeko Cragell
+ Brandy Bowmer
+ Gabrielle Cauderlie
+ Connie Lisciardelli
+ Yolanthe Woolley
+ Irita Willisch
+ Eldon Epps
+ Robinet Dugall
+ Ralph Kembrey
+ Maggy Fulle
+ Tymothy Cearley
+ Madelaine Atton
+ Carlie Onraet
+ Sander Igo
+ Cordey Pounsett
+ Jessalyn Meadowcraft
+ Jedd Shane
+ Klara Vatcher
+(41 rows)
+
 __________________________________________________________________________________________________________________________________________
-l)
+m) Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles, but on at least two such aircrafts.
 Ans=>
+airline_flight_info=# SELECT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 ) GROUP BY E.eid Having COUNT(A.aname)>1 order by E.ename ;
+    Employee Name    
+---------------------
+ Ardella McGarvey
+ Baxie Guerin
+ Butch Cahalin
+ Carlie Onraet
+ Connie Lisciardelli
+ Cordey Pounsett
+ Edita Briiginshaw
+ Edita Dumingos
+ Eldon Epps
+ Elsinore Craigheid
+ Gay MacTrustie
+ Irita Willisch
+ Kristian Forsey
+ Leticia Hunter
+ Lilian Brideaux
+ Madelaine Atton
+ Matthiew Arnholtz
+ Pippo Fogel
+ Rakel Warwicker
+ Ralph Kembrey
+ Robinet Dugall
+ Rochester Bartosik
+ Tam Loseke
+ Tymothy Cearley
+ Yolanthe Woolley
+(25 rows)
+
 __________________________________________________________________________________________________________________________________________
-m)
+n)Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles and who are certified on some Boeing aircraft.
 Ans=>
-__________________________________________________________________________________________________________________________________________
-n)
-Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 ) AND A.aname LIKE 'Boeing%' order by E.ename;
+    Employee Name     
+----------------------
+ Ardella McGarvey
+ Barby Extal
+ Brandy Bowmer
+ Connie Lisciardelli
+ Cordey Pounsett
+ Dalis Lembrick
+ Edita Briiginshaw
+ Edita Dumingos
+ Eldon Epps
+ Ellette Rainville
+ Elsinore Craigheid
+ Hyacinthie Buttery
+ Irita Willisch
+ Jessalyn Meadowcraft
+ Klara Vatcher
+ Leticia Hunter
+ Madelaine Atton
+ Pippo Fogel
+ Ralph Kembrey
+ Rochester Bartosik
+ Tymothy Cearley
+ Yolanthe Woolley
+(22 rows)
+
+
 __________________________________________________________________________________________________________________________________________
 
 
