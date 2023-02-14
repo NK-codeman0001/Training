@@ -199,6 +199,15 @@ airline_flight_info=# Select A.aid from aircraft as A where A.cruisingrange >= (
 __________________________________________________________________________________________________________________________________________
 g) Identify the routes that can be piloted by every pilot who makes more than $100,000.
 Ans=>
+airline_flight_info=# Select Distinct(F."from",F."to") from flights as F where distance <=(Select Min(A.cruisingrange) from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid where E.salary >100000 );
+            row             
+----------------------------
+ (Chicago,"Los Angeles")
+ ("Los Angeles",Madison)
+ (Madison,"New York")
+ ("New York","Los Angeles")
+(4 rows)
+
 __________________________________________________________________________________________________________________________________________
 h)Print the enames of pilots who can operate planes with cruisingrange greater than 3000 miles but are not certified on any Boeing aircraft.
 Ans=>
