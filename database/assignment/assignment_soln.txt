@@ -75,8 +75,18 @@ Select * from certified as C join aircraft as A on C.aid = A.aid join employees 
 
 ___________________________________________________________________________________________________________________________________________
 a) Find the names of aircraft such that all pilots certified to operate them earn more than $80,000.
-Ans=> Select A.aname, E.salary from aircraft as A, employees as E, certified as C where E.eid = C.eid  and E.eid not in (select eid from employees where salary <= 80000) group by A.aname;
-
+Ans=> 
+airline_flight_info=# SELECT Distinct A.aname from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid  group by A.aname having every(E.salary>80000) order by A.aname ;
+   aname    
+------------
+ Airbus 24
+ Airbus 34
+ Airbus 74
+ Airbus 84
+ Boeing 34
+ Boeing 84
+ Locheed 04
+(7 rows)
 
 __________________________________________________________________________________________________________________________________________
 b) For each pilot who is certified for more than three aircraft, find the eid and the maximum cruisingrange of the aircraft for which she or he is certified.
@@ -172,22 +182,89 @@ airline_flight_info=# SELECT DISTINCT E.ename as "Pilot Name" from aircraft as A
 
 __________________________________________________________________________________________________________________________________________
 f)Find the aids of all aircraft that can be used on routes from Los Angeles to Chicago.
-Ans=>
+Ans=> 
+airline_flight_info=# Select A.aid from aircraft as A where A.cruisingrange >= (Select MIN(F.distance) from flights as F where "from"='Los Angeles' AND "to"='Honolulu');
+ aid 
+-----
+  16
+  22
+  27
+  31
+  48
+  59
+  65
+  88
+(8 rows)
+
 __________________________________________________________________________________________________________________________________________
 g) Identify the routes that can be piloted by every pilot who makes more than $100,000.
 Ans=>
 __________________________________________________________________________________________________________________________________________
 h)Print the enames of pilots who can operate planes with cruisingrange greater than 3000 miles but are not certified on any Boeing aircraft.
 Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where  A.aname LIKE '%Boeing%') AND A.cruisingrange > 3000 order by E.ename;
+    Employee Name    
+---------------------
+ Butch Cahalin
+ Gabrielle Cauderlie
+ Gay MacTrustie
+ Kristian Forsey
+ Lilian Brideaux
+ Matthiew Arnholtz
+ Rakel Warwicker
+ Robinet Dugall
+(8 rows)
 __________________________________________________________________________________________________________________________________________
 i)A customer wants to travel from Madison to New York with no more than two changes of flight. List the choice of departure times from Madison if the customer wants to arrive in New York by 6 p.m.
 Ans=>
+
 __________________________________________________________________________________________________________________________________________
 j)Compute the difference between the average salary of a pilot and the average salary of all employees (including pilots).
 Ans=>
+airline_flight_info=# SELECT ROUND((SELECT AVG(E.salary) from employees as E) - (SELECT AVG(E.salary) from employees as E where E.eid IN (Select DISTINCT C.eid from certified as C)),2) AS "Salary difference"; 
+ Salary difference 
+-------------------
+           1864.59
+(1 row)
+
 __________________________________________________________________________________________________________________________________________
 k)Print the name and salary of every nonpilot whose salary is more than the average salary for pilots.
 Ans=>
+airline_flight_info=# SELECT E.ename as name, E.salary from employees as E where E.eid NOT IN (Select DISTINCT C.eid from certified as C) AND E.salary > (SELECT AVG(E.salary) from employees as E where E.eid IN (Select DISTINCT C.eid from certified as C ));
+
+        name        | salary 
+--------------------+--------
+ Minda Katzmann     | 107779
+ Davon Paslow       |  99267
+ Jannelle Gronow    |  99596
+ Arlan deKnevet     | 105188
+ Neal Ivushkin      | 106094
+ Aubrette O'Ruane   | 117408
+ Phyllida Karlicek  | 110818
+ Buddie Orrick      | 104338
+ Juditha Freund     |  98144
+ Shelba McLese      | 106105
+ Oswell Bruntjen    |  91273
+ Kale Gloucester    | 100371
+ Duncan Franks      |  97427
+ Cecelia Coleyshaw  | 109939
+ Esra Heck          | 104401
+ Adams Colicot      | 113505
+ Che Allanby        |  98310
+ Katherine Louden   | 113782
+ Dacy Fissenden     | 107477
+ Ryun Doonican      | 103192
+ Nata O'Shields     | 106129
+ Dody Goudy         |  91217
+ Thibaut Sheringham | 110440
+ Matthew Anchor     | 104156
+ Aldrich Meineking  | 105158
+ Egor Leidecker     | 118232
+ Pamela Urrey       | 110253
+ Gabie Savin        | 117473
+ Raimondo Novic     | 113351
+ Gaby Polglaze      |  96183
+(30 rows)
 __________________________________________________________________________________________________________________________________________
 l)Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles.
 Ans=> 
