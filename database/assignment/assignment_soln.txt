@@ -226,6 +226,54 @@ airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft a
 __________________________________________________________________________________________________________________________________________
 i)A customer wants to travel from Madison to New York with no more than two changes of flight. List the choice of departure times from Madison if the customer wants to arrive in New York by 6 p.m.
 Ans=>
+0 change: Select * from flights as F where F."from"='Madison' AND F."to"='New York' AND F.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+ flno |  from   |    to    | distance | departs | arrives | price 
+------+---------+----------+----------+---------+---------+-------
+    2 | Madison | New York |     3545 | 00:27   | 11:26   |   260
+    6 | Madison | New York |     3597 | 06:07   | 06:46   |   347
+   11 | Madison | New York |     3611 | 20:01   | 02:14   |   427
+   15 | Madison | New York |     5222 | 14:20   | 14:47   |   165
+   31 | Madison | New York |     2761 | 21:30   | 16:29   |   491
+   41 | Madison | New York |     3160 | 19:30   | 02:59   |   329
+(6 rows)
+
+
+1 change: Select F1."from",F1."to",F1.departs,F1.arrives,F2."from",F2."to",F2.departs,F2.arrives from flights as F1,flights F2 where F1."from"='Madison' AND F2."from"=F1."to" AND F2."to"='New York' AND F1.arrives<F2.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+  from   |     to      | departs | arrives |    from     |    to    | departs | arrives 
+---------+-------------+---------+---------+-------------+----------+---------+---------
+ Madison | Los Angeles | 07:45   | 21:24   | Los Angeles | New York | 22:29   | 05:32
+ Madison | Los Angeles | 21:33   | 16:09   | Los Angeles | New York | 22:29   | 05:32
+ Madison | Los Angeles | 20:23   | 17:50   | Los Angeles | New York | 22:29   | 05:32
+(3 rows)
+
+2 change: Select F1."from",F1."to",F1.departs,F1.arrives,F2."from",F2."to",F2.departs,F2.arrives,F3."from",F3."to",F3.departs,F3.arrives from flights as F1,flights F2,flights F3 where F1."from"='Madison' AND F2."from"=F1."to" AND F3."from"=F2."to" AND F3."to"='New York' AND F2."to"<>F1."from" AND F1.arrives<F2.departs AND F2.arrives<F3.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+  from   |     to      | departs | arrives |    from     |   to    | departs | arrives |  from   |    to    | departs | arrives 
+---------+-------------+---------+---------+-------------+---------+---------+---------+---------+----------+---------+---------
+ Madison | Los Angeles | 21:33   | 16:09   | Los Angeles | Chicago | 19:36   | 05:36   | Chicago | New York | 11:20   | 08:41
+ Madison | Los Angeles | 20:23   | 17:50   | Los Angeles | Chicago | 19:36   | 05:36   | Chicago | New York | 11:20   | 08:41
+ Madison | Honolulu    | 05:58   | 05:53   | Honolulu    | Chicago | 09:31   | 02:31   | Chicago | New York | 11:20   | 08:41
+(3 rows)
+
+airline_flight_info=# Select F.departs from flights as F where F."from"='Madison' AND F."to"='New York' AND F.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' )
+UNION
+Select F1.departs from flights as F1,flights F2 where F1."from"='Madison' AND F2."from"=F1."to" AND F2."to"='New York' AND F1.arrives<F2.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' )
+UNION
+Select F1.departs from flights as F1,flights F2,flights F3 where F1."from"='Madison' AND F2."from"=F1."to" AND F3."from"=F2."to" AND F3."to"='New York' AND F2."to"<>F1."from" AND F1.arrives<F2.departs AND F2.arrives<F3.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' ) 
+;
+ departs 
+---------
+ 08:48
+ 20:01
+ 06:07
+ 21:33
+ 14:20
+ 00:27
+ 05:58
+ 07:45
+ 21:30
+ 20:23
+ 19:30
+(11 rows)
 
 __________________________________________________________________________________________________________________________________________
 j)Compute the difference between the average salary of a pilot and the average salary of all employees (including pilots).
