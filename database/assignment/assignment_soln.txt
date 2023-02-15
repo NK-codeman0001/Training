@@ -1,0 +1,442 @@
+Assignment Solution
+
+                                             List of relations
+ Schema |       Name        |   Type   |  Owner   | Persistence | Access method |    Size    | Description 
+--------+-------------------+----------+----------+-------------+---------------+------------+-------------
+ public | aircraft          | table    | postgres | permanent   | heap          | 16 kB      | 
+ public | aircraft_aid_seq  | sequence | postgres | permanent   |               | 8192 bytes | 
+ public | certified         | table    | postgres | permanent   | heap          | 48 kB      | 
+ public | employees         | table    | postgres | permanent   | heap          | 16 kB      | 
+ public | employees_eid_seq | sequence | postgres | permanent   |               | 8192 bytes | 
+ public | flights           | table    | postgres | permanent   | heap          | 8192 bytes | 
+ public | flights_flno_seq  | sequence | postgres | permanent   |               | 8192 bytes | 
+(7 rows)
+
+[Note that the Employees relation describes pilots and other kinds of employees aswell; every pilot is certified for some aircraft, and only pilots are certified to fly.Write each of the following queries in SQL.]
+__________________________________________________________________________________________________________________________________________
+
+
+                                                         Table "public.aircraft"
+    Column     |       Type        | Collation | Nullable |                Default                | Storage  | Stats target | Description 
+---------------+-------------------+-----------+----------+---------------------------------------+----------+--------------+-------------
+ aid           | bigint            |           | not null | nextval('aircraft_aid_seq'::regclass) | plain    |              | 
+ aname         | character varying |           |          |                                       | extended |              | 
+ cruisingrange | integer           |           |          |                                       | plain    |              | 
+Indexes:
+    "aircraft_pkey" PRIMARY KEY, btree (aid)
+Access method: heap
+
+__________________________________________________________________________________________________________________________________________
+
+
+                                                         Table "public.flights"
+  Column  |         Type          | Collation | Nullable |                Default                | Storage  | Stats target | Description 
+----------+-----------------------+-----------+----------+---------------------------------------+----------+--------------+-------------
+ flno     | bigint                |           | not null | nextval('flights_flno_seq'::regclass) | plain    |              | 
+ from     | character varying(25) |           |          |                                       | extended |              | 
+ to       | character varying(25) |           |          |                                       | extended |              | 
+ distance | integer               |           |          |                                       | plain    |              | 
+ departs  | character varying(15) |           |          |                                       | extended |              | 
+ arrives  | character varying(15) |           |          |                                       | extended |              | 
+ price    | integer               |           |          |                                       | plain    |              | 
+Indexes:
+    "flights_pkey" PRIMARY KEY, btree (flno)
+Access method: heap
+
+__________________________________________________________________________________________________________________________________________
+
+                                                      Table "public.employees"
+ Column |       Type        | Collation | Nullable |                Default                 | Storage  | Stats target | Description 
+--------+-------------------+-----------+----------+----------------------------------------+----------+--------------+-------------
+ eid    | bigint            |           | not null | nextval('employees_eid_seq'::regclass) | plain    |              | 
+ ename  | character varying |           |          |                                        | extended |              | 
+ salary | integer           |           |          |                                        | plain    |              | 
+Indexes:
+    "employees_pkey" PRIMARY KEY, btree (eid)
+Referenced by:
+    TABLE "certified" CONSTRAINT "certified_eid_fkey" FOREIGN KEY (eid) REFERENCES employees(eid)
+Access method: heap
+__________________________________________________________________________________________________________________________________________
+
+                                 Table "public.certified"
+ Column |  Type   | Collation | Nullable | Default | Storage | Stats target | Description 
+--------+---------+-----------+----------+---------+---------+--------------+-------------
+ eid    | integer |           | not null |         | plain   |              | 
+ aid    | integer |           | not null |         | plain   |              | 
+Indexes:
+    "certified_pkey" PRIMARY KEY, btree (eid, aid)
+Foreign-key constraints:
+    "certified_eid_fkey" FOREIGN KEY (eid) REFERENCES employees(eid)
+Access method: heap
+
+
+
+Select * from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid order by A.aname;
+
+___________________________________________________________________________________________________________________________________________
+a) Find the names of aircraft such that all pilots certified to operate them earn more than $80,000.
+Ans=> 
+airline_flight_info=# SELECT Distinct A.aname from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid  group by A.aname having every(E.salary>80000) order by A.aname ;
+   aname    
+------------
+ Airbus 24
+ Airbus 34
+ Airbus 74
+ Airbus 84
+ Boeing 34
+ Boeing 84
+ Locheed 04
+(7 rows)
+
+__________________________________________________________________________________________________________________________________________
+b) For each pilot who is certified for more than three aircraft, find the eid and the maximum cruisingrange of the aircraft for which she or he is certified.
+Ans=> 
+airline_flight_info=# Select C.eid, MAX(A.cruisingrange) from certified as C join aircraft as A on C.aid = A.aid Group by C.eid Having count(*)>3 order by C.eid ;
+ eid | max  
+-----+------
+  30 | 3636
+  31 | 3995
+  32 | 2425
+  49 | 3206
+  50 | 3636
+  67 | 3255
+(6 rows)
+__________________________________________________________________________________________________________________________________________
+c) Find the names of pilots whose salary is less than the price of the cheapest route from Los Angeles to Honolulu.
+Ans=>
+airline_flight_info=# Select E.eid, E.ename, E.salary from employees as E where E.salary < (Select MIN(F.price) from flights as F where "from"='Los Angeles' AND "to"='Honolulu');
+ eid |        ename        | salary 
+-----+---------------------+--------
+  21 | Cordey Pounsett     |  71437
+  41 | Madelaine Atton     |  70370
+  49 | Butch Cahalin       |  71299
+  52 | Barby Extal         |  70000
+  65 | Gabrielle Cauderlie |  70264
+(5 rows)
+
+__________________________________________________________________________________________________________________________________________
+d) For all aircraft with cruisingrange over 1000 miles, find the name of the aircraft and the average salary of all pilots certified for this aircraft.
+Ans=>
+airline_flight_info=# Select A.aname as "Aircraft Name", ROUND(AVG(E.salary),2) as "Average Salary" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid  where A.cruisingrange>1000 Group by A.aname; 
+ Aircraft Name | Average Salary 
+---------------+----------------
+ Locheed 44    |       77398.00
+ Locheed 94    |       96589.00
+ Airbus 54     |       90257.50
+ Airbus 74     |      101895.00
+ Locheed 84    |       96385.00
+ Locheed 54    |       79506.50
+ Boeing 04     |       79422.00
+ Airbus 84     |       96050.00
+ Boeing 34     |       85742.00
+ Airbus 14     |       83810.00
+ Airbus 04     |       92186.33
+ Boeing 94     |       86125.75
+ Boeing 64     |       88801.00
+ Airbus 94     |       95649.17
+ Boeing 84     |      104940.50
+ Airbus 24     |      113038.00
+ Locheed 14    |       93079.18
+ Boeing 44     |       87806.57
+ Airbus 34     |       98249.00
+ Locheed 04    |       97986.33
+ Locheed 24    |       93137.30
+ Boeing 54     |       93690.67
+ Locheed 64    |       87716.00
+ Boeing 14     |       97848.67
+ Locheed 74    |       91389.60
+ Locheed 34    |       87223.25
+(26 rows)
+
+__________________________________________________________________________________________________________________________________________
+e) Find the names of pilots certified for some Boeing aircraft.
+Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Pilot Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.aname LIKE 'Boeing%';
+      Pilot Name      
+----------------------
+ Connie Lisciardelli
+ Dalis Lembrick
+ Yolanthe Woolley
+ Irita Willisch
+ Ardella McGarvey
+ Eldon Epps
+ Bette Yurlov
+ Ralph Kembrey
+ Leticia Hunter
+ Ellette Rainville
+ Madelaine Atton
+ Tymothy Cearley
+ Edita Briiginshaw
+ Elsinore Craigheid
+ Rochester Bartosik
+ Pippo Fogel
+ Kayne Brook
+ Cordey Pounsett
+ Hyacinthie Buttery
+ Jessalyn Meadowcraft
+ Barby Extal
+ Edita Dumingos
+ Klara Vatcher
+ Brandy Bowmer
+(24 rows)
+
+__________________________________________________________________________________________________________________________________________
+f)Find the aids of all aircraft that can be used on routes from Los Angeles to Chicago.
+Ans=> 
+airline_flight_info=# Select A.aid from aircraft as A where A.cruisingrange >= (Select MIN(F.distance) from flights as F where "from"='Los Angeles' AND "to"='Honolulu');
+ aid 
+-----
+  16
+  22
+  27
+  31
+  48
+  59
+  65
+  88
+(8 rows)
+
+__________________________________________________________________________________________________________________________________________
+g) Identify the routes that can be piloted by every pilot who makes more than $100,000.
+Ans=>
+airline_flight_info=# Select Distinct(F."from",F."to") from flights as F where distance <=(Select Min(A.cruisingrange) from certified as C join aircraft as A on C.aid = A.aid join employees as E on E.eid=C.eid where E.salary >100000 );
+            row             
+----------------------------
+ (Chicago,"Los Angeles")
+ ("Los Angeles",Madison)
+ (Madison,"New York")
+ ("New York","Los Angeles")
+(4 rows)
+
+__________________________________________________________________________________________________________________________________________
+h)Print the enames of pilots who can operate planes with cruisingrange greater than 3000 miles but are not certified on any Boeing aircraft.
+Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where  A.aname LIKE '%Boeing%') AND A.cruisingrange > 3000 order by E.ename;
+    Employee Name    
+---------------------
+ Butch Cahalin
+ Gabrielle Cauderlie
+ Gay MacTrustie
+ Kristian Forsey
+ Lilian Brideaux
+ Matthiew Arnholtz
+ Rakel Warwicker
+ Robinet Dugall
+(8 rows)
+__________________________________________________________________________________________________________________________________________
+i)A customer wants to travel from Madison to New York with no more than two changes of flight. List the choice of departure times from Madison if the customer wants to arrive in New York by 6 p.m.
+Ans=>
+0 change: Select * from flights as F where F."from"='Madison' AND F."to"='New York' AND F.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+ flno |  from   |    to    | distance | departs | arrives | price 
+------+---------+----------+----------+---------+---------+-------
+    2 | Madison | New York |     3545 | 00:27   | 11:26   |   260
+    6 | Madison | New York |     3597 | 06:07   | 06:46   |   347
+   11 | Madison | New York |     3611 | 20:01   | 02:14   |   427
+   15 | Madison | New York |     5222 | 14:20   | 14:47   |   165
+   31 | Madison | New York |     2761 | 21:30   | 16:29   |   491
+   41 | Madison | New York |     3160 | 19:30   | 02:59   |   329
+(6 rows)
+
+
+1 change: Select F1."from",F1."to",F1.departs,F1.arrives,F2."from",F2."to",F2.departs,F2.arrives from flights as F1,flights F2 where F1."from"='Madison' AND F2."from"=F1."to" AND F2."to"='New York' AND F1.arrives<F2.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+  from   |     to      | departs | arrives |    from     |    to    | departs | arrives 
+---------+-------------+---------+---------+-------------+----------+---------+---------
+ Madison | Los Angeles | 07:45   | 21:24   | Los Angeles | New York | 22:29   | 05:32
+ Madison | Los Angeles | 21:33   | 16:09   | Los Angeles | New York | 22:29   | 05:32
+ Madison | Los Angeles | 20:23   | 17:50   | Los Angeles | New York | 22:29   | 05:32
+(3 rows)
+
+2 change: Select F1."from",F1."to",F1.departs,F1.arrives,F2."from",F2."to",F2.departs,F2.arrives,F3."from",F3."to",F3.departs,F3.arrives from flights as F1,flights F2,flights F3 where F1."from"='Madison' AND F2."from"=F1."to" AND F3."from"=F2."to" AND F3."to"='New York' AND F2."to"<>F1."from" AND F1.arrives<F2.departs AND F2.arrives<F3.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' );
+  from   |     to      | departs | arrives |    from     |   to    | departs | arrives |  from   |    to    | departs | arrives 
+---------+-------------+---------+---------+-------------+---------+---------+---------+---------+----------+---------+---------
+ Madison | Los Angeles | 21:33   | 16:09   | Los Angeles | Chicago | 19:36   | 05:36   | Chicago | New York | 11:20   | 08:41
+ Madison | Los Angeles | 20:23   | 17:50   | Los Angeles | Chicago | 19:36   | 05:36   | Chicago | New York | 11:20   | 08:41
+ Madison | Honolulu    | 05:58   | 05:53   | Honolulu    | Chicago | 09:31   | 02:31   | Chicago | New York | 11:20   | 08:41
+(3 rows)
+
+airline_flight_info=# Select F.departs from flights as F where F."from"='Madison' AND F."to"='New York' AND F.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' )
+UNION
+Select F1.departs from flights as F1,flights F2 where F1."from"='Madison' AND F2."from"=F1."to" AND F2."to"='New York' AND F1.arrives<F2.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' )
+UNION
+Select F1.departs from flights as F1,flights F2,flights F3 where F1."from"='Madison' AND F2."from"=F1."to" AND F3."from"=F2."to" AND F3."to"='New York' AND F2."to"<>F1."from" AND F1.arrives<F2.departs AND F2.arrives<F3.departs AND F2.arrives<to_char( to_timestamp ( '6:00 PM', 'HH12:MI PM' ) , 'HH24:MI' ) 
+;
+ departs 
+---------
+ 08:48
+ 20:01
+ 06:07
+ 21:33
+ 14:20
+ 00:27
+ 05:58
+ 07:45
+ 21:30
+ 20:23
+ 19:30
+(11 rows)
+
+__________________________________________________________________________________________________________________________________________
+j)Compute the difference between the average salary of a pilot and the average salary of all employees (including pilots).
+Ans=>
+airline_flight_info=# SELECT ROUND((SELECT AVG(E.salary) from employees as E) - (SELECT AVG(E.salary) from employees as E where E.eid IN (Select DISTINCT C.eid from certified as C)),2) AS "Salary difference"; 
+ Salary difference 
+-------------------
+           1864.59
+(1 row)
+
+__________________________________________________________________________________________________________________________________________
+k)Print the name and salary of every nonpilot whose salary is more than the average salary for pilots.
+Ans=>
+airline_flight_info=# SELECT E.ename as name, E.salary from employees as E where E.eid NOT IN (Select DISTINCT C.eid from certified as C) AND E.salary > (SELECT AVG(E.salary) from employees as E where E.eid IN (Select DISTINCT C.eid from certified as C ));
+
+        name        | salary 
+--------------------+--------
+ Minda Katzmann     | 107779
+ Davon Paslow       |  99267
+ Jannelle Gronow    |  99596
+ Arlan deKnevet     | 105188
+ Neal Ivushkin      | 106094
+ Aubrette O'Ruane   | 117408
+ Phyllida Karlicek  | 110818
+ Buddie Orrick      | 104338
+ Juditha Freund     |  98144
+ Shelba McLese      | 106105
+ Oswell Bruntjen    |  91273
+ Kale Gloucester    | 100371
+ Duncan Franks      |  97427
+ Cecelia Coleyshaw  | 109939
+ Esra Heck          | 104401
+ Adams Colicot      | 113505
+ Che Allanby        |  98310
+ Katherine Louden   | 113782
+ Dacy Fissenden     | 107477
+ Ryun Doonican      | 103192
+ Nata O'Shields     | 106129
+ Dody Goudy         |  91217
+ Thibaut Sheringham | 110440
+ Matthew Anchor     | 104156
+ Aldrich Meineking  | 105158
+ Egor Leidecker     | 118232
+ Pamela Urrey       | 110253
+ Gabie Savin        | 117473
+ Raimondo Novic     | 113351
+ Gaby Polglaze      |  96183
+(30 rows)
+__________________________________________________________________________________________________________________________________________
+l)Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles.
+Ans=> 
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 );
+
+    Employee Name     
+----------------------
+ Lucienne Janczak
+ Lilian Brideaux
+ Dalis Lembrick
+ Rakel Warwicker
+ Kristian Forsey
+ Butch Cahalin
+ Ardella McGarvey
+ Tam Loseke
+ Freeman Manser
+ Harlene Waud
+ Leticia Hunter
+ Ellette Rainville
+ Christi Eyton
+ Edita Briiginshaw
+ Elsinore Craigheid
+ Baxie Guerin
+ Rochester Bartosik
+ Pippo Fogel
+ Hyacinthie Buttery
+ Matthiew Arnholtz
+ Barby Extal
+ Gay MacTrustie
+ Edita Dumingos
+ Ulrikaumeko Cragell
+ Brandy Bowmer
+ Gabrielle Cauderlie
+ Connie Lisciardelli
+ Yolanthe Woolley
+ Irita Willisch
+ Eldon Epps
+ Robinet Dugall
+ Ralph Kembrey
+ Maggy Fulle
+ Tymothy Cearley
+ Madelaine Atton
+ Carlie Onraet
+ Sander Igo
+ Cordey Pounsett
+ Jessalyn Meadowcraft
+ Jedd Shane
+ Klara Vatcher
+(41 rows)
+
+__________________________________________________________________________________________________________________________________________
+m) Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles, but on at least two such aircrafts.
+Ans=>
+airline_flight_info=# SELECT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 ) GROUP BY E.eid Having COUNT(A.aname)>1 order by E.ename ;
+    Employee Name    
+---------------------
+ Ardella McGarvey
+ Baxie Guerin
+ Butch Cahalin
+ Carlie Onraet
+ Connie Lisciardelli
+ Cordey Pounsett
+ Edita Briiginshaw
+ Edita Dumingos
+ Eldon Epps
+ Elsinore Craigheid
+ Gay MacTrustie
+ Irita Willisch
+ Kristian Forsey
+ Leticia Hunter
+ Lilian Brideaux
+ Madelaine Atton
+ Matthiew Arnholtz
+ Pippo Fogel
+ Rakel Warwicker
+ Ralph Kembrey
+ Robinet Dugall
+ Rochester Bartosik
+ Tam Loseke
+ Tymothy Cearley
+ Yolanthe Woolley
+(25 rows)
+
+__________________________________________________________________________________________________________________________________________
+n)Print the names of employees who are certified only on aircrafts with cruising range longer than 1000 miles and who are certified on some Boeing aircraft.
+Ans=>
+airline_flight_info=# SELECT DISTINCT E.ename as "Employee Name" from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where E.eid NOT IN (SELECT Distinct E.eid from aircraft as A join certified as C on C.aid=A.aid join  employees as E on C.eid = E.eid where A.cruisingrange <=1000 ) AND A.aname LIKE 'Boeing%' order by E.ename;
+    Employee Name     
+----------------------
+ Ardella McGarvey
+ Barby Extal
+ Brandy Bowmer
+ Connie Lisciardelli
+ Cordey Pounsett
+ Dalis Lembrick
+ Edita Briiginshaw
+ Edita Dumingos
+ Eldon Epps
+ Ellette Rainville
+ Elsinore Craigheid
+ Hyacinthie Buttery
+ Irita Willisch
+ Jessalyn Meadowcraft
+ Klara Vatcher
+ Leticia Hunter
+ Madelaine Atton
+ Pippo Fogel
+ Ralph Kembrey
+ Rochester Bartosik
+ Tymothy Cearley
+ Yolanthe Woolley
+(22 rows)
+
+
+__________________________________________________________________________________________________________________________________________
+
+
+
