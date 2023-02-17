@@ -2,4 +2,5 @@
 .~lock*
 /database/*.pdf
 /database/*.odt
+*.rb
 
