@@ -1,0 +1,111 @@
+Q1) Users who are also drivers:
+Query= select U.* from users as U join roles as R on U.id=R.users_id where R.roles_id=1 and U.id in (select R.users_id from roles as R where R.roles_id=2);
+
+                  id                  |      name       |         email          |       phone       |    dob     | gender |            created_at            
+--------------------------------------+-----------------+------------------------+-------------------+------------+--------+----------------------------------
+ 1d3aacf7-af6c-11ed-9ed3-1b0367dc8e20 | Mandy Pellett   | mpellett7@ifeng.com    | +351 910 792 5839 | 1998-11-16 | others | 2023-02-18 14:40:40.072974+05:30
+ 1d3aacf9-af6c-11ed-9ed3-1b0367dc8e20 | Aron Blumer     | ablumer9@narod.ru      | +66 924 962 7757  | 2001-03-25 | male   | 2023-02-18 14:40:40.089682+05:30
+ 1d3aad00-af6c-11ed-9ed3-1b0367dc8e20 | Cletis Hele     | cheleg@hao123.com      | +86 607 128 8961  | 1993-09-23 | others | 2023-02-18 14:40:40.148171+05:30
+ 1d3aad01-af6c-11ed-9ed3-1b0367dc8e20 | Rees Tierny     | rtiernyh@dell.com      | +58 639 661 5588  | 2001-08-04 | male   | 2023-02-18 14:40:40.156492+05:30
+ 1d3aad02-af6c-11ed-9ed3-1b0367dc8e20 | Iormina Clifton | icliftoni@cornell.edu  | +86 982 399 7135  | 1999-02-02 | others | 2023-02-18 14:40:40.164649+05:30
+ d4365176-b0e0-11ed-b086-436833f0f540 | Yul Tudor       | ytudor8@guardian.co.uk | +1-704-186-4248   | 1998-10-10 | female | 2023-02-20 11:08:39.857566+05:30
+(6 rows)
+
+___________________________________________________________
+
+Q2) Only user gender count:
+Query=  select U.gender, Count(*)  from users as U where U.id not in (select R.users_id from roles as R where R.roles_id =2) group by U.gender ;
+
+s1) only users: select U.* from users as U where U.id not in (select R.users_id from roles as R where R.roles_id =2);
+s2) gender count of only users: select U.gender, Count(*)  from users as U where U.id not in (select R.users_id from roles as R where R.roles_id =2) group by U.gender ;
+
+ gender | count 
+--------+-------
+ others |     5
+ male   |     4
+ female |     4
+(3 rows)
+
+___________________________________________________________
+
+Q3) : Cabs in Maximum Categories:
+Query= Select C.*,count(C.id) from cabs as C join cab_categories as CC on C.id = CC.cabs_id
+group by C.id having count(*)=(select Count(C.cabs_id) from cab_categories as C group by C.cab_types_id order by count(C.cab_types_id) desc limit 1);
+                  id                  |              driver_id               |  name   |    reg_no     |  reg_date  | count 
+--------------------------------------+--------------------------------------+---------+---------------+------------+-------
+ 36757f39-b0e3-11ed-b086-436833f0f540 | d4365175-b0e0-11ed-b086-436833f0f540 | Lincoln | PN-22-BF-1292 | 2022-09-27 |     9
+ 36757f2e-b0e3-11ed-b086-436833f0f540 | 1d3aacfb-af6c-11ed-9ed3-1b0367dc8e20 | Lincoln | PN-02-VS-3222 | 2020-07-22 |     9
+(2 rows)
+_____________________________________________________
+
+
+Q4) : Categories having most cabs:
+Query= cab_booking_db=# Select C.* from cabs as C join cab_categories as CC on C.id = CC.cabs_id
+where 
+CC.cab_types_id =(select C.cab_types_id from cab_categories as C group by C.cab_types_id order by count(C.cab_types_id) desc limit 1);
+                  id                  |              driver_id               |    name    |    reg_no     |  reg_date  
+--------------------------------------+--------------------------------------+------------+---------------+------------
+ 36757f2e-b0e3-11ed-b086-436833f0f540 | 1d3aacfb-af6c-11ed-9ed3-1b0367dc8e20 | Lincoln    | PN-02-VS-3222 | 2020-07-22
+ 36757f2f-b0e3-11ed-b086-436833f0f540 | 1d3aacfc-af6c-11ed-9ed3-1b0367dc8e20 | Volkswagen | HR-82-JN-5272 | 2013-02-16
+ 36757f30-b0e3-11ed-b086-436833f0f540 | 1d3aacfd-af6c-11ed-9ed3-1b0367dc8e20 | Acura      | DL-52-CA-3242 | 2022-08-10
+ 36757f31-b0e3-11ed-b086-436833f0f540 | 1d3aacfe-af6c-11ed-9ed3-1b0367dc8e20 | Nissan     | HR-02-EO-8242 | 2018-05-20
+ 36757f33-b0e3-11ed-b086-436833f0f540 | 1d3aad00-af6c-11ed-9ed3-1b0367dc8e20 | Dodge      | PN-52-EA-6232 | 2014-03-10
+ 36757f34-b0e3-11ed-b086-436833f0f540 | 1d3aad01-af6c-11ed-9ed3-1b0367dc8e20 | GMC        | DL-22-BN-5262 | 2022-12-14
+ 36757f38-b0e3-11ed-b086-436833f0f540 | d4365174-b0e0-11ed-b086-436833f0f540 | Nissan     | PN-42-HC-8212 | 2012-06-11
+ 36757f39-b0e3-11ed-b086-436833f0f540 | d4365175-b0e0-11ed-b086-436833f0f540 | Lincoln    | PN-22-BF-1292 | 2022-09-27
+ 49003bfc-b0e3-11ed-b086-436833f0f540 | 1d3aacfa-af6c-11ed-9ed3-1b0367dc8e20 | Nissan     | UP-02-QF-6242 | 2018-10-11
+(9 rows)
+
+___________________________________________________________
+
+
+Q5) : total good ,bad, and average reviews:
+Query= cab_booking_db=# Select category, count(*) from (
+select case
+when R.value ='4'  or R.value ='5' then 'Good'
+when R.value ='3' then 'Average'
+else 'Bad'
+end
+as category
+from ratings as R) as A group by A.category;
+ category | count 
+----------+-------
+ Good     |     2
+ Average  |     4
+ Bad      |     3
+(3 rows)
+
+___________________________________________________________
+
+
+Q6) : Total Cabs and Drivers with Good Ratings and Bad Ratings:
+Query= cab_booking_db=# Select C.drivers,Count(C.drivers) from
+cab_booking_db-# (
+cab_booking_db(# Select case 
+when R.value ='1'  or R.value ='2' then 'Bad'
+else 'Good'
+end
+as drivers
+from ratings as R) as C group by C.drivers;
+ drivers | count 
+---------+-------
+ Good    |     6
+ Bad     |     3
+(2 rows)
+
+___________________________________________________________
+
+
+Q3) : find distance of each trip:
+Query= 
+___________________________________________________________
+
+
+Q3) :
+Query= 
+___________________________________________________________
+
+
+
+
+
