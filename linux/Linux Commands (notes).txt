@@ -514,6 +514,144 @@ if mainfile is lost then link will break;
 in hard link         cmd: ln filename linkname
 if link file move:  ==> linkfile will work
 if mainfile is lost then==> link will break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ______________________________________________________________________________
 rev will print in horizontal reverse (mirror image) (Neeraj == jareeN)
 tac will print in vertical reverse  (first line will become last line)
@@ -555,6 +693,9 @@ getent group group-name
 For example, if the user's primary group is users and the user is also a member of the groups mqm, groupa and groupb, to remove the user from the mqm group, use the following command: 
 usermod -G groupa,groupb user-name
 where user-name is the user name. 
+
+
+
 
 
 Linux ls command options
@@ -1049,6 +1190,20 @@ Replace forward with backward from first line to the last line
 Replace forward with backward from third line to the ninth line 
 
 
+________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
 system commands Following are some of the important system commands in Linux. 
 uname
 This will display the system information. 
@@ -1122,4 +1277,6 @@ This command will print the current hostname IP address.
 In the following example we are getting the current hostname IP address. 
 $ hostname -i
 127.0.1.1
+________________________________________________________________________________whenever sudoers file get corrupt : https://askubuntu.com/questions/1304390/user-is-not-in-the-sudoers-file-this-incident-will-be-reported-when-trying-to
+correct secure path link: secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 

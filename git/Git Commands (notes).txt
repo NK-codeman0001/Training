@@ -205,9 +205,6 @@ git rm filename
 
 To delete the ﬁle from git without removing it from disk, use the --cached ﬂag
 git rm --cached filename
-
-git diff     (difference between stagged and untraced)
-git diff --cached   (difference between stagged and last commit)
 ________________________________________________________________________________
 
 Ignoring Files and Folders
@@ -383,8 +380,6 @@ To undo changes added to the index.
 git reset --hard
 
 Without the --hard ﬂag this will do a soft reset.
-Soft flag to undo commit (changes made after given commit will be save)
-hard flag to undo commit and changes (changes made after given commit will be not save)
 ________________________________________________________________________________
 Merging
 
@@ -605,8 +600,8 @@ Code with Harry Notes:
     • git remote set-url origin <new-url>
     • git push -u origin master
 ________________________________________________________________________________
-Connect PC with github (SSH)
-    1. ssh -keygen -t rsa -b 4096 -C “neeraj.kumar@berylsystems.com”  (let passphrase  empty)
+Connect PC with github (SSH)  (first remove previous .ssh folder if exist)
+    1. ssh-keygen -t rsa -b 4096 -C “neeraj.kumar@berylsystems.com”  (let passphrase  empty)
     2. eval $(ssh-agent -s)
     3. ssh-add   ~/.ssh/id_rsa
     4. tail ~/.ssh/id_rsa.pub             (copy this token)
@@ -639,6 +634,81 @@ ________________________________________________________________________________
     • git push -d origin branch_name   (to delete a branch on github)
 
 ________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+PIC Notes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+________________________________________________________________________________
+
 
 Revert a commit:
 
