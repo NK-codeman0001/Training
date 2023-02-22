@@ -176,3 +176,8 @@ ALTER TABLE bookings ADD FOREIGN KEY (driver_record_id) REFERENCES drivers_recor
 ALTER TABLE payments ADD FOREIGN KEY (booking_id) REFERENCES bookings (id);
 
 ALTER TABLE ratings ADD FOREIGN KEY (booking_id) REFERENCES bookings (id);
+
+## Rename table users
+Alter Table users RENAME TO customers;
+
+
