@@ -1,0 +1,21 @@
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (1, 3, 1, 5, true, 'PN15 YL5023', 2009);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (2, 6, 1, 3, true, 'HR53 QR5587', 2003);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (3, 7, 2, 1, true, 'HR27 VE0610', 2022);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (4, 2, 2, 1, true, 'UP86 RM9008', 2020);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (5, 1, 2, 1, true, 'UP51 VU2996', 2016);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (6, 3, 1, 4, false, 'UP40 OH8677', 2008);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (7, 7, 1, 1, true, 'UP94 GD8140', 2008);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (8, 1, 1, 2, true, 'UP13 ES8435', 1999);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (9, 5, 1, 2, true, 'UP55 UY2341', 2015);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (10, 2, 4, 2, true, 'UP44 OX7246', 2018);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (11, 3, 1, 1, false, 'HR33 CQ7831', 1999);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (12, 6, 5, 5, false, 'UP20 MP6756', 2002);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (13, 6, 1, 2, true, 'UP97 RT4061', 2015);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (14, 3, 2, 1, false, 'PN26 DX0615', 2010);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (15, 5, 1, 2, false, 'UP24 FQ0570', 2001);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (16, 4, 2, 4, true, 'HR46 KP8596', 2020);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (17, 4, 3, 4, true, 'PN71 YO1635', 2017);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (18, 10, 1, 2, false, 'UP90 VX3595', 2003);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (19, 4, 2, 4, false, 'PN82 HR2451', 2018);
+insert into cabs (id, car_model_id, category_id, type_id, is_active, vehicle_registration_plate, manufactured_year) values (20, 5, 1, 4, true, 'HR35 IT5035', 2001);
+
