@@ -214,6 +214,10 @@ ALTER TABLE
 ALTER TABLE
 ALTER TABLE
 ALTER TABLE
-cab_booking_db=# 
+
+
+## drop foreign key i addresses to drivers;
+alter table addresses drop constraint  addresses_user_id_fkey1;
+
 
 
