@@ -180,4 +180,40 @@ ALTER TABLE ratings ADD FOREIGN KEY (booking_id) REFERENCES bookings (id);
 ## Rename table users
 Alter Table users RENAME TO customers;
 
+## added roles, countries and addresses
+cab_booking_db=# CREATE TABLE "roles" (
+  "id" integer PRIMARY KEY,
+  "role" varchar
+);
+CREATE TABLE
+cab_booking_db=# CREATE TABLE "countries" (
+  "id" integer PRIMARY KEY,
+  "name" varchar
+);
+CREATE TABLE
+cab_booking_db=# CREATE TABLE "addresses" (
+  "id" integer PRIMARY KEY,
+  "role_id" integer,
+  "user_id" bigint,
+  "pincode" integer,
+  "house_number" varchar,
+  "city" varchar,
+  "state" varchar,
+  "country_id" integer,
+  "full_address" text
+);
+CREATE TABLE
+cab_booking_db=# ALTER TABLE "addresses" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+
+ALTER TABLE "addresses" ADD FOREIGN KEY ("user_id") REFERENCES "customers" ("id");
+
+ALTER TABLE "addresses" ADD FOREIGN KEY ("country_id") REFERENCES "countries" ("id");
+
+ALTER TABLE "addresses" ADD FOREIGN KEY ("user_id") REFERENCES "drivers" ("id");
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+cab_booking_db=# 
+
 
