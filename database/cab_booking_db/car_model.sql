@@ -1,0 +1,10 @@
+insert into car_model (id, model_name, company_name) values (1, 'Landaulet', 'Maybach');
+insert into car_model (id, model_name, company_name) values (2, 'TundraMax', 'Toyota');
+insert into car_model (id, model_name, company_name) values (3, 'Taurus', 'Ford');
+insert into car_model (id, model_name, company_name) values (4, '9000', 'Saab');
+insert into car_model (id, model_name, company_name) values (5, 'Odyssey', 'Honda');
+insert into car_model (id, model_name, company_name) values (6, 'Discovery', 'Land Rover');
+insert into car_model (id, model_name, company_name) values (7, 'Ranger', 'Ford');
+insert into car_model (id, model_name, company_name) values (8, 'TundraMax', 'Toyota');
+insert into car_model (id, model_name, company_name) values (9, 'Chariot', 'Mitsubishi');
+insert into car_model (id, model_name, company_name) values (10, 'T100', 'Toyota');
