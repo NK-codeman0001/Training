@@ -75,6 +75,46 @@ CREATE TYPE public.trip_status AS ENUM (
 
 ALTER TYPE public.trip_status OWNER TO postgres;
 
+--
+-- Name: calculate_distance(double precision, double precision, double precision, double precision, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calculate_distance(lon1 double precision, lat1 double precision, lon2 double precision, lat2 double precision, units character varying) RETURNS double precision
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        dist float = 0;
+        radlat1 float;
+        radlat2 float;
+        theta float;
+        radtheta float;
+    BEGIN
+        IF lat1 = lat2 OR lon1 = lon2
+            THEN RETURN dist;
+        ELSE
+            radlat1 = pi() * lat1 / 180;
+            radlat2 = pi() * lat2 / 180;
+            theta = lon1 - lon2;
+            radtheta = pi() * theta / 180;
+            dist = sin(radlat1) * sin(radlat2) + cos(radlat1) * cos(radlat2) * cos(radtheta);
+
+            IF dist > 1 THEN dist = 1; END IF;
+
+            dist = acos(dist);
+            dist = dist * 180 / pi();
+            dist = dist * 60 * 1.1515;
+
+            IF units = 'K' THEN dist = dist * 1.609344; END IF;
+            IF units = 'N' THEN dist = dist * 0.8684; END IF;
+
+            RETURN dist;
+        END IF;
+    END;
+$$;
+
+
+ALTER FUNCTION public.calculate_distance(lon1 double precision, lat1 double precision, lon2 double precision, lat2 double precision, units character varying) OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -91,6 +131,25 @@ CREATE TABLE public.active_cabs (
 
 
 ALTER TABLE public.active_cabs OWNER TO postgres;
+
+--
+-- Name: addresses; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.addresses (
+    id integer NOT NULL,
+    role_id integer,
+    user_id bigint,
+    pincode integer,
+    house_number character varying,
+    city character varying,
+    state character varying,
+    country_id integer,
+    full_address text
+);
+
+
+ALTER TABLE public.addresses OWNER TO postgres;
 
 --
 -- Name: bookings; Type: TABLE; Schema: public; Owner: postgres
@@ -180,6 +239,35 @@ CREATE TABLE public.charging_modes (
 
 
 ALTER TABLE public.charging_modes OWNER TO postgres;
+
+--
+-- Name: countries; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.countries (
+    id integer NOT NULL,
+    name character varying
+);
+
+
+ALTER TABLE public.countries OWNER TO postgres;
+
+--
+-- Name: customers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.customers (
+    id bigint NOT NULL,
+    name character varying,
+    email character varying,
+    phone character varying,
+    dob date,
+    gender character varying,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.customers OWNER TO postgres;
 
 --
 -- Name: drivers; Type: TABLE; Schema: public; Owner: postgres
@@ -274,6 +362,18 @@ CREATE TABLE public.ratings (
 ALTER TABLE public.ratings OWNER TO postgres;
 
 --
+-- Name: roles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.roles (
+    id integer NOT NULL,
+    role character varying
+);
+
+
+ALTER TABLE public.roles OWNER TO postgres;
+
+--
 -- Name: shifts; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -287,23 +387,6 @@ CREATE TABLE public.shifts (
 
 
 ALTER TABLE public.shifts OWNER TO postgres;
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users (
-    id bigint NOT NULL,
-    name character varying,
-    email character varying,
-    phone character varying,
-    dob date,
-    gender character varying,
-    created_at timestamp with time zone DEFAULT now()
-);
-
-
-ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Data for Name: active_cabs; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -330,6 +413,64 @@ COPY public.active_cabs (cab_id, is_active, current_location) FROM stdin;
 18	f	(-8.6041746,39.7075592)
 19	f	(2.591512,48.5878559)
 20	f	(121.001601,14.4588552)
+\.
+
+
+--
+-- Data for Name: addresses; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.addresses (id, role_id, user_id, pincode, house_number, city, state, country_id, full_address) FROM stdin;
+1	1	1	110497	7261	Birmingham	Alabama	1	PO Box 28899
+2	1	2	330981	1604	Birmingham	Alabama	4	6th Floor
+3	1	3	411958	0222	Birmingham	Alabama	1	PO Box 58204
+4	1	4	399129	3195	Birmingham	Alabama	3	Room 1733
+5	1	5	349483	9835	Birmingham	Alabama	5	Room 1345
+6	1	6	666371	0219	Montgomery	Alabama	3	Room 1621
+7	1	7	848948	6121	Birmingham	Alabama	4	13th Floor
+8	1	8	350077	5963	Huntsville	Alabama	2	20th Floor
+9	1	9	744244	8853	Tuscaloosa	Alabama	3	Room 418
+10	1	10	226539	6105	Birmingham	Alabama	4	8th Floor
+11	1	11	247207	4757	Mobile	Alabama	2	13th Floor
+12	1	12	736716	1203	Gadsden	Alabama	4	Suite 71
+13	1	13	204275	8235	Birmingham	Alabama	2	1st Floor
+14	1	14	517688	3135	Montgomery	Alabama	4	Apt 890
+15	1	15	997265	1717	Mobile	Alabama	3	20th Floor
+16	1	16	437959	8381	Mobile	Alabama	5	Suite 54
+17	1	17	870567	4857	Tuscaloosa	Alabama	3	11th Floor
+18	1	18	951413	1995	Montgomery	Alabama	1	PO Box 96217
+19	1	19	773852	3557	Birmingham	Alabama	2	Apt 84
+20	1	20	8130	3476	Birmingham	Alabama	2	Apt 716
+21	1	21	703527	9785	Gadsden	Alabama	2	PO Box 79043
+22	1	22	36174	4751	Montgomery	Alabama	2	PO Box 21192
+23	1	23	487551	9551	Montgomery	Alabama	3	Room 1908
+24	1	24	995933	8550	Birmingham	Alabama	1	Suite 34
+25	1	25	945210	5563	Mobile	Alabama	1	PO Box 39232
+26	1	26	538566	2334	Montgomery	Alabama	1	PO Box 40560
+27	1	27	377797	6420	Birmingham	Alabama	2	Apt 786
+28	1	28	557232	1734	Mobile	Alabama	5	Suite 48
+29	1	29	649967	3581	Mobile	Alabama	3	Suite 25
+30	1	30	613642	6338	Birmingham	Alabama	1	16th Floor
+31	1	31	554523	6124	Tuscaloosa	Alabama	5	6th Floor
+32	1	32	45342	7224	Mobile	Alabama	5	Room 186
+33	1	33	197686	2866	Huntsville	Alabama	5	Room 125
+34	1	34	827448	2461	Tuscaloosa	Alabama	1	Room 1157
+35	1	35	540349	8042	Montgomery	Alabama	1	PO Box 30315
+36	1	36	643872	9613	Anniston	Alabama	3	Apt 854
+37	1	37	387361	7136	Birmingham	Alabama	3	Suite 28
+38	1	38	127497	1085	Huntsville	Alabama	4	20th Floor
+39	1	39	339982	4891	Huntsville	Alabama	3	12th Floor
+40	1	40	108229	4769	Mobile	Alabama	3	Suite 2
+41	1	41	250826	6984	Anniston	Alabama	1	Suite 74
+42	1	42	860646	6268	Huntsville	Alabama	4	7th Floor
+43	1	43	186832	0358	Huntsville	Alabama	2	10th Floor
+44	1	44	54390	7830	Birmingham	Alabama	4	Suite 15
+45	1	45	157123	6889	Mobile	Alabama	3	PO Box 29876
+46	1	46	268726	1512	Montgomery	Alabama	5	Suite 15
+47	1	47	340911	8641	Mobile	Alabama	1	Room 1342
+48	1	48	215448	7161	Birmingham	Alabama	4	Apt 717
+49	1	49	438976	3631	Mobile	Alabama	5	12th Floor
+50	1	50	32745	5417	Mobile	Alabama	1	Room 518
 \.
 
 
@@ -471,6 +612,77 @@ COPY public.charging_modes (id, mode) FROM stdin;
 1	per hour
 2	per kilometer
 3	per day
+\.
+
+
+--
+-- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.countries (id, name) FROM stdin;
+1	India
+2	Pakistan
+3	Bangladesh
+4	Nepal
+5	Sri Lanka
+\.
+
+
+--
+-- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.customers (id, name, email, phone, dob, gender, created_at) FROM stdin;
+1	Andree Haberfield	ahaberfield0@pinterest.com	+7-217-667-8339	2001-09-12	Female	2023-02-22 11:55:47.559302+05:30
+2	Cecelia Mattingson	cmattingson1@hibu.com	+976-263-766-0265	1980-03-21	Female	2023-02-22 11:55:54.561881+05:30
+3	Quintus Barnaby	qbarnaby2@hostgator.com	+63-544-120-1997	2000-09-27	Male	2023-02-22 11:55:54.578803+05:30
+4	Blaine Litchfield	blitchfield3@disqus.com	+86-863-646-8752	1986-10-24	Male	2023-02-22 11:55:54.587027+05:30
+5	Ric Buick	rbuick4@icio.us	+86-379-251-0384	1984-02-04	Male	2023-02-22 11:55:54.595313+05:30
+6	Ryon Sudlow	rsudlow5@netscape.com	+51-660-107-7329	1995-12-02	Male	2023-02-22 11:55:54.603626+05:30
+7	Otis Paslow	opaslow6@baidu.com	+86-640-572-5021	1988-11-13	Male	2023-02-22 11:55:54.612098+05:30
+8	Marty Castellone	mcastellone7@timesonline.co.uk	+7-637-646-8621	1999-08-23	Male	2023-02-22 11:55:54.620486+05:30
+9	Foster MacAloren	fmacaloren8@utexas.edu	+86-508-698-5850	1995-05-21	Male	2023-02-22 11:55:54.6287+05:30
+10	Pepe Barenskie	pbarenskie9@ft.com	+86-737-733-0381	1995-02-22	Male	2023-02-22 11:55:54.6371+05:30
+11	Druci Tankard	dtankarda@about.com	+46-215-170-5472	1991-08-05	Female	2023-02-22 11:55:54.6456+05:30
+12	Kalila Dorant	kdorantb@live.com	+57-579-982-4085	2001-03-03	Female	2023-02-22 11:55:54.653778+05:30
+13	Abran Klement	aklementc@pbs.org	+7-209-642-4820	1988-11-25	Male	2023-02-22 11:55:54.662061+05:30
+14	Opaline Farryann	ofarryannd@wikipedia.org	+235-181-121-5224	1984-06-08	Female	2023-02-22 11:55:54.670433+05:30
+15	Lon Daburn	ldaburne@yellowbook.com	+86-228-711-6429	1991-06-01	Male	2023-02-22 11:55:54.678695+05:30
+16	Travis Gawn	tgawnf@msn.com	+7-325-373-7737	1992-02-14	Male	2023-02-22 11:55:54.686942+05:30
+17	Bendick Clowser	bclowserg@privacy.gov.au	+7-207-339-5948	1998-11-24	Male	2023-02-22 11:55:54.695278+05:30
+18	Riane Antonowicz	rantonowiczh@cafepress.com	+256-931-823-6518	1987-09-24	Female	2023-02-22 11:55:54.703768+05:30
+19	Annadiana Cave	acavei@marketwatch.com	+31-216-854-7352	1991-04-07	Female	2023-02-22 11:55:54.712062+05:30
+20	Rosabella Wardesworth	rwardesworthj@shop-pro.jp	+380-386-437-0720	1980-10-08	Female	2023-02-22 11:55:54.720335+05:30
+21	Dari Coton	dcotonk@latimes.com	+358-439-539-8289	1992-08-14	Female	2023-02-22 11:55:54.728562+05:30
+22	Karol Standeven	kstandevenl@google.fr	+420-979-950-8726	1983-03-29	Female	2023-02-22 11:55:54.737102+05:30
+23	Gilburt Turfs	gturfsm@soundcloud.com	+48-565-777-0608	1983-09-20	Male	2023-02-22 11:55:54.745323+05:30
+24	Reuven Bridgen	rbridgenn@sina.com.cn	+505-743-967-1065	1983-06-19	Male	2023-02-22 11:55:54.753744+05:30
+25	Quinn Footitt	qfootitto@so-net.ne.jp	+46-800-849-5955	1994-02-22	Male	2023-02-22 11:55:54.761912+05:30
+26	Gay Dobsons	gdobsonsp@unc.edu	+359-678-598-4134	1987-05-01	Polygender	2023-02-22 11:55:54.770457+05:30
+27	Zsa zsa Ornillos	zzsaq@state.gov	+33-150-743-7997	1994-12-04	Genderqueer	2023-02-22 11:55:54.778572+05:30
+28	Dyan Mewis	dmewisr@theguardian.com	+86-568-831-6813	1993-01-31	Female	2023-02-22 11:55:54.786973+05:30
+29	Kane Branthwaite	kbranthwaites@de.vu	+57-823-136-4474	1982-08-31	Male	2023-02-22 11:55:54.795229+05:30
+30	Brenden Gear	bgeart@narod.ru	+62-873-882-0923	2000-06-01	Male	2023-02-22 11:55:54.803647+05:30
+31	Kelsey Blastock	kblastocku@abc.net.au	+225-248-995-3863	1983-02-05	Genderfluid	2023-02-22 11:55:54.812121+05:30
+32	Oren Wailes	owailesv@indiegogo.com	+55-300-312-0401	1981-09-16	Male	2023-02-22 11:55:54.82041+05:30
+33	Isa Cattermole	icattermolew@w3.org	+86-278-968-6548	1981-08-12	Female	2023-02-22 11:55:54.82894+05:30
+34	Rozalie Hinstridge	rhinstridgex@alexa.com	+86-814-801-1173	1998-11-27	Female	2023-02-22 11:55:54.837114+05:30
+35	Clari Eusden	ceusdeny@ning.com	+86-399-768-5848	1994-02-11	Female	2023-02-22 11:55:54.845491+05:30
+36	Erhart Cheeney	echeeneyz@bigcartel.com	+380-586-337-6012	1986-01-10	Male	2023-02-22 11:55:54.85382+05:30
+37	Nicky Waliszewski	nwaliszewski10@jiathis.com	+86-640-719-2903	1992-11-01	Female	2023-02-22 11:55:54.89556+05:30
+38	Minda Cuniam	mcuniam11@msu.edu	+86-735-950-2168	1987-10-15	Female	2023-02-22 11:55:54.903929+05:30
+39	Imojean Reid	ireid12@nationalgeographic.com	+503-742-880-4326	2001-04-13	Female	2023-02-22 11:55:54.912233+05:30
+40	Arnaldo Cajkler	acajkler13@rakuten.co.jp	+62-812-783-7137	1980-08-23	Male	2023-02-22 11:55:54.920634+05:30
+41	Robinet Byrd	rbyrd14@usgs.gov	+86-273-949-6898	1985-06-02	Female	2023-02-22 11:55:54.928911+05:30
+42	Zolly Groven	zgroven15@usatoday.com	+86-605-389-1671	1999-10-08	Male	2023-02-22 11:55:54.937288+05:30
+43	Olenolin Barthelemy	obarthelemy16@loc.gov	+33-629-184-7415	1996-01-19	Agender	2023-02-22 11:55:54.945495+05:30
+44	Benn Decayette	bdecayette17@csmonitor.com	+48-940-343-3978	1987-08-09	Male	2023-02-22 11:55:54.953888+05:30
+45	Eugenius Trase	etrase18@slate.com	+86-542-132-9574	1991-07-10	Male	2023-02-22 11:55:54.962205+05:30
+46	Carlyle Jelley	cjelley19@nsw.gov.au	+420-909-529-2806	1998-07-17	Male	2023-02-22 11:55:54.970538+05:30
+47	Meara Dinesen	mdinesen1a@mapy.cz	+66-715-204-1117	1992-01-19	Female	2023-02-22 11:55:54.978892+05:30
+48	Cass McGann	cmcgann1b@tinypic.com	+98-189-440-6013	1992-02-07	Female	2023-02-22 11:55:54.987057+05:30
+49	Naoma Tivnan	ntivnan1c@dyndns.org	+48-302-220-8612	1982-07-19	Female	2023-02-22 11:55:54.995436+05:30
+50	Jedediah McEnery	jmcenery1d@sourceforge.net	+55-917-135-3495	1982-08-12	Male	2023-02-22 11:55:55.003827+05:30
 \.
 
 
@@ -651,6 +863,16 @@ COPY public.ratings (id, booking_id, value, feedback) FROM stdin;
 
 
 --
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.roles (id, role) FROM stdin;
+1	customer
+2	driver
+\.
+
+
+--
 -- Data for Name: shifts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -689,69 +911,19 @@ COPY public.shifts (id, driver_id, login_time, logout_time, successful_rides) FR
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.users (id, name, email, phone, dob, gender, created_at) FROM stdin;
-1	Andree Haberfield	ahaberfield0@pinterest.com	+7-217-667-8339	2001-09-12	Female	2023-02-22 11:55:47.559302+05:30
-2	Cecelia Mattingson	cmattingson1@hibu.com	+976-263-766-0265	1980-03-21	Female	2023-02-22 11:55:54.561881+05:30
-3	Quintus Barnaby	qbarnaby2@hostgator.com	+63-544-120-1997	2000-09-27	Male	2023-02-22 11:55:54.578803+05:30
-4	Blaine Litchfield	blitchfield3@disqus.com	+86-863-646-8752	1986-10-24	Male	2023-02-22 11:55:54.587027+05:30
-5	Ric Buick	rbuick4@icio.us	+86-379-251-0384	1984-02-04	Male	2023-02-22 11:55:54.595313+05:30
-6	Ryon Sudlow	rsudlow5@netscape.com	+51-660-107-7329	1995-12-02	Male	2023-02-22 11:55:54.603626+05:30
-7	Otis Paslow	opaslow6@baidu.com	+86-640-572-5021	1988-11-13	Male	2023-02-22 11:55:54.612098+05:30
-8	Marty Castellone	mcastellone7@timesonline.co.uk	+7-637-646-8621	1999-08-23	Male	2023-02-22 11:55:54.620486+05:30
-9	Foster MacAloren	fmacaloren8@utexas.edu	+86-508-698-5850	1995-05-21	Male	2023-02-22 11:55:54.6287+05:30
-10	Pepe Barenskie	pbarenskie9@ft.com	+86-737-733-0381	1995-02-22	Male	2023-02-22 11:55:54.6371+05:30
-11	Druci Tankard	dtankarda@about.com	+46-215-170-5472	1991-08-05	Female	2023-02-22 11:55:54.6456+05:30
-12	Kalila Dorant	kdorantb@live.com	+57-579-982-4085	2001-03-03	Female	2023-02-22 11:55:54.653778+05:30
-13	Abran Klement	aklementc@pbs.org	+7-209-642-4820	1988-11-25	Male	2023-02-22 11:55:54.662061+05:30
-14	Opaline Farryann	ofarryannd@wikipedia.org	+235-181-121-5224	1984-06-08	Female	2023-02-22 11:55:54.670433+05:30
-15	Lon Daburn	ldaburne@yellowbook.com	+86-228-711-6429	1991-06-01	Male	2023-02-22 11:55:54.678695+05:30
-16	Travis Gawn	tgawnf@msn.com	+7-325-373-7737	1992-02-14	Male	2023-02-22 11:55:54.686942+05:30
-17	Bendick Clowser	bclowserg@privacy.gov.au	+7-207-339-5948	1998-11-24	Male	2023-02-22 11:55:54.695278+05:30
-18	Riane Antonowicz	rantonowiczh@cafepress.com	+256-931-823-6518	1987-09-24	Female	2023-02-22 11:55:54.703768+05:30
-19	Annadiana Cave	acavei@marketwatch.com	+31-216-854-7352	1991-04-07	Female	2023-02-22 11:55:54.712062+05:30
-20	Rosabella Wardesworth	rwardesworthj@shop-pro.jp	+380-386-437-0720	1980-10-08	Female	2023-02-22 11:55:54.720335+05:30
-21	Dari Coton	dcotonk@latimes.com	+358-439-539-8289	1992-08-14	Female	2023-02-22 11:55:54.728562+05:30
-22	Karol Standeven	kstandevenl@google.fr	+420-979-950-8726	1983-03-29	Female	2023-02-22 11:55:54.737102+05:30
-23	Gilburt Turfs	gturfsm@soundcloud.com	+48-565-777-0608	1983-09-20	Male	2023-02-22 11:55:54.745323+05:30
-24	Reuven Bridgen	rbridgenn@sina.com.cn	+505-743-967-1065	1983-06-19	Male	2023-02-22 11:55:54.753744+05:30
-25	Quinn Footitt	qfootitto@so-net.ne.jp	+46-800-849-5955	1994-02-22	Male	2023-02-22 11:55:54.761912+05:30
-26	Gay Dobsons	gdobsonsp@unc.edu	+359-678-598-4134	1987-05-01	Polygender	2023-02-22 11:55:54.770457+05:30
-27	Zsa zsa Ornillos	zzsaq@state.gov	+33-150-743-7997	1994-12-04	Genderqueer	2023-02-22 11:55:54.778572+05:30
-28	Dyan Mewis	dmewisr@theguardian.com	+86-568-831-6813	1993-01-31	Female	2023-02-22 11:55:54.786973+05:30
-29	Kane Branthwaite	kbranthwaites@de.vu	+57-823-136-4474	1982-08-31	Male	2023-02-22 11:55:54.795229+05:30
-30	Brenden Gear	bgeart@narod.ru	+62-873-882-0923	2000-06-01	Male	2023-02-22 11:55:54.803647+05:30
-31	Kelsey Blastock	kblastocku@abc.net.au	+225-248-995-3863	1983-02-05	Genderfluid	2023-02-22 11:55:54.812121+05:30
-32	Oren Wailes	owailesv@indiegogo.com	+55-300-312-0401	1981-09-16	Male	2023-02-22 11:55:54.82041+05:30
-33	Isa Cattermole	icattermolew@w3.org	+86-278-968-6548	1981-08-12	Female	2023-02-22 11:55:54.82894+05:30
-34	Rozalie Hinstridge	rhinstridgex@alexa.com	+86-814-801-1173	1998-11-27	Female	2023-02-22 11:55:54.837114+05:30
-35	Clari Eusden	ceusdeny@ning.com	+86-399-768-5848	1994-02-11	Female	2023-02-22 11:55:54.845491+05:30
-36	Erhart Cheeney	echeeneyz@bigcartel.com	+380-586-337-6012	1986-01-10	Male	2023-02-22 11:55:54.85382+05:30
-37	Nicky Waliszewski	nwaliszewski10@jiathis.com	+86-640-719-2903	1992-11-01	Female	2023-02-22 11:55:54.89556+05:30
-38	Minda Cuniam	mcuniam11@msu.edu	+86-735-950-2168	1987-10-15	Female	2023-02-22 11:55:54.903929+05:30
-39	Imojean Reid	ireid12@nationalgeographic.com	+503-742-880-4326	2001-04-13	Female	2023-02-22 11:55:54.912233+05:30
-40	Arnaldo Cajkler	acajkler13@rakuten.co.jp	+62-812-783-7137	1980-08-23	Male	2023-02-22 11:55:54.920634+05:30
-41	Robinet Byrd	rbyrd14@usgs.gov	+86-273-949-6898	1985-06-02	Female	2023-02-22 11:55:54.928911+05:30
-42	Zolly Groven	zgroven15@usatoday.com	+86-605-389-1671	1999-10-08	Male	2023-02-22 11:55:54.937288+05:30
-43	Olenolin Barthelemy	obarthelemy16@loc.gov	+33-629-184-7415	1996-01-19	Agender	2023-02-22 11:55:54.945495+05:30
-44	Benn Decayette	bdecayette17@csmonitor.com	+48-940-343-3978	1987-08-09	Male	2023-02-22 11:55:54.953888+05:30
-45	Eugenius Trase	etrase18@slate.com	+86-542-132-9574	1991-07-10	Male	2023-02-22 11:55:54.962205+05:30
-46	Carlyle Jelley	cjelley19@nsw.gov.au	+420-909-529-2806	1998-07-17	Male	2023-02-22 11:55:54.970538+05:30
-47	Meara Dinesen	mdinesen1a@mapy.cz	+66-715-204-1117	1992-01-19	Female	2023-02-22 11:55:54.978892+05:30
-48	Cass McGann	cmcgann1b@tinypic.com	+98-189-440-6013	1992-02-07	Female	2023-02-22 11:55:54.987057+05:30
-49	Naoma Tivnan	ntivnan1c@dyndns.org	+48-302-220-8612	1982-07-19	Female	2023-02-22 11:55:54.995436+05:30
-50	Jedediah McEnery	jmcenery1d@sourceforge.net	+55-917-135-3495	1982-08-12	Male	2023-02-22 11:55:55.003827+05:30
-\.
-
-
---
 -- Name: active_cabs active_cab_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.active_cabs
     ADD CONSTRAINT active_cab_pkey PRIMARY KEY (cab_id);
+
+
+--
+-- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
 
 
 --
@@ -811,6 +983,14 @@ ALTER TABLE ONLY public.charging_modes
 
 
 --
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: drivers drivers_phone_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -859,6 +1039,14 @@ ALTER TABLE ONLY public.ratings
 
 
 --
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: shifts shifts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -867,18 +1055,18 @@ ALTER TABLE ONLY public.shifts
 
 
 --
--- Name: users users_phone_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: customers users_phone_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY public.customers
     ADD CONSTRAINT users_phone_key UNIQUE (phone);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: customers users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY public.customers
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
@@ -891,11 +1079,35 @@ ALTER TABLE ONLY public.active_cabs
 
 
 --
+-- Name: addresses addresses_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id);
+
+
+--
+-- Name: addresses addresses_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id);
+
+
+--
+-- Name: addresses addresses_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.customers(id);
+
+
+--
 -- Name: bookings bookings_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.bookings
-    ADD CONSTRAINT bookings_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.users(id);
+    ADD CONSTRAINT bookings_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id);
 
 
 --
