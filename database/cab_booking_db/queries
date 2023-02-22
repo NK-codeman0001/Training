@@ -147,16 +147,59 @@ where: 'M' is statute miles (default)
 'N' is nautical miles
 
 
-Q3) : find distance of each trip:
-Query= 
+Q1) : find distance of each complete trip:
+Query= select B.id,B.customer_id,B.driver_record_id, calculate_distance(B.source[0],B.source[1],B.destination[0],B.destination[1],'K') as distance from bookings as B;
+ 
 ___________________________________________________________
 
-
-Q3) :
-Query= 
+Q2) : find per charge of a trip;
+Query= select B.id, CT.per_charge from bookings as B join drivers_records as DR on B.driver_record_id = DR.id join cabs as C on DR.cab_id = C.id join cab_types as CT on C.type_id=CT.id;
 ___________________________________________________________
 
+Q3) : find booking id with actual cost of a trip without extra charges;
+Query= select B.id,B.customer_id,B.driver_record_id, calculate_distance(B.source[0],B.source[1],B.destination[0],B.destination[1],'K')*(CT.per_charge) as "Actual Cost", CT.type from bookings as B join drivers_records as DR on B.driver_record_id = DR.id join cabs as C on DR.cab_id = C.id join cab_types as CT on C.type_id=CT.id;
 
+___________________________________________________________
+Q4) : find all extra charges of each type;
+Query= select CT.type, Sum(OC.charge) from cab_types as CT join other_charges as OC on CT.id = OC.cab_types_id Group by CT.type  ;
+___________________________________________________________
+Q5) : Customer with most trips;
 
+s1= maximum trip: select Max(T.trips) from (Select B.customer_id,Count(*) as trips from bookings as B group by B.customer_id) as T;
+Query = Select C.name from bookings as B join Customers as C on C.id = B.customer_id group by C.name having count(*) =(select Max(T.trips) from (Select B.customer_id,Count(*) as trips from bookings as B group by B.customer_id) as T) ;
+         name          
+-----------------------
+ Marty Castellone
+ Kane Branthwaite
+ Lon Daburn
+ Rosabella Wardesworth
+ Cecelia Mattingson
+ Kelsey Blastock
+(6 rows)
+
+___________________________________________________________
+Q6) : driver with most trips;
+s1= maximum trip: select MAX(T.trips) from (Select Count(*) as trips from bookings as B join drivers_records as DR on B.driver_record_id = DR.id group by DR.driver_id) as T;
+Query = Select D.name from bookings as B join drivers_records as DR on B.driver_record_id = DR.id join drivers as D on DR.driver_id =D.id group by D.name having count(*) =(select MAX(T.trips) from (Select Count(*) as trips from bookings as B join drivers_records as DR on B.driver_record_id = DR.id group by DR.driver_id) as T) ;
+      name       
+-----------------
+ Crista Burberye
+ Nannie Tansly
+(2 rows)
+
+___________________________________________________________
+23/02/2023
+
+Q1) : customer who had spent the most;
+Query = 
+
+___________________________________________________________
+Q2) : drivwer who had earned the most;
+Query = 
+___________________________________________________________
+Q3) : find booking id with actual cost of a trip with all extra charges; (tough)
+Query = (select B.id,B.customer_id,B.driver_record_id, calculate_distance(B.source[0],B.source[1],B.destination[0],B.destination[1],'K')*(CT.per_charge) as "Actual Cost", CT.type from bookings as B join drivers_records as DR on B.driver_record_id = DR.id join cabs as C on DR.cab_id = C.id join cab_types as CT on C.type_id=CT.id) 
+Join
+(select CT.type, Sum(OC.charge) from cab_types as CT join other_charges as OC on CT.id = OC.cab_types_id Group by CT.type);
 
 
