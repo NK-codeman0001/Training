@@ -3293,4 +3293,87 @@ f.truncate( len)
 Truncates f to len bytes.
 
 Dir Class and Methods.
+A Dir is a class to represent a directory stream that gives filenames in the directory in the operating system. Dir class also holds directory related operations, such as wild card filename matching, changing current working directory, etc. as class methods.
+Class Methods
+Sr.No.
+Method & Description
+1
+Dir[pat]
+Dir::glob( pat)
+Returns an array of filenames matching the specified wild card pattern pat − 
+    • * − Matches any string including the null string
+    • ** − Matches any string recursively
+    • ? − Matches any single character
+    • [...] − Matches any one of enclosed characters
+    • {a,b...} − Matches any one of strings
+Dir["foo.*"] # matches "foo.c", "foo.rb", etc.
+Dir["foo.?"] # matches "foo.c", "foo.h", etc.
+2
+Dir::chdir( path)
+Changes the current directory.
+3
+Dir::chroot( path)
+Changes the root directory (only allowed by super user). Not available on all platforms.
+4
+Dir::delete( path)
+Deletes the directory specified by path. The directory must be empty.
+5
+Dir::entries( path)
+Returns an array of filenames in directory path.
+6
+Dir::foreach( path) {| f| ...}
+Executes the block once for each file in the directory specified by path.
+7
+Dir::getwd
+Dir::pwd
+Returns the current directory.
+8
+Dir::mkdir( path[, mode=0777])
+Creates the directory specified by path. Permission mode may be modified by the value of File::umask and is ignored on Win32 platforms.
+9
+Dir::new( path)
+Dir::open( path)
+Dir::open( path) {| dir| ...}
+Returns a new directory object for path. If open is given a block, a new directory object is passed to the block, which closes the directory object before terminating.
+10
+Dir::pwd
+See Dir::getwd.
+11
+Dir::rmdir( path)
+Dir::unlink( path)
+Dir::delete( path)
+Deletes the directory specified by path. The directory must be empty.
+Instance Methods
+Assuming d is an instance of Dir class −
+Sr.No.
+Method & Description
+1
+d.close
+Closes the directory stream.
+2
+d.each {| f| ...}
+Executes the block once for each entry in d.
+3
+d.pos
+d.tell
+Returns the current position in d.
+4
+d.pos = offset
+Sets the position in the directory stream.
+5
+d.pos = pos
+d.seek(po s)
+Moves to a position in d. pos must be a value returned by d.pos or 0.
+6
+d.read
+Returns the next entry from d.
+7
+d.rewind
+Moves position in d to the first entry.
+8
+d.seek(po s)
+See d.pos = pos.
+9
+d.tell
+See d.pos.
 
