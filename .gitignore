@@ -4,5 +4,5 @@
 /database/*.odt
 /ruby/*.pdf
 /ruby/*.odt
-*.rb
+/*/test*
 
