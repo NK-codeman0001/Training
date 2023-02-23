@@ -1,0 +1,3296 @@
+﻿Whitespace in Ruby Program
+Whitespace characters such as spaces and tabs are generally ignored in Ruby code, except when they appear in strings. Sometimes, however, they are used to interpret ambiguous statements. Interpretations of this sort produce warnings when the -w option is enabled.
+Example
+a + b is interpreted as a+b ( Here a is a local variable)
+a  +b is interpreted as a(+b) ( Here a is a method call)
+________________________________________________________________________________
+Line Endings in Ruby Program
+Ruby interprets semicolons and newline characters as the ending of a statement. However, if Ruby encounters operators, such as +, −, or backslash at the end of a line, they indicate the continuation of a statement.
+________________________________________________________________________________
+Ruby Identifiers
+Identifiers are names of variables, constants, and methods. Ruby identifiers are case sensitive. It means Ram and RAM are two different identifiers in Ruby.
+Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
+________________________________________________________________________________
+Reserved Words
+The following list shows the reserved words in Ruby. These reserved words may not be used as constant or variable names. They can, however, be used as method names.
+BEGIN
+do
+next
+then
+END
+else
+nil
+true
+alias
+elsif
+not
+undef
+and
+end
+or
+unless
+begin
+ensure
+redo
+until
+break
+false
+rescue
+when
+case
+for
+retry
+while
+class
+if
+return
+while
+def
+in
+self
+__FILE__
+defined?
+module
+super
+__LINE__
+
+________________________________________________________________________________
+Ruby BEGIN Statement
+Syntax
+BEGIN {
+   code
+}
+Declares code to be called before the program is run.
+Example
+#!/usr/bin/ruby
+
+puts "This is main Ruby Program"
+
+BEGIN {
+   puts "Initializing Ruby Program"
+}
+This will produce the following result −
+Initializing Ruby Program
+This is main Ruby Program
+________________________________________________________________________________
+Ruby END Statement
+Syntax
+END {
+   code
+}
+Declares code to be called at the end of the program.
+Example
+#!/usr/bin/ruby
+
+puts "This is main Ruby Program"
+
+END {
+   puts "Terminating Ruby Program"
+}
+BEGIN {
+   puts "Initializing Ruby Program"
+}
+This will produce the following result −
+Initializing Ruby Program
+This is main Ruby Program
+Terminating Ruby Program
+________________________________________________________________________________
+Ruby - Classes and Objects
+Ruby is a perfect Object Oriented Programming Language. The features of the object-oriented programming language include −
+    • Data Encapsulation 
+    • Data Abstraction 
+    • Polymorphism 
+    • Inheritance 
+These features have been discussed in the chapter Object Oriented Ruby.
+An object-oriented program involves classes and objects. A class is the blueprint from which individual objects are created. In object-oriented terms, we say that your bicycle is an instance of the class of objects known as bicycles.
+Take the example of any vehicle. It comprises wheels, horsepower, and fuel or gas tank capacity. These characteristics form the data members of the class Vehicle. You can differentiate one vehicle from the other with the help of these characteristics.
+A vehicle can also have certain functions, such as halting, driving, and speeding. Even these functions form the data members of the class Vehicle. You can, therefore, define a class as a combination of characteristics and functions.
+A class Vehicle can be defined as −
+Class Vehicle {
+
+   Number no_of_wheels
+   Number horsepower
+   Characters type_of_tank
+   Number Capacity
+   Function speeding {
+   }
+   
+   Function driving {
+   }
+   
+   Function halting {
+   }
+}
+By assigning different values to these data members, you can form several instances of the class Vehicle. For example, an airplane has three wheels, horsepower of 1,000, fuel as the type of tank, and a capacity of 100 liters. In the same way, a car has four wheels, horsepower of 200, gas as the type of tank, and a capacity of 25 liters.
+Defining a Class in Ruby
+To implement object-oriented programming by using Ruby, you need to first learn how to create objects and classes in Ruby.
+A class in Ruby always starts with the keyword class followed by the name of the class. The name should always be in initial capitals. The class Customer can be displayed as −
+class Customer
+end
+You terminate a class by using the keyword end. All the data members in the class are between the class definition and the end keyword.
+Variables in a Ruby Class
+Ruby provides four types of variables −
+    • Local Variables − Local variables are the variables that are defined in a method. Local variables are not available outside the method. You will see more details about method in subsequent chapter. Local variables begin with a lowercase letter or _.
+    • Instance Variables − Instance variables are available across methods for any particular instance or object. That means that instance variables change from object to object. Instance variables are preceded by the at sign (@) followed by the variable name.
+    • Class Variables − Class variables are available across different objects. A class variable belongs to the class and is a characteristic of a class. They are preceded by the sign @@ and are followed by the variable name.
+    • Global Variables − Class variables are not available across classes. If you want to have a single variable, which is available across classes, you need to define a global variable. The global variables are always preceded by the dollar sign ($).
+Example
+Using the class variable @@no_of_customers, you can determine the number of objects that are being created. This enables in deriving the number of customers.
+class Customer
+   @@no_of_customers = 0
+end
+Creating Objects in Ruby using new Method
+Objects are instances of the class. You will now learn how to create objects of a class in Ruby. You can create objects in Ruby by using the method new of the class.
+The method new is a unique type of method, which is predefined in the Ruby library. The new method belongs to the class methods.
+Here is the example to create two objects cust1 and cust2 of the class Customer −
+cust1 = Customer. new
+cust2 = Customer. new
+Here, cust1 and cust2 are the names of two objects. You write the object name followed by the equal to sign (=) after which the class name will follow. Then, the dot operator and the keyword new will follow.
+Custom Method to Create Ruby Objects
+You can pass parameters to method new and those parameters can be used to initialize class variables.
+When you plan to declare the new method with parameters, you need to declare the method initialize at the time of the class creation.
+The initialize method is a special type of method, which will be executed when the new method of the class is called with parameters.
+Here is the example to create initialize method −
+class Customer
+   @@no_of_customers = 0
+   def initialize(id, name, addr)
+      @cust_id = id
+      @cust_name = name
+      @cust_addr = addr
+   end
+end
+In this example, you declare the initialize method with id, name, and addr as local variables. Here, def and end are used to define a Ruby method initialize. You will learn more about methods in subsequent chapters.
+In the initialize method, you pass on the values of these local variables to the instance variables @cust_id, @cust_name, and @cust_addr. Here local variables hold the values that are passed along with the new method.
+Now, you can create objects as follows −
+cust1 = Customer.new("1", "John", "Wisdom Apartments, Ludhiya")
+cust2 = Customer.new("2", "Poul", "New Empire road, Khandala")
+Member Functions in Ruby Class
+In Ruby, functions are called methods. Each method in a class starts with the keyword def followed by the method name.
+The method name always preferred in lowercase letters. You end a method in Ruby by using the keyword end.
+Here is the example to define a Ruby method −
+class Sample
+   def function
+      statement 1
+      statement 2
+   end
+end
+Here, statement 1 and statement 2 are part of the body of the method function inside the class Sample. These statments could be any valid Ruby statement. For example we can put a method puts to print Hello Ruby as follows −
+class Sample
+   def hello
+      puts "Hello Ruby!"
+   end
+end
+Now in the following example, create one object of Sample class and call hello method and see the result −
+#!/usr/bin/ruby
+
+class Sample
+   def hello
+      puts "Hello Ruby!"
+   end
+end
+
+# Now using above class to create objects
+object = Sample. new
+object.hello
+This will produce the following result −
+Hello Ruby!
+Simple Case Study
+Here is a case study if you want to do more practice with class and objects.
+Ruby Class Case Study
+Ruby - Variables, Constants and Literals
+Variables are the memory locations, which hold any data to be used by any program.
+There are five types of variables supported by Ruby. You already have gone through a small description of these variables in the previous chapter as well. These five types of variables are explained in this chapter.
+Ruby Global Variables
+Global variables begin with $. Uninitialized global variables have the value nil and produce warnings with the -w option.
+Assignment to global variables alters the global status. It is not recommended to use global variables. They make programs cryptic.
+Here is an example showing the usage of global variable.
+#!/usr/bin/ruby
+
+$global_variable = 10
+class Class1
+   def print_global
+      puts "Global variable in Class1 is #$global_variable"
+   end
+end
+class Class2
+   def print_global
+      puts "Global variable in Class2 is #$global_variable"
+   end
+end
+
+class1obj = Class1.new
+class1obj.print_global
+class2obj = Class2.new
+class2obj.print_global
+Here $global_variable is a global variable. This will produce the following result −
+NOTE − In Ruby, you CAN access value of any variable or constant by putting a hash (#) character just before that variable or constant.
+Global variable in Class1 is 10
+Global variable in Class2 is 10
+Ruby Instance Variables
+Instance variables begin with @. Uninitialized instance variables have the value nil and produce warnings with the -w option.
+Here is an example showing the usage of Instance Variables.
+#!/usr/bin/ruby
+
+class Customer
+   def initialize(id, name, addr)
+      @cust_id = id
+      @cust_name = name
+      @cust_addr = addr
+   end
+   def display_details()
+      puts "Customer id #@cust_id"
+      puts "Customer name #@cust_name"
+      puts "Customer address #@cust_addr"
+   end
+end
+
+# Create Objects
+cust1 = Customer.new("1", "John", "Wisdom Apartments, Ludhiya")
+cust2 = Customer.new("2", "Poul", "New Empire road, Khandala")
+
+# Call Methods
+cust1.display_details()
+cust2.display_details()
+Here, @cust_id, @cust_name and @cust_addr are instance variables. This will produce the following result −
+Customer id 1
+Customer name John
+Customer address Wisdom Apartments, Ludhiya
+Customer id 2
+Customer name Poul
+Customer address New Empire road, Khandala
+Ruby Class Variables
+Class variables begin with @@ and must be initialized before they can be used in method definitions.
+Referencing an uninitialized class variable produces an error. Class variables are shared among descendants of the class or module in which the class variables are defined.
+Overriding class variables produce warnings with the -w option.
+Here is an example showing the usage of class variable −
+#!/usr/bin/ruby
+
+class Customer
+   @@no_of_customers = 0
+   def initialize(id, name, addr)
+      @cust_id = id
+      @cust_name = name
+      @cust_addr = addr
+   end
+   def display_details()
+      puts "Customer id #@cust_id"
+      puts "Customer name #@cust_name"
+      puts "Customer address #@cust_addr"
+   end
+   def total_no_of_customers()
+      @@no_of_customers += 1
+      puts "Total number of customers: #@@no_of_customers"
+   end
+end
+
+# Create Objects
+cust1 = Customer.new("1", "John", "Wisdom Apartments, Ludhiya")
+cust2 = Customer.new("2", "Poul", "New Empire road, Khandala")
+
+# Call Methods
+cust1.total_no_of_customers()
+cust2.total_no_of_customers()
+Here @@no_of_customers is a class variable. This will produce the following result −
+Total number of customers: 1
+Total number of customers: 2
+Ruby Local Variables
+Local variables begin with a lowercase letter or _. The scope of a local variable ranges from class, module, def, or do to the corresponding end or from a block's opening brace to its close brace {}.
+When an uninitialized local variable is referenced, it is interpreted as a call to a method that has no arguments.
+Assignment to uninitialized local variables also serves as variable declaration. The variables start to exist until the end of the current scope is reached. The lifetime of local variables is determined when Ruby parses the program.
+In the above example, local variables are id, name and addr.
+Ruby Constants
+Constants begin with an uppercase letter. Constants defined within a class or module can be accessed from within that class or module, and those defined outside a class or module can be accessed globally.
+Constants may not be defined within methods. Referencing an uninitialized constant produces an error. Making an assignment to a constant that is already initialized produces a warning.
+#!/usr/bin/ruby
+
+class Example
+   VAR1 = 100
+   VAR2 = 200
+   def show
+      puts "Value of first Constant is #{VAR1}"
+      puts "Value of second Constant is #{VAR2}"
+   end
+end
+
+# Create Objects
+object = Example.new()
+object.show
+Here VAR1 and VAR2 are constants. This will produce the following result −
+Value of first Constant is 100
+Value of second Constant is 200
+Ruby Pseudo-Variables
+They are special variables that have the appearance of local variables but behave like constants. You cannot assign any value to these variables.
+    • self − The receiver object of the current method.
+    • true − Value representing true.
+    • false − Value representing false.
+    • nil − Value representing undefined.
+    • __FILE__ − The name of the current source file.
+    • __LINE__ − The current line number in the source file.
+Ruby Basic Literals
+The rules Ruby uses for literals are simple and intuitive. This section explains all basic Ruby Literals.
+Integer Numbers
+Ruby supports integer numbers. An integer number can range from -230 to 230-1 or -262 to 262-1. Integers within this range are objects of class Fixnum and integers outside this range are stored in objects of class Bignum.
+You write integers using an optional leading sign, an optional base indicator (0 for octal, 0x for hex, or 0b for binary), followed by a string of digits in the appropriate base. Underscore characters are ignored in the digit string.
+You can also get the integer value, corresponding to an ASCII character or escape the sequence by preceding it with a question mark.
+Example
+123                  # Fixnum decimal
+1_234                # Fixnum decimal with underline
+-500                 # Negative Fixnum
+0377                 # octal
+0xff                 # hexadecimal
+0b1011               # binary
+?a                   # character code for 'a'
+?\n                  # code for a newline (0x0a)
+12345678901234567890 # Bignum
+NOTE − Class and Objects are explained in a separate chapter of this tutorial.
+Floating Numbers
+Ruby supports floating numbers. They are also numbers but with decimals. Floating-point numbers are objects of class Float and can be any of the following −
+Example
+123.4                # floating point value
+1.0e6                # scientific notation
+4E20                 # dot not required
+4e+20                # sign before exponential
+String Literals
+Ruby strings are simply sequences of 8-bit bytes and they are objects of class String. Double-quoted strings allow substitution and backslash notation but single-quoted strings don't allow substitution and allow backslash notation only for \\ and \'
+Example
+#!/usr/bin/ruby -w
+
+puts 'escape using "\\"';
+puts 'That\'s right';
+This will produce the following result −
+escape using "\"
+That's right
+You can substitute the value of any Ruby expression into a string using the sequence #{ expr }. Here, expr could be any ruby expression.
+#!/usr/bin/ruby -w
+
+puts "Multiplication Value : #{24*60*60}";
+This will produce the following result −
+Multiplication Value : 86400
+Backslash Notations
+Following is the list of Backslash notations supported by Ruby −
+Notation
+Character represented
+\n
+Newline (0x0a)
+\r
+Carriage return (0x0d)
+\f
+Formfeed (0x0c)
+\b
+Backspace (0x08)
+\a
+Bell (0x07)
+\e
+Escape (0x1b)
+\s
+Space (0x20)
+\nnn
+Octal notation (n being 0-7)
+\xnn
+Hexadecimal notation (n being 0-9, a-f, or A-F)
+\cx, \C-x
+Control-x
+\M-x
+Meta-x (c | 0x80)
+\M-\C-x
+Meta-Control-x
+\x
+Character x
+For more detail on Ruby Strings, go through Ruby Strings.
+Ruby Arrays
+Literals of Ruby Array are created by placing a comma-separated series of object references between the square brackets. A trailing comma is ignored.
+Example
+#!/usr/bin/ruby
+
+ary = [  "fred", 10, 3.14, "This is a string", "last element", ]
+ary.each do |i|
+   puts i
+end
+This will produce the following result −
+fred
+10
+3.14
+This is a string
+last element
+For more detail on Ruby Arrays, go through Ruby Arrays.
+Ruby Hashes
+A literal Ruby Hash is created by placing a list of key/value pairs between braces, with either a comma or the sequence => between the key and the value. A trailing comma is ignored.
+Example
+#!/usr/bin/ruby
+
+hsh = colors = { "red" => 0xf00, "green" => 0x0f0, "blue" => 0x00f }
+hsh.each do |key, value|
+   print key, " is ", value, "\n"
+end
+This will produce the following result −
+red is 3840
+green is 240
+blue is 15
+For more detail on Ruby Hashes, go through Ruby Hashes.
+Ruby Ranges
+A Range represents an interval which is a set of values with a start and an end. Ranges may be constructed using the s..e and s...e literals, or with Range.new.
+Ranges constructed using .. run from the start to the end inclusively. Those created using ... exclude the end value. When used as an iterator, ranges return each value in the sequence.
+A range (1..5) means it includes 1, 2, 3, 4, 5 values and a range (1...5) means it includes 1, 2, 3, 4 values.
+Example
+#!/usr/bin/ruby
+
+(10..15).each do |n| 
+   print n, ' ' 
+end
+This will produce the following result −
+10 11 12 13 14 15
+For more detail on Ruby Ranges, go through Ruby Ranges.
+Ruby - Operators
+Ruby supports a rich set of operators, as you'd expect from a modern language. Most operators are actually method calls. For example, a + b is interpreted as a.+(b), where the + method in the object referred to by variable a is called with b as its argument.
+For each operator (+ - * / % ** & | ^ << >> && ||), there is a corresponding form of abbreviated assignment operator (+= -= etc.).
+Ruby Arithmetic Operators
+Assume variable a holds 10 and variable b holds 20, then −
+Operator
+Description
+Example
++
+Addition − Adds values on either side of the operator.
+a + b will give 30
+−
+Subtraction − Subtracts right hand operand from left hand operand.
+a - b will give -10
+*
+Multiplication − Multiplies values on either side of the operator.
+a * b will give 200
+/
+Division − Divides left hand operand by right hand operand.
+b / a will give 2
+%
+Modulus − Divides left hand operand by right hand operand and returns remainder.
+b % a will give 0
+**
+Exponent − Performs exponential (power) calculation on operators.
+a**b will give 10 to the power 20
+Ruby Comparison Operators
+Assume variable a holds 10 and variable b holds 20, then −
+Operator
+Description
+Example
+==
+Checks if the value of two operands are equal or not, if yes then condition becomes true.
+(a == b) is not true.
+!=
+Checks if the value of two operands are equal or not, if values are not equal then condition becomes true.
+(a != b) is true.
+>
+Checks if the value of left operand is greater than the value of right operand, if yes then condition becomes true.
+(a > b) is not true.
+<
+Checks if the value of left operand is less than the value of right operand, if yes then condition becomes true.
+(a < b) is true.
+>=
+Checks if the value of left operand is greater than or equal to the value of right operand, if yes then condition becomes true.
+(a >= b) is not true.
+<=
+Checks if the value of left operand is less than or equal to the value of right operand, if yes then condition becomes true.
+(a <= b) is true.
+<=>
+Combined comparison operator. Returns 0 if first operand equals second, 1 if first operand is greater than the second and -1 if first operand is less than the second.
+(a <=> b) returns -1.
+===
+Used to test equality within a when clause of a case statement.
+(1...10) === 5 returns true.
+.eql?
+True if the receiver and argument have both the same type and equal values.
+1 == 1.0 returns true, but 1.eql?(1.0) is false.
+equal?
+True if the receiver and argument have the same object id.
+if aObj is duplicate of bObj then aObj == bObj is true, a.equal?bObj is false but a.equal?aObj is true.
+Ruby Assignment Operators
+Assume variable a holds 10 and variable b holds 20, then −
+Operator
+Description
+Example
+=
+Simple assignment operator, assigns values from right side operands to left side operand.
+c = a + b will assign the value of a + b into c
++=
+Add AND assignment operator, adds right operand to the left operand and assign the result to left operand.
+c += a is equivalent to c = c + a
+-=
+Subtract AND assignment operator, subtracts right operand from the left operand and assign the result to left operand.
+c -= a is equivalent to c = c - a
+*=
+Multiply AND assignment operator, multiplies right operand with the left operand and assign the result to left operand.
+c *= a is equivalent to c = c * a
+/=
+Divide AND assignment operator, divides left operand with the right operand and assign the result to left operand.
+c /= a is equivalent to c = c / a
+%=
+Modulus AND assignment operator, takes modulus using two operands and assign the result to left operand.
+c %= a is equivalent to c = c % a
+**=
+Exponent AND assignment operator, performs exponential (power) calculation on operators and assign value to the left operand.
+c **= a is equivalent to c = c ** a
+Ruby Parallel Assignment
+Ruby also supports the parallel assignment of variables. This enables multiple variables to be initialized with a single line of Ruby code. For example −
+a = 10
+b = 20
+c = 30
+This may be more quickly declared using parallel assignment −
+a, b, c = 10, 20, 30
+Parallel assignment is also useful for swapping the values held in two variables −
+a, b = b, c
+Ruby Bitwise Operators
+Bitwise operator works on bits and performs bit by bit operation.
+Assume if a = 60; and b = 13; now in binary format they will be as follows −
+ a    =  0011 1100
+ b    =  0000 1101
+ ------------------
+ a&b  =  0000 1100
+ a|b  =  0011 1101
+ a^b  =  0011 0001
+ ~a   =  1100 0011
+The following Bitwise operators are supported by Ruby language.
+Operator
+Description
+Example
+&
+Binary AND Operator copies a bit to the result if it exists in both operands.
+(a & b) will give 12, which is 0000 1100
+|
+Binary OR Operator copies a bit if it exists in either operand.
+(a | b) will give 61, which is 0011 1101
+^
+Binary XOR Operator copies the bit if it is set in one operand but not both.
+(a ^ b) will give 49, which is 0011 0001
+~
+Binary Ones Complement Operator is unary and has the effect of 'flipping' bits.
+(~a ) will give -61, which is 1100 0011 in 2's complement form due to a signed binary number.
+<<
+Binary Left Shift Operator. The left operands value is moved left by the number of bits specified by the right operand.
+a << 2 will give 240, which is 1111 0000
+>>
+Binary Right Shift Operator. The left operands value is moved right by the number of bits specified by the right operand.
+a >> 2 will give 15, which is 0000 1111
+Ruby Logical Operators
+The following logical operators are supported by Ruby language
+Assume variable a holds 10 and variable b holds 20, then −
+Operator
+Description
+Example
+and
+Called Logical AND operator. If both the operands are true, then the condition becomes true.
+(a and b) is true.
+or
+Called Logical OR Operator. If any of the two operands are non zero, then the condition becomes true.
+(a or b) is true.
+&&
+Called Logical AND operator. If both the operands are non zero, then the condition becomes true.
+(a && b) is true.
+||
+Called Logical OR Operator. If any of the two operands are non zero, then the condition becomes true.
+(a || b) is true.
+!
+Called Logical NOT Operator. Use to reverses the logical state of its operand. If a condition is true, then Logical NOT operator will make false.
+!(a && b) is false.
+not
+Called Logical NOT Operator. Use to reverses the logical state of its operand. If a condition is true, then Logical NOT operator will make false.
+not(a && b) is false.
+Ruby Ternary Operator
+There is one more operator called Ternary Operator. It first evaluates an expression for a true or false value and then executes one of the two given statements depending upon the result of the evaluation. The conditional operator has this syntax −
+Operator
+Description
+Example
+? :
+Conditional Expression
+If Condition is true ? Then value X : Otherwise value Y
+Ruby Range Operators
+Sequence ranges in Ruby are used to create a range of successive values - consisting of a start value, an end value, and a range of values in between.
+In Ruby, these sequences are created using the ".." and "..." range operators. The two-dot form creates an inclusive range, while the three-dot form creates a range that excludes the specified high value.
+Operator
+Description
+Example
+..
+Creates a range from start point to end point inclusive.
+1..10 Creates a range from 1 to 10 inclusive.
+...
+Creates a range from start point to end point exclusive.
+1...10 Creates a range from 1 to 9.
+Ruby defined? Operators
+defined? is a special operator that takes the form of a method call to determine whether or not the passed expression is defined. It returns a description string of the expression, or nil if the expression isn't defined.
+There are various usage of defined? Operator
+Usage 1
+defined? variable # True if variable is initialized
+For Example
+foo = 42
+defined? foo    # => "local-variable"
+defined? $_     # => "global-variable"
+defined? bar    # => nil (undefined)
+Usage 2
+defined? method_call # True if a method is defined
+For Example
+defined? puts        # => "method"
+defined? puts(bar)   # => nil (bar is not defined here)
+defined? unpack      # => nil (not defined here)
+Usage 3
+# True if a method exists that can be called with super user
+defined? super
+For Example
+defined? super     # => "super" (if it can be called)
+defined? super     # => nil (if it cannot be)
+Usage 4
+defined? yield   # True if a code block has been passed
+For Example
+defined? yield    # => "yield" (if there is a block passed)
+defined? yield    # => nil (if there is no block)
+Ruby Dot "." and Double Colon "::" Operators
+You call a module method by preceding its name with the module's name and a period, and you reference a constant using the module name and two colons.
+The :: is a unary operator that allows: constants, instance methods and class methods defined within a class or module, to be accessed from anywhere outside the class or module.
+Remember in Ruby, classes and methods may be considered constants too.
+You need to just prefix the :: Const_name with an expression that returns the appropriate class or module object.
+If no prefix expression is used, the main Object class is used by default.
+Here are two examples −
+MR_COUNT = 0         # constant defined on main Object class
+module Foo
+   MR_COUNT = 0
+   ::MR_COUNT = 1    # set global count to 1
+   MR_COUNT = 2      # set local count to 2
+end
+puts MR_COUNT        # this is the global constant
+puts Foo::MR_COUNT   # this is the local "Foo" constant
+Second Example
+CONST = ' out there'
+class Inside_one
+   CONST = proc {' in there'}
+   def where_is_my_CONST
+      ::CONST + ' inside one'
+   end
+end
+class Inside_two
+   CONST = ' inside two'
+   def where_is_my_CONST
+      CONST
+   end
+end
+puts Inside_one.new.where_is_my_CONST
+puts Inside_two.new.where_is_my_CONST
+puts Object::CONST + Inside_two::CONST
+puts Inside_two::CONST + CONST
+puts Inside_one::CONST
+puts Inside_one::CONST.call + Inside_two::CONST
+Ruby Operators Precedence
+The following table lists all operators from highest precedence to lowest.
+Method
+Operator
+Description
+Yes
+::
+Constant resolution operator
+Yes
+[ ] [ ]=
+Element reference, element set
+Yes
+**
+Exponentiation (raise to the power)
+Yes
+! ~ + -
+Not, complement, unary plus and minus (method names for the last two are +@ and -@)
+Yes
+* / %
+Multiply, divide, and modulo
+Yes
++ -
+Addition and subtraction
+Yes
+>> <<
+Right and left bitwise shift
+Yes
+&
+Bitwise 'AND'
+Yes
+^ |
+Bitwise exclusive `OR' and regular `OR'
+Yes
+<= < > >=
+Comparison operators
+Yes
+<=> == === != =~ !~
+Equality and pattern match operators (!= and !~ may not be defined as methods)
+ 
+&&
+Logical 'AND'
+ 
+||
+Logical 'OR'
+ 
+.. ...
+Range (inclusive and exclusive)
+ 
+? :
+Ternary if-then-else
+ 
+= %= { /= -= += |= &= >>= <<= *= &&= ||= **=
+Assignment
+ 
+defined?
+Check if specified symbol defined
+ 
+not
+Logical negation
+ 
+or and
+Logical composition
+NOTE − Operators with a Yes in the method column are actually methods, and as such may be overridden.
+Ruby - Comments
+Comments are lines of annotation within Ruby code that are ignored at runtime. A single line comment starts with # character and they extend from # to the end of the line as follows −
+#!/usr/bin/ruby -w
+# This is a single line comment.
+
+puts "Hello, Ruby!"
+When executed, the above program produces the following result −
+Hello, Ruby!
+Ruby Multiline Comments
+You can comment multiple lines using =begin and =end syntax as follows −
+#!/usr/bin/ruby -w
+
+puts "Hello, Ruby!"
+
+=begin
+This is a multiline comment and con spwan as many lines as you
+like. But =begin and =end should come in the first line only. 
+=end
+When executed, the above program produces the following result −
+Hello, Ruby!
+Make sure trailing comments are far enough from the code and that they are easily distinguished. If more than one trailing comment exists in a block, align them. For example −
+@counter      # keeps track times page has been hit
+@siteCounter  # keeps track of times all pages have been hit
+
+Ruby if...else Statement
+Syntax
+if conditional [then]
+   code...
+[elsif conditional [then]
+   code...]...
+[else
+   code...]
+end
+if expressions are used for conditional execution. The values false and nil are false, and everything else are true. Notice Ruby uses elsif, not else if nor elif.
+Executes code if the conditional is true. If the conditional is not true, code specified in the else clause is executed.
+An if expression's conditional is separated from code by the reserved word then, a newline, or a semicolon.
+Example
+#!/usr/bin/ruby
+
+x = 1
+if x > 2
+   puts "x is greater than 2"
+elsif x <= 2 and x!=0
+   puts "x is 1"
+else
+   puts "I can't guess the number"
+end
+x is 1
+Ruby case Statement
+Syntax
+case expression
+[when expression [, expression ...] [then]
+   code ]...
+[else
+   code ]
+end
+Compares the expression specified by case and that specified by when using the === operator and executes the code of the when clause that matches.
+The expression specified by the when clause is evaluated as the left operand. If no when clauses match, case executes the code of the else clause.
+A when statement's expression is separated from code by the reserved word then, a newline, or a semicolon. Thus −
+case expr0
+when expr1, expr2
+   stmt1
+when expr3, expr4
+   stmt2
+else
+   stmt3
+end
+is basically similar to the following −
+_tmp = expr0
+if expr1 === _tmp || expr2 === _tmp
+   stmt1
+elsif expr3 === _tmp || expr4 === _tmp
+   stmt2
+else
+   stmt3
+end
+Example
+#!/usr/bin/ruby
+
+$age =  5
+case $age
+when 0 .. 2
+   puts "baby"
+when 3 .. 6
+   puts "little child"
+when 7 .. 12
+   puts "child"
+when 13 .. 18
+   puts "youth"
+else
+   puts "adult"
+end
+This will produce the following result −
+little child
+Ruby - Loops
+Loops in Ruby are used to execute the same block of code a specified number of times. This chapter details all the loop statements supported by Ruby.
+Ruby while Statement
+Syntax
+while conditional [do]
+   code
+end
+Executes code while conditional is true. A while loop's conditional is separated from code by the reserved word do, a newline, backslash \, or a semicolon ;.
+Example
+#!/usr/bin/ruby
+
+$i = 0
+$num = 5
+
+while $i < $num  do
+   puts("Inside the loop i = #$i" )
+   $i +=1
+end
+This will produce the following result −
+Inside the loop i = 0
+Inside the loop i = 1
+Inside the loop i = 2
+Inside the loop i = 3
+Inside the loop i = 4
+Ruby while modifier
+Syntax
+code while condition
+
+OR
+
+begin 
+  code 
+end while conditional
+Executes code while conditional is true.
+If a while modifier follows a begin statement with no rescue or ensure clauses, code is executed once before conditional is evaluated.
+Example
+#!/usr/bin/ruby
+
+$i = 0
+$num = 5
+begin
+   puts("Inside the loop i = #$i" )
+   $i +=1
+end while $i < $num
+This will produce the following result −
+Inside the loop i = 0
+Inside the loop i = 1
+Inside the loop i = 2
+Inside the loop i = 3
+Inside the loop i = 4
+Ruby until Statement
+until conditional [do]
+   code
+end
+Executes code while conditional is false. An until statement's conditional is separated from code by the reserved word do, a newline, or a semicolon.
+Example
+#!/usr/bin/ruby
+
+$i = 0
+$num = 5
+
+until $i > $num  do
+   puts("Inside the loop i = #$i" )
+   $i +=1;
+end
+This will produce the following result −
+Inside the loop i = 0
+Inside the loop i = 1
+Inside the loop i = 2
+Inside the loop i = 3
+Inside the loop i = 4
+Inside the loop i = 5
+Ruby for Statement
+Syntax
+for variable [, variable ...] in expression [do]
+   code
+end
+Executes code once for each element in expression.
+Example
+#!/usr/bin/ruby
+
+for i in 0..5
+   puts "Value of local variable is #{i}"
+end
+Here, we have defined the range 0..5. The statement for i in 0..5 will allow i to take values in the range from 0 to 5 (including 5). This will produce the following result −
+Value of local variable is 0
+Value of local variable is 1
+Value of local variable is 2
+Value of local variable is 3
+Value of local variable is 4
+Value of local variable is 5
+A for...in loop is almost exactly equivalent to the following −
+(expression).each do |variable[, variable...]| code end
+except that a for loop doesn't create a new scope for local variables. A for loop's expression is separated from code by the reserved word do, a newline, or a semicolon.
+Example
+#!/usr/bin/ruby
+
+(0..5).each do |i|
+   puts "Value of local variable is #{i}"
+end
+This will produce the following result −
+Value of local variable is 0
+Value of local variable is 1
+Value of local variable is 2
+Value of local variable is 3
+Value of local variable is 4
+Value of local variable is 5
+Ruby break Statement
+Syntax
+break
+Terminates the most internal loop. Terminates a method with an associated block if called within the block (with the method returning nil).
+Example
+#!/usr/bin/ruby
+
+for i in 0..5
+   if i > 2 then
+      break
+   end
+   puts "Value of local variable is #{i}"
+end
+This will produce the following result −
+Value of local variable is 0
+Value of local variable is 1
+Value of local variable is 2
+Ruby next Statement
+Syntax
+next
+Jumps to the next iteration of the most internal loop. Terminates execution of a block if called within a block (with yield or call returning nil).
+Example
+#!/usr/bin/ruby
+
+for i in 0..5
+   if i < 2 then
+      next
+   end
+   puts "Value of local variable is #{i}"
+end
+This will produce the following result −
+Value of local variable is 2
+Value of local variable is 3
+Value of local variable is 4
+Value of local variable is 5
+Ruby redo Statement
+Syntax
+redo
+Restarts this iteration of the most internal loop, without checking loop condition. Restarts yield or call if called within a block.
+Example
+#!/usr/bin/ruby
+
+for i in 0..5
+   if i < 2 then
+      puts "Value of local variable is #{i}"
+      redo
+   end
+end
+This will produce the following result and will go in an infinite loop −
+Value of local variable is 0
+Value of local variable is 0
+............................
+Ruby retry Statement
+Syntax
+retry
+If retry appears in rescue clause of begin expression, restart from the beginning of the begin body.
+begin
+   do_something # exception raised
+rescue
+   # handles error
+   retry  # restart from beginning
+end
+If retry appears in the iterator, the block, or the body of the for expression, restarts the invocation of the iterator call. Arguments to the iterator is re-evaluated.
+for i in 1..5
+   retry if some_condition # restart from i == 1
+end
+Example
+#!/usr/bin/ruby
+for i in 0..5
+   retry if i > 2
+puts "Value of local variable is #{i}"
+end
+This will produce the following result and will go in an infinite loop −
+Value of local variable is 1
+Value of local variable is 2
+Value of local variable is 1
+Value of local variable is 2
+Value of local variable is 1
+Value of local variable is 2
+............................
+Ruby - Methods
+Ruby methods are very similar to functions in any other programming language. Ruby methods are used to bundle one or more repeatable statements into a single unit.
+Method names should begin with a lowercase letter. If you begin a method name with an uppercase letter, Ruby might think that it is a constant and hence can parse the call incorrectly.
+Methods should be defined before calling them, otherwise Ruby will raise an exception for undefined method invoking.
+Syntax
+def method_name [( [arg [= default]]...[, * arg [, &expr ]])]
+   expr..
+end
+So, you can define a simple method as follows −
+def method_name 
+   expr..
+end
+You can represent a method that accepts parameters like this −
+def method_name (var1, var2)
+   expr..
+end
+You can set default values for the parameters, which will be used if method is called without passing the required parameters −
+def method_name (var1 = value1, var2 = value2)
+   expr..
+end
+Whenever you call the simple method, you write only the method name as follows −
+method_name
+However, when you call a method with parameters, you write the method name along with the parameters, such as −
+method_name 25, 30
+The most important drawback to using methods with parameters is that you need to remember the number of parameters whenever you call such methods. For example, if a method accepts three parameters and you pass only two, then Ruby displays an error.
+Example
+#!/usr/bin/ruby
+
+def test(a1 = "Ruby", a2 = "Perl")
+   puts "The programming language is #{a1}"
+   puts "The programming language is #{a2}"
+end
+test "C", "C++"
+test
+This will produce the following result −
+The programming language is C
+The programming language is C++
+The programming language is Ruby
+The programming language is Perl
+Return Values from Methods
+Every method in Ruby returns a value by default. This returned value will be the value of the last statement. For example −
+def test
+   i = 100
+   j = 10
+   k = 0
+end
+This method, when called, will return the last declared variable k.
+Ruby return Statement
+The return statement in ruby is used to return one or more values from a Ruby Method.
+Syntax
+return [expr[`,' expr...]]
+If more than two expressions are given, the array containing these values will be the return value. If no expression given, nil will be the return value.
+Example
+return
+
+OR
+
+return 12
+
+OR
+
+return 1,2,3
+Have a look at this example −
+#!/usr/bin/ruby
+
+def test
+   i = 100
+   j = 200
+   k = 300
+return i, j, k
+end
+var = test
+puts var
+This will produce the following result −
+100
+200
+300
+Variable Number of Parameters
+Suppose you declare a method that takes two parameters, whenever you call this method, you need to pass two parameters along with it.
+However, Ruby allows you to declare methods that work with a variable number of parameters. Let us examine a sample of this −
+#!/usr/bin/ruby
+
+def sample (*test)
+   puts "The number of parameters is #{test.length}"
+   for i in 0...test.length
+      puts "The parameters are #{test[i]}"
+   end
+end
+sample "Zara", "6", "F"
+sample "Mac", "36", "M", "MCA"
+In this code, you have declared a method sample that accepts one parameter test. However, this parameter is a variable parameter. This means that this parameter can take in any number of variables. So, the above code will produce the following result −
+The number of parameters is 3
+The parameters are Zara
+The parameters are 6
+The parameters are F
+The number of parameters is 4
+The parameters are Mac
+The parameters are 36
+The parameters are M
+The parameters are MCA
+Class Methods
+When a method is defined outside of the class definition, the method is marked as private by default. On the other hand, the methods defined in the class definition are marked as public by default. The default visibility and the private mark of the methods can be changed by public or private of the Module.
+Whenever you want to access a method of a class, you first need to instantiate the class. Then, using the object, you can access any member of the class.
+Ruby gives you a way to access a method without instantiating a class. Let us see how a class method is declared and accessed −
+class Accounts
+   def reading_charge
+   end
+   def Accounts.return_date
+   end
+end
+See how the method return_date is declared. It is declared with the class name followed by a period, which is followed by the name of the method. You can access this class method directly as follows −
+Accounts.return_date
+To access this method, you need not create objects of the class Accounts.
+Ruby alias Statement
+This gives alias to methods or global variables. Aliases cannot be defined within the method body. The alias of the method keeps the current definition of the method, even when methods are overridden.
+Making aliases for the numbered global variables ($1, $2,...) is prohibited. Overriding the built-in global variables may cause serious problems.
+Syntax
+alias method-name method-name
+alias global-variable-name global-variable-name
+Example
+alias foo bar
+alias $MATCH $&
+Here we have defined foo alias for bar, and $MATCH is an alias for $&
+Ruby undef Statement
+This cancels the method definition. An undef cannot appear in the method body.
+By using undef and alias, the interface of the class can be modified independently from the superclass, but notice it may be broke programs by the internal method call to self.
+Syntax
+undef method-name
+Example
+To undefine a method called bar do the following −
+undef bar
+Ruby - Blocks
+You have seen how Ruby defines methods where you can put number of statements and then you call that method. Similarly, Ruby has a concept of Block.
+    • A block consists of chunks of code.
+    • You assign a name to a block.
+    • The code in the block is always enclosed within braces ({}).
+    • A block is always invoked from a function with the same name as that of the block. This means that if you have a block with the name test, then you use the function test to invoke this block.
+    • You invoke a block by using the yield statement.
+Syntax
+block_name {
+   statement1
+   statement2
+   ..........
+}
+Here, you will learn to invoke a block by using a simple yield statement. You will also learn to use a yield statement with parameters for invoking a block. You will check the sample code with both types of yield statements.
+The yield Statement
+Let's look at an example of the yield statement −
+#!/usr/bin/ruby
+
+def test
+   puts "You are in the method"
+   yield
+   puts "You are again back to the method"
+   yield
+end
+test {puts "You are in the block"}
+This will produce the following result −
+You are in the method
+You are in the block
+You are again back to the method
+You are in the block
+You also can pass parameters with the yield statement. Here is an example −
+#!/usr/bin/ruby
+
+def test
+   yield 5
+   puts "You are in the method test"
+   yield 100
+end
+test {|i| puts "You are in the block #{i}"}
+This will produce the following result −
+You are in the block 5
+You are in the method test
+You are in the block 100
+Here, the yield statement is written followed by parameters. You can even pass more than one parameter. In the block, you place a variable between two vertical lines (||) to accept the parameters. Therefore, in the preceding code, the yield 5 statement passes the value 5 as a parameter to the test block.
+Now, look at the following statement −
+test {|i| puts "You are in the block #{i}"}
+Here, the value 5 is received in the variable i. Now, observe the following puts statement −
+puts "You are in the block #{i}"
+The output of this puts statement is −
+You are in the block 5
+If you want to pass more than one parameters, then the yield statement becomes −
+yield a, b
+and the block is −
+test {|a, b| statement}
+The parameters will be separated by commas.
+Blocks and Methods
+You have seen how a block and a method can be associated with each other. You normally invoke a block by using the yield statement from a method that has the same name as that of the block. Therefore, you write −
+#!/usr/bin/ruby
+
+def test
+   yield
+end
+test{ puts "Hello world"}
+This example is the simplest way to implement a block. You call the test block by using the yield statement.
+But if the last argument of a method is preceded by &, then you can pass a block to this method and this block will be assigned to the last parameter. In case both * and & are present in the argument list, & should come later.
+#!/usr/bin/ruby
+
+def test(&block)
+   block.call
+end
+test { puts "Hello World!"}
+This will produce the following result −
+Hello World!
+BEGIN and END Blocks
+Every Ruby source file can declare blocks of code to be run as the file is being loaded (the BEGIN blocks) and after the program has finished executing (the END blocks).
+#!/usr/bin/ruby
+
+BEGIN { 
+   # BEGIN block code 
+   puts "BEGIN code block"
+} 
+
+END { 
+   # END block code 
+   puts "END code block"
+}
+   # MAIN block code 
+puts "MAIN code block"
+A program may include multiple BEGIN and END blocks. BEGIN blocks are executed in the order they are encountered. END blocks are executed in reverse order. When executed, the above program produces the following result −
+BEGIN code block
+MAIN code block
+END code block
+Ruby - Modules and Mixins
+Modules are a way of grouping together methods, classes, and constants. Modules give you two major benefits.
+    • Modules provide a namespace and prevent name clashes.
+    • Modules implement the mixin facility.
+Modules define a namespace, a sandbox in which your methods and constants can play without having to worry about being stepped on by other methods and constants.
+Syntax
+module Identifier
+   statement1
+   statement2
+   ...........
+end
+Module constants are named just like class constants, with an initial uppercase letter. The method definitions look similar, too: Module methods are defined just like class methods.
+As with class methods, you call a module method by preceding its name with the module's name and a period, and you reference a constant using the module name and two colons.
+Example
+#!/usr/bin/ruby
+
+# Module defined in trig.rb file
+
+module Trig
+   PI = 3.141592654
+   def Trig.sin(x)
+   # ..
+   end
+   def Trig.cos(x)
+   # ..
+   end
+end
+We can define one more module with the same function name but different functionality −
+#!/usr/bin/ruby
+
+# Module defined in moral.rb file
+
+module Moral
+   VERY_BAD = 0
+   BAD = 1
+   def Moral.sin(badness)
+   # ...
+   end
+end
+Like class methods, whenever you define a method in a module, you specify the module name followed by a dot and then the method name.
+Ruby require Statement
+The require statement is similar to the include statement of C and C++ and the import statement of Java. If a third program wants to use any defined module, it can simply load the module files using the Ruby require statement −
+Syntax
+require filename
+Here, it is not required to give .rb extension along with a file name.
+Example
+$LOAD_PATH << '.'
+
+require 'trig.rb'
+require 'moral'
+
+y = Trig.sin(Trig::PI/4)
+wrongdoing = Moral.sin(Moral::VERY_BAD)
+Here we are using $LOAD_PATH << '.' to make Ruby aware that included files must be searched in the current directory. If you do not want to use $LOAD_PATH then you can use require_relative to include files from a relative directory.
+IMPORTANT − Here, both the files contain the same function name. So, this will result in code ambiguity while including in calling program but modules avoid this code ambiguity and we are able to call appropriate function using module name.
+Ruby include Statement
+You can embed a module in a class. To embed a module in a class, you use the include statement in the class −
+Syntax
+include modulename
+If a module is defined in a separate file, then it is required to include that file using require statement before embedding module in a class.
+Example
+Consider the following module written in support.rb file.
+module Week
+   FIRST_DAY = "Sunday"
+   def Week.weeks_in_month
+      puts "You have four weeks in a month"
+   end
+   def Week.weeks_in_year
+      puts "You have 52 weeks in a year"
+   end
+end
+Now, you can include this module in a class as follows −
+#!/usr/bin/ruby
+$LOAD_PATH << '.'
+require "support"
+
+class Decade
+include Week
+   no_of_yrs = 10
+   def no_of_months
+      puts Week::FIRST_DAY
+      number = 10*12
+      puts number
+   end
+end
+d1 = Decade.new
+puts Week::FIRST_DAY
+Week.weeks_in_month
+Week.weeks_in_year
+d1.no_of_months
+This will produce the following result −
+Sunday
+You have four weeks in a month
+You have 52 weeks in a year
+Sunday
+120
+Mixins in Ruby
+Before going through this section, we assume you have the knowledge of Object Oriented Concepts.
+When a class can inherit features from more than one parent class, the class is supposed to show multiple inheritance.
+Ruby does not support multiple inheritance directly but Ruby Modules have another wonderful use. At a stroke, they pretty much eliminate the need for multiple inheritance, providing a facility called a mixin.
+Mixins give you a wonderfully controlled way of adding functionality to classes. However, their true power comes out when the code in the mixin starts to interact with code in the class that uses it.
+Let us examine the following sample code to gain an understand of mixin −
+module A
+   def a1
+   end
+   def a2
+   end
+end
+module B
+   def b1
+   end
+   def b2
+   end
+end
+
+class Sample
+include A
+include B
+   def s1
+   end
+end
+
+samp = Sample.new
+samp.a1
+samp.a2
+samp.b1
+samp.b2
+samp.s1
+Module A consists of the methods a1 and a2. Module B consists of the methods b1 and b2. The class Sample includes both modules A and B. The class Sample can access all four methods, namely, a1, a2, b1, and b2. Therefore, you can see that the class Sample inherits from both the modules. Thus, you can say the class Sample shows multiple inheritance or a mixin.
+
+Ruby - Strings
+A String object in Ruby holds and manipulates an arbitrary sequence of one or more bytes, typically representing characters that represent human language.
+The simplest string literals are enclosed in single quotes (the apostrophe character). The text within the quote marks is the value of the string −
+'This is a simple Ruby string literal'
+If you need to place an apostrophe within a single-quoted string literal, precede it with a backslash, so that the Ruby interpreter does not think that it terminates the string −
+'Won\'t you read O\'Reilly\'s book?'
+The backslash also works to escape another backslash, so that the second backslash is not itself interpreted as an escape character.
+Following are the string-related features of Ruby.
+Expression Substitution
+Expression substitution is a means of embedding the value of any Ruby expression into a string using #{ and } −
+#!/usr/bin/ruby
+
+x, y, z = 12, 36, 72
+puts "The value of x is #{ x }."
+puts "The sum of x and y is #{ x + y }."
+puts "The average was #{ (x + y + z)/3 }."
+This will produce the following result −
+The value of x is 12.
+The sum of x and y is 48.
+The average was 40.
+General Delimited Strings
+With general delimited strings, you can create strings inside a pair of matching though arbitrary delimiter characters, e.g., !, (, {, <, etc., preceded by a percent character (%). Q, q, and x have special meanings. General delimited strings can be −
+%{Ruby is fun.}  equivalent to "Ruby is fun."
+%Q{ Ruby is fun. } equivalent to " Ruby is fun. "
+%q[Ruby is fun.]  equivalent to a single-quoted string
+%x!ls! equivalent to back tick command output `ls`
+Escape Characters
+Following table is a list of escape or non-printable characters that can be represented with the backslash notation. 
+NOTE − In a double-quoted string, an escape character is interpreted; in a single-quoted string, an escape character is preserved.
+Backslash notation
+Hexadecimal character
+Description
+\a
+0x07
+Bell or alert
+\b
+0x08
+Backspace
+\cx
+ 
+Control-x
+\C-x
+ 
+Control-x
+\e
+0x1b
+Escape
+\f
+0x0c
+Formfeed
+\M-\C-x
+ 
+Meta-Control-x
+\n
+0x0a
+Newline
+\nnn
+ 
+Octal notation, where n is in the range 0.7
+\r
+0x0d
+Carriage return
+\s
+0x20
+Space
+\t
+0x09
+Tab
+\v
+0x0b
+Vertical tab
+\x
+ 
+Character x
+\xnn
+ 
+Hexadecimal notation, where n is in the range 0.9, a.f, or A.F
+
+Character Encoding
+The default character set for Ruby is ASCII, whose characters may be represented by single bytes. If you use UTF-8, or another modern character set, characters may be represented in one to four bytes.
+You can change your character set using $KCODE at the beginning of your program, like this −
+$KCODE = 'u'
+Following are the possible values for $KCODE. 
+
+Sr.No.
+Code & Description
+1
+a
+ASCII (same as none). This is the default.
+2
+e
+EUC.
+3
+n
+None (same as ASCII).
+4
+u
+UTF-8.
+
+String Built-in Methods
+We need to have an instance of String object to call a String method. Following is the way to create an instance of String object −
+new [String.new(str = "")]
+This will return a new string object containing a copy of str. Now, using str object, we can all use any available instance methods. For example −
+#!/usr/bin/ruby
+
+myStr = String.new("THIS IS TEST")
+foo = myStr.downcase
+
+puts "#{foo}"
+This will produce the following result −
+this is test
+Following are the public String methods ( Assuming str is a String object ) − 
+
+Sr.No.
+Methods & Description
+1
+str % arg
+Formats a string using a format specification. arg must be an array if it contains more than one substitution. For information on the format specification, see sprintf under "Kernel Module."
+2
+str * integer
+Returns a new string containing integer times str. In other words, str is repeated integer imes.
+3
+str + other_str
+Concatenates other_str to str.
+4
+str << obj
+Concatenates an object to str. If the object is a Fixnum in the range 0.255, it is converted to a character. Compare it with concat.
+5
+str <=> other_str
+Compares str with other_str, returning -1 (less than), 0 (equal), or 1 (greater than). The comparison is case-sensitive.
+6
+str == obj
+Tests str and obj for equality. If obj is not a String, returns false; returns true if str <=> obj returns 0.
+7
+str =~ obj
+Matches str against a regular expression pattern obj. Returns the position where the match starts; otherwise, false.
+8
+str.capitalize
+Capitalizes a string.
+9
+str.capitalize!
+Same as capitalize, but changes are made in place.
+10
+str.casecmp
+Makes a case-insensitive comparison of strings.
+11
+str.center
+Centers a string.
+12
+str.chomp
+Removes the record separator ($/), usually \n, from the end of a string. If no record separator exists, does nothing.
+13
+str.chomp!
+Same as chomp, but changes are made in place.
+14
+str.chop
+Removes the last character in str.
+15
+str.chop!
+Same as chop, but changes are made in place.
+16
+str.concat(other_str)
+Concatenates other_str to str.
+17
+str.count(str, ...)
+Counts one or more sets of characters. If there is more than one set of characters, counts the intersection of those sets
+18
+str.crypt(other_str)
+Applies a one-way cryptographic hash to str. The argument is the salt string, which should be two characters long, each character in the range a.z, A.Z, 0.9, . or /.
+19
+str.delete(other_str, ...)
+Returns a copy of str with all characters in the intersection of its arguments deleted.
+20
+str.delete!(other_str, ...)
+Same as delete, but changes are made in place.
+21
+str.downcase
+Returns a copy of str with all uppercase letters replaced with lowercase.
+22
+str.downcase!
+Same as downcase, but changes are made in place.
+23
+str.dump
+Returns a version of str with all nonprinting characters replaced by \nnn notation and all special characters escaped.
+24
+str.each(separator = $/) { |substr| block }
+Splits str using argument as the record separator ($/ by default), passing each substring to the supplied block.
+25
+str.each_byte { |fixnum| block }
+Passes each byte from str to the block, returning each byte as a decimal representation of the byte.
+26
+str.each_line(separator=$/) { |substr| block }
+Splits str using argument as the record separator ($/ by default), passing each substring to the supplied block.
+27
+str.empty?
+Returns true if str is empty (has a zero length).
+28
+str.eql?(other)
+Two strings are equal if they have the same length and content.
+29
+str.gsub(pattern, replacement) [or]
+str.gsub(pattern) { |match| block }
+Returns a copy of str with all occurrences of pattern replaced with either replacement or the value of the block. The pattern will typically be a Regexp; if it is a String then no regular expression metacharacters will be interpreted (that is, /\d/ will match a digit, but '\d' will match a backslash followed by a 'd')
+30
+str[fixnum] [or] str[fixnum,fixnum] [or] str[range] [or] str[regexp] [or] str[regexp, fixnum] [or] str[other_str]
+References str, using the following arguments: one Fixnum, returns a character code at fixnum; two Fixnums, returns a substring starting at an offset (first fixnum) to length (second fixnum); range, returns a substring in the range; regexp returns portion of matched string; regexp with fixnum, returns matched data at fixnum; other_str returns substring matching other_str. A negative Fixnum starts at end of string with -1.
+31
+str[fixnum] = fixnum [or] str[fixnum] = new_str [or] str[fixnum, fixnum] = new_str [or] str[range] = aString [or] str[regexp] = new_str [or] str[regexp, fixnum] = new_str [or] str[other_str] = new_str ]
+Replace (assign) all or part of a string. Synonym of slice!.
+32
+str.gsub!(pattern, replacement) [or] str.gsub!(pattern) { |match|block }
+Performs the substitutions of String#gsub in place, returning str, or nil if no substitutions were performed.
+33
+str.hash
+Returns a hash based on the string's length and content.
+34
+str.hex
+Treats leading characters from str as a string of hexadecimal digits (with an optional sign and an optional 0x) and returns the corresponding number. Zero is returned on error.
+35
+str.include? other_str [or] str.include? fixnum
+Returns true if str contains the given string or character.
+36
+str.index(substring [, offset]) [or]
+str.index(fixnum [, offset]) [or]
+str.index(regexp [, offset])
+Returns the index of the first occurrence of the given substring, character (fixnum), or pattern (regexp) in str. Returns nil if not found. If the second parameter is present, it specifies the position in the string to begin the search.
+37
+str.insert(index, other_str)
+Inserts other_str before the character at the given index, modifying str. Negative indices count from the end of the string, and insert after the given character. The intent is to insert a string so that it starts at the given index.
+38
+str.inspect
+Returns a printable version of str, with special characters escaped.
+39
+str.intern [or] str.to_sym
+Returns the Symbol corresponding to str, creating the symbol if it did not previously exist.
+40
+str.length
+Returns the length of str. Compare size.
+41
+str.ljust(integer, padstr = ' ')
+If integer is greater than the length of str, returns a new String of length integer with str left-justified and padded with padstr; otherwise, returns str.
+42
+str.lstrip
+Returns a copy of str with leading whitespace removed.
+43
+str.lstrip!
+Removes leading whitespace from str, returning nil if no change was made.
+44
+str.match(pattern)
+Converts pattern to a Regexp (if it isn't already one), then invokes its match method on str.
+45
+str.oct
+Treats leading characters of str as a string of octal digits (with an optional sign) and returns the corresponding number. Returns 0 if the conversion fails.
+46
+str.replace(other_str)
+Replaces the contents and taintedness of str with the corresponding values in other_str.
+47
+str.reverse
+Returns a new string with the characters from str in reverse order.
+48
+str.reverse!
+Reverses str in place.
+49
+str.rindex(substring [, fixnum]) [or]
+str.rindex(fixnum [, fixnum]) [or]
+str.rindex(regexp [, fixnum])
+Returns the index of the last occurrence of the given substring, character (fixnum), or pattern (regexp) in str. Returns nil if not found. If the second parameter is present, it specifies the position in the string to end the search.characters beyond this point won't be considered.
+50.
+str.rjust(integer, padstr = ' ')
+If integer is greater than the length of str, returns a new String of length integer with str right-justified and padded with padstr; otherwise, returns str.
+51
+str.rstrip
+Returns a copy of str with trailing whitespace removed.
+52
+str.rstrip!
+Removes trailing whitespace from str, returning nil if no change was made.
+53
+str.scan(pattern) [or]
+str.scan(pattern) { |match, ...| block }
+Both forms iterate through str, matching the pattern (which may be a Regexp or a String). For each match, a result is generated and either added to the result array or passed to the block. If the pattern contains no groups, each individual result consists of the matched string, $&. If the pattern contains groups, each individual result is itself an array containing one entry per group.
+54
+str.slice(fixnum) [or] str.slice(fixnum, fixnum) [or]
+str.slice(range) [or] str.slice(regexp) [or]
+str.slice(regexp, fixnum) [or] str.slice(other_str)
+See str[fixnum], etc.
+str.slice!(fixnum) [or] str.slice!(fixnum, fixnum) [or]
+str.slice!(range) [or] str.slice!(regexp) [or]
+str.slice!(other_str)
+Deletes the specified portion from str, and returns the portion deleted. The forms that take a Fixnum will raise an IndexError if the value is out of range; the Range form will raise a RangeError, and the Regexp and String forms will silently ignore the assignment.
+55
+str.split(pattern = $, [limit])
+Divides str into substrings based on a delimiter, returning an array of these substrings.
+If pattern is a String, then its contents are used as the delimiter when splitting str. If pattern is a single space, str is split on whitespace, with leading whitespace and runs of contiguous whitespace characters ignored.
+If pattern is a Regexp, str is divided where the pattern matches. Whenever the pattern matches a zero-length string, str is split into individual characters.
+If pattern is omitted, the value of $; is used. If $; is nil (which is the default), str is split on whitespace as if ` ` were specified.
+If the limit parameter is omitted, trailing null fields are suppressed. If limit is a positive number, at most that number of fields will be returned (if limit is 1, the entire string is returned as the only entry in an array). If negative, there is no limit to the number of fields returned, and trailing null fields are not suppressed.
+56
+str.squeeze([other_str]*)
+Builds a set of characters from the other_str parameter(s) using the procedure described for String#count. Returns a new string where runs of the same character that occur in this set are replaced by a single character. If no arguments are given, all runs of identical characters are replaced by a single character.
+57
+str.squeeze!([other_str]*)
+Squeezes str in place, returning either str, or nil if no changes were made.
+58
+str.strip
+Returns a copy of str with leading and trailing whitespace removed.
+59
+str.strip!
+Removes leading and trailing whitespace from str. Returns nil if str was not altered.
+60
+str.sub(pattern, replacement) [or]
+str.sub(pattern) { |match| block }
+Returns a copy of str with the first occurrence of pattern replaced with either replacement or the value of the block. The pattern will typically be a Regexp; if it is a String then no regular expression metacharacters will be interpreted.
+61
+str.sub!(pattern, replacement) [or]
+str.sub!(pattern) { |match| block }
+Performs the substitutions of String#sub in place, returning str, or nil if no substitutions were performed.
+62
+str.succ [or] str.next
+Returns the successor to str.
+63
+str.succ! [or] str.next!
+Equivalent to String#succ, but modifies the receiver in place.
+64
+str.sum(n = 16)
+Returns a basic n-bit checksum of the characters in str, where n is the optional Fixnum parameter, defaulting to 16. The result is simply the sum of the binary value of each character in str modulo 2n - 1. This is not a particularly good checksum.
+65
+str.swapcase
+Returns a copy of str with uppercase alphabetic characters converted to lowercase and lowercase characters converted to uppercase.
+66
+str.swapcase!
+Equivalent to String#swapcase, but modifies the receiver in place, returning str, or nil if no changes were made.
+67
+str.to_f
+>Returns the result of interpreting leading characters in str as a floating-point number. Extraneous characters past the end of a valid number are ignored. If there is not a valid number at the start of str, 0.0 is returned. This method never raises an exception.
+68
+str.to_i(base = 10)
+Returns the result of interpreting leading characters in str as an integer base (base 2, 8, 10, or 16). Extraneous characters past the end of a valid number are ignored. If there is not a valid number at the start of str, 0 is returned. This method never raises an exception.
+69
+str.to_s [or] str.to_str
+Returns the receiver.
+70
+str.tr(from_str, to_str)
+Returns a copy of str with the characters in from_str replaced by the corresponding characters in to_str. If to_str is shorter than from_str, it is padded with its last character. Both strings may use the c1.c2 notation to denote ranges of characters, and from_str may start with a ^, which denotes all characters except those listed.
+71
+str.tr!(from_str, to_str)
+Translates str in place, using the same rules as String#tr. Returns str, or nil if no changes were made.
+72
+str.tr_s(from_str, to_str)
+Processes a copy of str as described under String#tr, then removes duplicate characters in regions that were affected by the translation.
+73
+str.tr_s!(from_str, to_str)
+Performs String#tr_s processing on str in place, returning str, or nil if no changes were made.
+74
+str.unpack(format)
+>Decodes str (which may contain binary data) according to the format string, returning an array of each value extracted. The format string consists of a sequence of single-character directives, summarized in Table 18. Each directive may be followed by a number, indicating the number of times to repeat with this directive. An asterisk (*) will use up all remaining elements. The directives sSiIlL may each be followed by an underscore (_) to use the underlying platform's native size for the specified type; otherwise, it uses a platform-independent consistent size. Spaces are ignored in the format string.
+75
+str.upcase
+Returns a copy of str with all lowercase letters replaced with their uppercase counterparts. The operation is locale insensitive. Only characters a to z are affected.
+76
+str.upcase!
+Changes the contents of str to uppercase, returning nil if no changes are made.
+77
+str.upto(other_str) { |s| block }
+Iterates through successive values, starting at str and ending at other_str inclusive, passing each value in turn to the block. The String#succ method is used to generate each value.
+
+String unpack Directives
+Following table lists the unpack directives for method String#unpack. 
+
+Directive
+Returns
+Description
+A
+String
+With trailing nulls and spaces removed.
+a
+String
+String.
+B
+String
+Extracts bits from each character (most significant bit first).
+b
+String
+Extracts bits from each character (least significant bit first).
+C
+Fixnum
+Extracts a character as an unsigned integer.
+c
+Fixnum
+Extracts a character as an integer.
+D, d
+Float
+Treats sizeof(double) characters as a native double.
+E
+Float
+Treats sizeof(double) characters as a double in littleendian byte order.
+e
+Float
+Treats sizeof(float) characters as a float in littleendian byte order.
+F, f
+Float
+Treats sizeof(float) characters as a native float.
+G
+Float
+Treats sizeof(double) characters as a double in network byte order.
+g
+String
+Treats sizeof(float) characters as a float in network byte order.
+H
+String
+Extracts hex nibbles from each character (most significant bit first)
+h
+String
+Extracts hex nibbles from each character (least significant bit first).
+I
+Integer
+Treats sizeof(int) (modified by _) successive characters as an unsigned native integer.
+i
+Integer
+Treats sizeof(int) (modified by _) successive characters as a signed native integer.
+L
+Integer
+Treats four (modified by _) successive characters as an unsigned native long integer.
+l
+Integer
+Treats four (modified by _) successive characters as a signed native long integer.
+M
+String
+Quoted-printable.
+m
+String
+Base64-encoded.
+N
+Integer
+Treats four characters as an unsigned long in network byte order.
+n
+Fixnum
+Treats two characters as an unsigned short in network byte order.
+P
+String
+Treats sizeof(char *) characters as a pointer, and return \emph{len} characters from the referenced location.
+p
+String
+Treats sizeof(char *) characters as a pointer to a null-terminated string.
+Q
+Integer
+Treats eight characters as an unsigned quad word (64 bits).
+q
+Integer
+Treats eight characters as a signed quad word (64 bits).
+S
+Fixnum
+Treats two (different if _ used) successive characters as an unsigned short in native byte order.
+s
+Fixnum
+Treats two (different if _ used) successive characters as a signed short in native byte order.
+U
+Integer
+UTF-8 characters as unsigned integers.
+u
+String
+UU-encoded.
+V
+Fixnum
+Treats four characters as an unsigned long in little-endian byte order.
+v
+Fixnum
+Treats two characters as an unsigned short in little-endian byte order.
+w
+Integer
+BER-compressed integer.
+X
+ 
+Skips backward one character.
+x
+ 
+Skips forward one character.
+Z
+String
+With trailing nulls removed up to first null with *.
+@
+ 
+Skips to the offset given by the length argument.
+
+Example
+Try the following example to unpack various data.
+"abc \0\0abc \0\0".unpack('A6Z6')   #=> ["abc", "abc "]
+"abc \0\0".unpack('a3a3')           #=> ["abc", " \000\000"]
+"abc \0abc \0".unpack('Z*Z*')       #=> ["abc ", "abc "]
+"aa".unpack('b8B8')                 #=> ["10000110", "01100001"]
+"aaa".unpack('h2H2c')               #=> ["16", "61", 97]
+"\xfe\xff\xfe\xff".unpack('sS')     #=> [-2, 65534]
+"now = 20is".unpack('M*')           #=> ["now is"]
+"whole".unpack('xax2aX2aX1aX2a')    #=> ["h", "e", "l", "l", "o"]
+Ruby - Arrays
+Ruby arrays are ordered, integer-indexed collections of any object. Each element in an array is associated with and referred to by an index.
+Array indexing starts at 0, as in C or Java. A negative index is assumed relative to the end of the array --- that is, an index of -1 indicates the last element of the array, -2 is the next to last element in the array, and so on.
+Ruby arrays can hold objects such as String, Integer, Fixnum, Hash, Symbol, even other Array objects. Ruby arrays are not as rigid as arrays in other languages. Ruby arrays grow automatically while adding elements to them.
+Creating Arrays
+There are many ways to create or initialize an array. One way is with the new class method −
+names = Array.new
+You can set the size of an array at the time of creating array −
+names = Array.new(20)
+The array names now has a size or length of 20 elements. You can return the size of an array with either the size or length methods −
+#!/usr/bin/ruby
+
+names = Array.new(20)
+puts names.size  # This returns 20
+puts names.length # This also returns 20
+This will produce the following result −
+20
+20
+You can assign a value to each element in the array as follows −
+#!/usr/bin/ruby
+
+names = Array.new(4, "mac")
+puts "#{names}"
+This will produce the following result −
+["mac", "mac", "mac", "mac"]
+You can also use a block with new, populating each element with what the block evaluates to −
+#!/usr/bin/ruby
+
+nums = Array.new(10) { |e| e = e * 2 }
+puts "#{nums}"
+This will produce the following result −
+[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+There is another method of Array, []. It works like this −
+nums = Array.[](1, 2, 3, 4,5)
+One more form of array creation is as follows −
+nums = Array[1, 2, 3, 4,5]
+The Kernel module available in core Ruby has an Array method, which only accepts a single argument. Here, the method takes a range as an argument to create an array of digits −
+#!/usr/bin/ruby
+
+digits = Array(0..9)
+puts "#{digits}"
+This will produce the following result −
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Array Built-in Methods
+We need to have an instance of Array object to call an Array method. As we have seen, following is the way to create an instance of Array object −
+Array.[](...) [or] Array[...] [or] [...]
+This will return a new array populated with the given objects. Now, using the created object, we can call any available instance methods. For example −
+#!/usr/bin/ruby
+
+digits = Array(0..9)
+num = digits.at(6)
+puts "#{num}"
+This will produce the following result −
+6
+Following are the public array methods (assuming array is an array object) − 
+
+Sr.No.
+Methods & Description
+1
+array & other_array
+Returns a new array containing elements common to the two arrays, with no duplicates.
+2
+array * int [or] array * str
+Returns a new array built by concatenating the int copies of self. With a String argument, equivalent to self.join(str).
+3
+array + other_array
+Returns a new array built by concatenating the two arrays together to produce a third array.
+4
+array - other_array
+Returns a new array that is a copy of the original array, removing any items that also appear in other_array.
+5
+array <=> other_array
+Compares str with other_str, returning -1 (less than), 0 (equal), or 1 (greater than). The comparison is casesensitive.
+6
+array | other_array
+Returns a new array by joining array with other_array, removing duplicates.
+7
+array << obj
+Pushes the given object onto the end of array. This expression returns the array itself, so several appends may be chained together.
+8
+array <=> other_array
+Returns an integer (-1, 0, or +1) if this array is less than, equal to, or greater than other_array.
+9
+array == other_array
+Two arrays are equal if they contain the same number of elements and if each element is equal to (according to Object.==) the corresponding element in the other array.
+10
+array[index] [or] array[start, length] [or]
+array[range] [or] array.slice(index) [or]
+array.slice(start, length) [or] array.slice(range)
+Returns the element at index, or returns a subarray starting at start and continuing for length elements, or returns a subarray specified by range. Negative indices count backward from the end of the array (-1 is the last element). Returns nil if the index (or starting index) is out of range.
+11
+array[index] = obj [or]
+array[start, length] = obj or an_array or nil [or]
+array[range] = obj or an_array or nil
+Sets the element at index, or replaces a subarray starting at start and continuing for length elements, or replaces a subarray specified by range. If indices are greater than the current capacity of the array, the array grows automatically. Negative indices will count backward from the end of the array. Inserts elements if length is zero. If nil is used in the second and third form, deletes elements from self.
+12
+array.abbrev(pattern = nil)
+Calculates the set of unambiguous abbreviations for the strings in self. If passed a pattern or a string, only the strings matching the pattern or starting with the string are considered.
+13
+array.assoc(obj)
+Searches through an array whose elements are also arrays comparing obj with the first element of each contained array using obj.==. Returns the first contained array that matches or nil if no match is found.
+14
+array.at(index)
+Returns the element at index. A negative index counts from the end of self. Returns nil if the index is out of range.
+15
+array.clear
+Removes all elements from array.
+16
+array.collect { |item| block } [or]
+array.map { |item| block }
+Invokes block once for each element of self. Creates a new array containing the values returned by the block.
+17
+array.collect! { |item| block } [or]
+array.map! { |item| block }
+Invokes block once for each element of self, replacing the element with the value returned by block.
+18
+array.compact
+Returns a copy of self with all nil elements removed.
+19
+array.compact!
+Removes nil elements from array. Returns nil if no changes were made.
+20
+array.concat(other_array)
+Appends the elements in other_array to self.
+21
+array.delete(obj) [or] 
+array.delete(obj) { block }
+Deletes items from self that are equal to obj. If the item is not found, returns nil. If the optional code block is given, returns the result of block if the item is not found.
+22
+array.delete_at(index)
+Deletes the element at the specified index, returning that element, or nil if the index is out of range.
+23
+array.delete_if { |item| block }
+Deletes every element of self for which block evaluates to true.
+24
+array.each { |item| block }
+Calls block once for each element in self, passing that element as a parameter.
+25
+array.each_index { |index| block }
+Same as Array#each, but passes the index of the element instead of the element itself.
+26
+array.empty?
+Returns true if the self array contains no elements.
+27
+array.eql?(other)
+Returns true if array and other are the same object, or are both arrays with the same content.
+28
+array.fetch(index) [or]
+array.fetch(index, default) [or]
+array.fetch(index) { |index| block }
+Tries to return the element at position index. If index lies outside the array, the first form throws an IndexError exception, the second form returns default, and the third form returns the value of invoking block, passing in index. Negative values of index count from the end of the array.
+29
+array.fill(obj) [or]
+array.fill(obj, start [, length]) [or]
+array.fill(obj, range) [or]
+array.fill { |index| block } [or]
+array.fill(start [, length] ) { |index| block } [or]
+array.fill(range) { |index| block }
+The first three forms set the selected elements of self to obj. A start of nil is equivalent to zero. A length of nil is equivalent to self.length. The last three forms fill the array with the value of the block. The block is passed with the absolute index of each element to be filled.
+30
+array.first [or]
+array.first(n)
+Returns the first element, or the first n elements, of the array. If the array is empty, the first form returns nil, and the second form returns an empty array.
+31
+array.flatten
+Returns a new array that is a one-dimensional flattening of this array (recursively).
+32
+array.flatten!
+Flattens array in place. Returns nil if no modifications were made. (array contains no subarrays.)
+33
+array.frozen?
+Returns true if array is frozen (or temporarily frozen while being sorted).
+34
+array.hash
+Computes a hash-code for array. Two arrays with the same content will have the same hash code.
+35
+array.include?(obj)
+Returns true if obj is present in self, false otherwise.
+36
+array.index(obj)
+Returns the index of the first object in self that is == to obj. Returns nil if no match is found.
+37
+array.indexes(i1, i2, ... iN) [or]
+array.indices(i1, i2, ... iN)
+This methods is deprecated in latest version of Ruby so please use Array#values_at.
+38
+array.indices(i1, i2, ... iN) [or]
+array.indexes(i1, i2, ... iN)
+This methods is deprecated in latest version of Ruby so please use Array#values_at.
+39
+array.insert(index, obj...)
+Inserts the given values before the element with the given index (which may be negative).
+40
+array.inspect
+Creates a printable version of array.
+41
+array.join(sep = $,)
+Returns a string created by converting each element of the array to a string, separated by sep.
+42
+array.last [or] array.last(n)
+Returns the last element(s) of self. If array is empty, the first form returns nil.
+43
+array.length
+Returns the number of elements in self. May be zero.
+44
+array.map { |item| block } [or]
+array.collect { |item| block }
+Invokes block once for each element of self. Creates a new array containing the values returned by the block.
+45
+array.map! { |item| block } [or]
+array.collect! { |item| block }
+Invokes block once for each element of array, replacing the element with the value returned by block.
+46
+array.nitems
+Returns the number of non-nil elements in self. May be zero.
+47
+array.pack(aTemplateString)
+Packs the contents of array into a binary sequence according to the directives in a TemplateString. Directives A, a, and Z may be followed by a count, which gives the width of the resulting field. The remaining directives also may take a count, indicating the number of array elements to convert. If the count is an asterisk (*), all remaining array elements will be converted. Any of the directives is still may be followed by an underscore (_) to use the underlying platform's native size for the specified type; otherwise, they use a platform independent size. Spaces are ignored in the template string.
+48
+array.pop
+Removes the last element from array and returns it, or nil if array is empty.
+49
+array.push(obj, ...)
+Pushes (appends) the given obj onto the end of this array. This expression returns the array itself, so several appends may be chained together.
+50
+array.rassoc(key)
+Searches through the array whose elements are also arrays. Compares key with the second element of each contained array using ==. Returns the first contained array that matches.
+51
+array.reject { |item| block }
+Returns a new array containing the items array for which the block is not true.
+52
+array.reject! { |item| block }
+Deletes elements from array for which the block evaluates to true, but returns nil if no changes were made. Equivalent to Array#delete_if.
+53
+array.replace(other_array)
+Replaces the contents of array with the contents of other_array, truncating or expanding if necessary.
+54
+array.reverse
+Returns a new array containing array's elements in reverse order.
+55
+array.reverse!
+Reverses array in place.
+56
+array.reverse_each {|item| block }
+Same as Array#each, but traverses array in reverse order.
+57
+array.rindex(obj)
+Returns the index of the last object in array == to obj. Returns nil if no match is found.
+58
+array.select {|item| block }
+Invokes the block passing in successive elements from array, returning an array containing those elements for which the block returns a true value.
+59
+array.shift
+Returns the first element of self and removes it (shifting all other elements down by one). Returns nil if the array is empty.
+60
+array.size
+Returns the length of array (number of elements). Alias for length.
+61
+array.slice(index) [or] array.slice(start, length) [or]
+array.slice(range) [or] array[index] [or]
+array[start, length] [or] array[range]
+Returns the element at index, or returns a subarray starting at start and continuing for length elements, or returns a subarray specified by range. Negative indices count backward from the end of the array (-1 is the last element). Returns nil if the index (or starting index) are out of range.
+62
+array.slice!(index) [or] array.slice!(start, length) [or]
+array.slice!(range)
+Deletes the element(s) given by an index (optionally with a length) or by a range. Returns the deleted object, subarray, or nil if index is out of range.
+63
+array.sort [or] array.sort { | a,b | block }
+Returns a new array created by sorting self.
+64
+array.sort! [or] array.sort! { | a,b | block }
+Sorts self.
+65
+array.to_a
+Returns self. If called on a subclass of Array, converts the receiver to an Array object.
+66
+array.to_ary
+Returns self.
+67
+array.to_s
+Returns self.join.
+68
+array.transpose
+Assumes that self is an array of arrays and transposes the rows and columns.
+69
+array.uniq
+Returns a new array by removing duplicate values in array.
+70
+array.uniq!
+Removes duplicate elements from self. Returns nil if no changes are made (that is, no duplicates are found).
+71
+array.unshift(obj, ...)
+Prepends objects to the front of array, other elements up one.
+72
+array.values_at(selector,...)
+Returns an array containing the elements in self corresponding to the given selector (one or more). The selectors may be either integer indices or ranges.
+73
+array.zip(arg, ...) [or] 
+array.zip(arg, ...){ | arr | block }
+Converts any arguments to arrays, then merges elements of array with corresponding elements from each argument.
+
+Array pack Directives
+Following table lists the pack directives for use with Array#pack. 
+
+Sr.No.
+Directive & Description
+1
+@
+Moves to absolute position.
+2
+A
+ASCII string (space padded, count is width).
+3
+a
+ASCII string (null padded, count is width).
+4
+B
+string (descending bit order).
+5
+b
+Bit string (ascending bit order).
+6
+C
+Unsigned char.
+7
+c
+Char.
+8
+D, d
+Double-precision float, native format.
+9
+E
+Double-precision float, little-endian byte order.
+10
+e
+Single-precision float, little-endian byte order.
+11
+F, f
+Single-precision float, native format.
+12
+G
+Double-precision float, network (big-endian) byte order.
+13
+g
+Single-precision float, network (big-endian) byte order.
+14
+H
+Hex string (high nibble first).
+15
+h
+Hex string (low nibble first).
+16
+I
+Unsigned integer.
+17
+i
+Integer.
+18
+L
+Unsigned long.
+19
+l
+Long.
+20
+M
+Quoted printable, MIME encoding (see RFC 2045).
+21
+m
+Base64-encoded string.
+22
+N
+Long, network (big-endian) byte order.
+23
+n
+Short, network (big-endian) byte order.
+24
+P
+Pointer to a structure (fixed-length string).
+25
+p
+Pointer to a null-terminated string.
+26
+Q, q
+64-bit number.
+27
+S
+Unsigned short.
+28
+s
+Short.
+29
+U
+UTF-8.
+30
+u
+UU-encoded string.
+31
+V
+Long, little-endian byte order.
+32
+v
+Short, little-endian byte order.
+33
+w
+BER-compressed integer \fnm.
+34
+X
+Back up a byte.
+35
+x
+Null byte.
+36
+Z
+Same as a, except that null is added with *.
+
+Example
+Try the following example to pack various data.
+a = [ "a", "b", "c" ]
+n = [ 65, 66, 67 ]
+puts a.pack("A3A3A3")   #=> "a  b  c  "
+puts a.pack("a3a3a3")   #=> "a\000\000b\000\000c\000\000"
+puts n.pack("ccc")      #=> "ABC"
+This will produce the following result −
+a  b  c
+abc
+ABC
+Ruby - Hashes
+A Hash is a collection of key-value pairs like this: "employee" = > "salary". It is similar to an Array, except that indexing is done via arbitrary keys of any object type, not an integer index.
+The order in which you traverse a hash by either key or value may seem arbitrary and will generally not be in the insertion order. If you attempt to access a hash with a key that does not exist, the method will return nil.
+Creating Hashes
+As with arrays, there is a variety of ways to create hashes. You can create an empty hash with the new class method −
+months = Hash.new
+You can also use new to create a hash with a default value, which is otherwise just nil −
+months = Hash.new( "month" )
+
+or
+
+months = Hash.new "month"
+When you access any key in a hash that has a default value, if the key or value doesn't exist, accessing the hash will return the default value −
+#!/usr/bin/ruby
+
+months = Hash.new( "month" )
+
+puts "#{months[0]}"
+puts "#{months[72]}"
+This will produce the following result −
+month
+month
+#!/usr/bin/ruby
+
+H = Hash["a" => 100, "b" => 200]
+
+puts "#{H['a']}"
+puts "#{H['b']}"
+This will produce the following result −
+100
+200
+You can use any Ruby object as a key or value, even an array, so the following example is a valid one −
+[1,"jan"] => "January"
+Hash Built-in Methods
+We need to have an instance of Hash object to call a Hash method. As we have seen, following is the way to create an instance of Hash object −
+Hash[[key =>|, value]* ] or
+
+Hash.new [or] Hash.new(obj) [or]
+Hash.new { |hash, key| block }
+This will return a new hash populated with the given objects. Now using the created object, we can call any available instance methods. For example −
+#!/usr/bin/ruby
+
+$, = ", "
+months = Hash.new( "month" )
+months = {"1" => "January", "2" => "February"}
+
+keys = months.keys
+puts "#{keys}"
+This will produce the following result −
+["1", "2"]
+Following are the public hash methods (assuming hash is an array object) −
+Sr.No.
+Methods & Description
+1
+hash == other_hash
+Tests whether two hashes are equal, based on whether they have the same number of key-value pairs, and whether the key-value pairs match the corresponding pair in each hash.
+2
+hash.[key]
+Using a key, references a value from hash. If the key is not found, returns a default value.
+3
+hash.[key] = value
+Associates the value given by value with the key given by key.
+4
+hash.clear
+Removes all key-value pairs from hash.
+5
+hash.default(key = nil)
+Returns the default value for hash, nil if not set by default=. ([] returns a default value if the key does not exist in hash.)
+6
+hash.default = obj
+Sets a default value for hash.
+7
+hash.default_proc
+Returns a block if hash was created by a block.
+8
+hash.delete(key) [or]
+array.delete(key) { |key| block }
+Deletes a key-value pair from hash by key. If block is used, returns the result of a block if pair is not found. Compare delete_if.
+9
+hash.delete_if { |key,value| block }
+Deletes a key-value pair from hash for every pair the block evaluates to true.
+10
+hash.each { |key,value| block }
+Iterates over hash, calling the block once for each key, passing the key-value as a two-element array.
+11
+hash.each_key { |key| block }
+Iterates over hash, calling the block once for each key, passing key as a parameter.
+12
+hash.each_key { |key_value_array| block }
+Iterates over hash, calling the block once for each key, passing the key and value as parameters.
+13
+hash.each_key { |value| block }
+Iterates over hash, calling the block once for each key, passing value as a parameter.
+14
+hash.empty?
+Tests whether hash is empty (contains no key-value pairs), returning true or false.
+15
+hash.fetch(key [, default] ) [or]
+hash.fetch(key) { | key | block }
+Returns a value from hash for the given key. If the key can't be found, and there are no other arguments, it raises an IndexError exception; if default is given, it is returned; if the optional block is specified, its result is returned.
+16
+hash.has_key?(key) [or] hash.include?(key) [or]
+hash.key?(key) [or] hash.member?(key)
+Tests whether a given key is present in hash, returning true or false.
+17
+hash.has_value?(value)
+Tests whether hash contains the given value.
+18
+hash.index(value)
+Returns the key for the given value in hash, nil if no matching value is found.
+19
+hash.indexes(keys)
+Returns a new array consisting of values for the given key(s). Will insert the default value for keys that are not found. This method is deprecated. Use select.
+20
+hash.indices(keys)
+Returns a new array consisting of values for the given key(s). Will insert the default value for keys that are not found. This method is deprecated. Use select.
+21
+hash.inspect
+Returns a pretty print string version of hash.
+22
+hash.invert
+Creates a new hash, inverting keys and values from hash; that is, in the new hash, the keys from hash become values and values become keys.
+23
+hash.keys
+Creates a new array with keys from hash.
+24
+hash.length
+Returns the size or length of hash as an integer.
+25
+hash.merge(other_hash) [or]
+hash.merge(other_hash) { |key, oldval, newval| block }
+Returns a new hash containing the contents of hash and other_hash, overwriting pairs in hash with duplicate keys with those from other_hash.
+26
+hash.merge!(other_hash) [or]
+hash.merge!(other_hash) { |key, oldval, newval| block }
+Same as merge, but changes are done in place.
+27
+hash.rehash
+Rebuilds hash based on the current values for each key. If values have changed since they were inserted, this method reindexes hash.
+28
+hash.reject { |key, value| block }
+Creates a new hash for every pair the block evaluates to true
+29
+hash.reject! { |key, value| block }
+Same as reject, but changes are made in place.
+30
+hash.replace(other_hash)
+Replaces the contents of hash with the contents of other_hash.
+31
+hash.select { |key, value| block }
+Returns a new array consisting of key-value pairs from hash for which the block returns true.
+32
+hash.shift
+Removes a key-value pair from hash, returning it as a two-element array.
+33
+hash.size
+Returns the size or length of hash as an integer.
+34
+hash.sort
+Converts hash to a two-dimensional array containing arrays of key-value pairs, then sorts it as an array.
+35
+hash.store(key, value)
+Stores a key-value pair in hash.
+36
+hash.to_a
+Creates a two-dimensional array from hash. Each key/value pair is converted to an array, and all these arrays are stored in a containing array.
+37
+hash.to_hash
+Returns hash (self).
+38
+hash.to_s
+Converts hash to an array, then converts that array to a string.
+39
+hash.update(other_hash) [or]
+hash.update(other_hash) {|key, oldval, newval| block}
+Returns a new hash containing the contents of hash and other_hash, overwriting pairs in hash with duplicate keys with those from other_hash.
+40
+hash.value?(value)
+Tests whether hash contains the given value.
+41
+hash.values
+Returns a new array containing all the values of hash.
+42
+hash.values_at(obj, ...)
+Returns a new array containing the values from hash that are associated with the given key or keys.
+
+Ruby - Date & Time
+The Time class represents dates and times in Ruby. It is a thin layer over the system date and time functionality provided by the operating system. This class may be unable on your system to represent dates before 1970 or after 2038.
+This chapter makes you familiar with all the most wanted concepts of date and time.
+Getting Current Date and Time
+Following is the simple example to get current date and time −
+#!/usr/bin/ruby -w
+
+time1 = Time.new
+puts "Current Time : " + time1.inspect
+
+# Time.now is a synonym:
+time2 = Time.now
+puts "Current Time : " + time2.inspect
+This will produce the following result −
+Current Time : Mon Jun 02 12:02:39 -0700 2008
+Current Time : Mon Jun 02 12:02:39 -0700 2008
+Getting Components of a Date & Time
+We can use Time object to get various components of date and time. Following is the example showing the same −
+#!/usr/bin/ruby -w
+
+time = Time.new
+
+# Components of a Time
+puts "Current Time : " + time.inspect
+puts time.year    # => Year of the date 
+puts time.month   # => Month of the date (1 to 12)
+puts time.day     # => Day of the date (1 to 31 )
+puts time.wday    # => 0: Day of week: 0 is Sunday
+puts time.yday    # => 365: Day of year
+puts time.hour    # => 23: 24-hour clock
+puts time.min     # => 59
+puts time.sec     # => 59
+puts time.usec    # => 999999: microseconds
+puts time.zone    # => "UTC": timezone name
+This will produce the following result −
+Current Time : Mon Jun 02 12:03:08 -0700 2008
+2008
+6
+2
+1
+154
+12
+3
+8
+247476
+UTC
+Time.utc, Time.gm and Time.local Functions
+These two functions can be used to format date in a standard format as follows −
+# July 8, 2008
+Time.local(2008, 7, 8)  
+# July 8, 2008, 09:10am, local time
+Time.local(2008, 7, 8, 9, 10)   
+# July 8, 2008, 09:10 UTC
+Time.utc(2008, 7, 8, 9, 10)  
+# July 8, 2008, 09:10:11 GMT (same as UTC)
+Time.gm(2008, 7, 8, 9, 10, 11)  
+Following is the example to get all the components in an array in the following format −
+[sec,min,hour,day,month,year,wday,yday,isdst,zone]
+Try the following −
+#!/usr/bin/ruby -w
+
+time = Time.new
+values = time.to_a
+p values
+This will generate the following result −
+[26, 10, 12, 2, 6, 2008, 1, 154, false, "MST"]
+This array could be passed to Time.utc or Time.local functions to get different format of dates as follows −
+#!/usr/bin/ruby -w
+
+time = Time.new
+values = time.to_a
+puts Time.utc(*values)
+This will generate the following result −
+Mon Jun 02 12:15:36 UTC 2008
+Following is the way to get time represented internally as seconds since the (platform-dependent) epoch −
+# Returns number of seconds since epoch
+time = Time.now.to_i  
+
+# Convert number of seconds into Time object.
+Time.at(time)
+
+# Returns second since epoch which includes microseconds
+time = Time.now.to_f
+Timezones and Daylight Savings Time
+You can use a Time object to get all the information related to Timezones and daylight savings as follows −
+time = Time.new
+
+# Here is the interpretation
+time.zone       # => "UTC": return the timezone
+time.utc_offset # => 0: UTC is 0 seconds offset from UTC
+time.zone       # => "PST" (or whatever your timezone is)
+time.isdst      # => false: If UTC does not have DST.
+time.utc?       # => true: if t is in UTC time zone
+time.localtime  # Convert to local timezone.
+time.gmtime     # Convert back to UTC.
+time.getlocal   # Return a new Time object in local zone
+time.getutc     # Return a new Time object in UTC
+Formatting Times and Dates
+There are various ways to format date and time. Here is one example showing a few −
+#!/usr/bin/ruby -w
+
+time = Time.new
+puts time.to_s
+puts time.ctime
+puts time.localtime
+puts time.strftime("%Y-%m-%d %H:%M:%S")
+This will produce the following result −
+Mon Jun 02 12:35:19 -0700 2008
+Mon Jun  2 12:35:19 2008
+Mon Jun 02 12:35:19 -0700 2008
+2008-06-02 12:35:19
+Time Formatting Directives
+These directives in the following table are used with the method Time.strftime.
+Sr.No.
+Directive & Description
+1
+%a
+The abbreviated weekday name (Sun).
+2
+%A
+The full weekday name (Sunday).
+3
+%b
+The abbreviated month name (Jan).
+4
+%B
+The full month name (January).
+5
+%c
+The preferred local date and time representation.
+6
+%d
+Day of the month (01 to 31).
+7
+%H
+Hour of the day, 24-hour clock (00 to 23).
+8
+%I
+Hour of the day, 12-hour clock (01 to 12).
+9
+%j
+Day of the year (001 to 366).
+10
+%m
+Month of the year (01 to 12).
+11
+%M
+Minute of the hour (00 to 59).
+12
+%p
+Meridian indicator (AM or PM).
+13
+%S
+Second of the minute (00 to 60).
+14
+%U
+Week number of the current year, starting with the first Sunday as the first day of the first week (00 to 53).
+15
+%W
+Week number of the current year, starting with the first Monday as the first day of the first week (00 to 53).
+16
+%w
+Day of the week (Sunday is 0, 0 to 6).
+17
+%x
+Preferred representation for the date alone, no time.
+18
+%X
+Preferred representation for the time alone, no date.
+19
+%y
+Year without a century (00 to 99).
+20
+%Y
+Year with century.
+21
+%Z
+Time zone name.
+22
+%%
+Literal % character.
+Time Arithmetic
+You can perform simple arithmetic with time as follows −
+now = Time.now          # Current time
+puts now
+
+past = now - 10         # 10 seconds ago. Time - number => Time
+puts past
+
+future = now + 10  # 10 seconds from now Time + number => Time
+puts future
+
+diff = future - past     # => 10  Time - Time => number of seconds
+puts diff
+This will produce the following result −
+Thu Aug 01 20:57:05 -0700 2013
+Thu Aug 01 20:56:55 -0700 2013
+Thu Aug 01 20:57:15 -0700 2013
+20.0
+Ruby - Ranges
+Ranges occur everywhere: January to December, 0 to 9, lines 50 through 67, and so on. Ruby supports ranges and allows us to use ranges in a variety of ways −
+    • Ranges as Sequences 
+    • Ranges as Conditions 
+    • Ranges as Intervals 
+Ranges as Sequences
+The first and perhaps the most natural use of ranges is to express a sequence. Sequences have a start point, an end point, and a way to produce successive values in the sequence.
+Ruby creates these sequences using the ''..'' and ''...'' range operators. The two-dot form creates an inclusive range, while the three-dot form creates a range that excludes the specified high value.
+(1..5)        #==> 1, 2, 3, 4, 5
+(1...5)       #==> 1, 2, 3, 4
+('a'..'d')    #==> 'a', 'b', 'c', 'd'
+The sequence 1..100 is held as a Range object containing references to two Fixnum objects. If you need to, you can convert a range to a list using the to_a method. Try the following example −
+#!/usr/bin/ruby
+
+$, =", "   # Array value separator
+range1 = (1..10).to_a
+range2 = ('bar'..'bat').to_a
+
+puts "#{range1}"
+puts "#{range2}"
+This will produce the following result −
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+["bar", "bas", "bat"]
+Ranges implement methods that let you iterate over them and test their contents in a variety of ways −
+#!/usr/bin/ruby
+
+# Assume a range
+digits = 0..9
+
+puts digits.include?(5)
+ret = digits.min
+puts "Min value is #{ret}"
+
+ret = digits.max
+puts "Max value is #{ret}"
+
+ret = digits.reject {|i| i < 5 }
+puts "Rejected values are #{ret}"
+
+digits.each do |digit|
+   puts "In Loop #{digit}"
+end
+This will produce the following result −
+true
+Min value is 0
+Max value is 9
+Rejected values are 5, 6, 7, 8, 9
+In Loop 0
+In Loop 1
+In Loop 2
+In Loop 3
+In Loop 4
+In Loop 5
+In Loop 6
+In Loop 7
+In Loop 8
+In Loop 9
+Ranges as Conditions
+Ranges may also be used as conditional expressions. For example, the following code fragment prints sets of lines from the standard input, where the first line in each set contains the word start and the last line the word ends −
+while gets
+   print if /start/../end/
+end
+Ranges can be used in case statements −
+#!/usr/bin/ruby
+
+score = 70
+
+result = case score
+   when 0..40 then "Fail"
+   when 41..60 then "Pass"
+   when 61..70 then "Pass with Merit"
+   when 71..100 then "Pass with Distinction"
+   else "Invalid Score"
+end
+
+puts result
+This will produce the following result −
+Pass with Merit
+Ranges as Intervals
+A final use of the versatile range is as an interval test: seeing if some value falls within the interval represented by the range. This is done using ===, the case equality operator.
+#!/usr/bin/ruby
+
+if ((1..10) === 5)
+   puts "5 lies in (1..10)"
+end
+
+if (('a'..'j') === 'c')
+   puts "c lies in ('a'..'j')"
+end
+
+if (('a'..'j') === 'z')
+   puts "z lies in ('a'..'j')"
+end
+This will produce the following result −
+5 lies in (1..10)
+c lies in ('a'..'j')
+Ruby - Iterators
+Iterators are nothing but methods supported by collections. Objects that store a group of data members are called collections. In Ruby, arrays and hashes can be termed collections.
+Iterators return all the elements of a collection, one after the other. We will be discussing two iterators here, each and collect. Let's look at these in detail.
+Ruby each Iterator
+The each iterator returns all the elements of an array or a hash.
+Syntax
+collection.each do |variable|
+   code
+end
+Executes code for each element in collection. Here, collection could be an array or a ruby hash.
+Example
+#!/usr/bin/ruby
+
+ary = [1,2,3,4,5]
+ary.each do |i|
+   puts i
+end
+This will produce the following result −
+1
+2
+3
+4
+5
+You always associate the each iterator with a block. It returns each value of the array, one by one, to the block. The value is stored in the variable i and then displayed on the screen.
+Ruby collect Iterator
+The collect iterator returns all the elements of a collection.
+Syntax
+collection = collection.collect
+The collect method need not always be associated with a block. The collect method returns the entire collection, regardless of whether it is an array or a hash.
+Example
+#!/usr/bin/ruby
+
+a = [1,2,3,4,5]
+b = Array.new
+b = a.collect
+puts b
+This will produce the following result −
+1
+2
+3
+4
+5
+NOTE − The collect method is not the right way to do copying between arrays. There is another method called a clone, which should be used to copy one array into another array.
+You normally use the collect method when you want to do something with each of the values to get the new array. For example, this code produces an array b containing 10 times each value in a.
+#!/usr/bin/ruby
+
+a = [1,2,3,4,5]
+b = a.collect{|x| 10*x}
+puts b
+This will produce the following result −
+10
+20
+30
+40
+50
+________________________________________________________________________________
+
+Ruby - File I/O
+The class IO provides all the basic methods, such as read, write, gets, puts, readline, getc, and printf.
+The puts Statement
+The puts statement instructs the program to display the value stored in the variable. This will add a new line at the end of each line it writes.
+Example
+#!/usr/bin/ruby
+
+val1 = "This is variable one"
+val2 = "This is variable two"
+puts val1
+puts val2
+This will produce the following result −
+This is variable one
+This is variable two
+The gets Statement
+The gets statement can be used to take any input from the user from standard screen called STDIN.
+Example
+#!/usr/bin/ruby
+
+puts "Enter a value :"
+val = gets
+puts val
+This will produce the following result −
+Enter a value :
+This is entered value
+This is entered value
+The putc Statement
+Unlike the puts statement, which outputs the entire string onto the screen, the putc statement can be used to output one character at a time.
+Example
+The output of the following code is just the character H −
+#!/usr/bin/ruby
+
+str = "Hello Ruby!"
+putc str
+This will produce the following result −
+H
+The print Statement
+The print statement is similar to the puts statement. The only difference is that the puts statement goes to the next line after printing the contents, whereas with the print statement the cursor is positioned on the same line.
+Example
+#!/usr/bin/ruby
+
+print "Hello World"
+print "Good Morning"
+This will produce the following result −
+Hello WorldGood Morning
+________________________________________________________________________________
+Opening and Closing Files
+The File.new Method
+You can create a File object using File.new method for reading, writing, or both, according to the mode string. Finally, you can use File.close method to close that file.
+Syntax
+aFile = File.new("filename", "mode")
+   # ... process the file
+aFile.close
+The File.open Method
+You can use File.open method to create a new file object and assign that file object to a file. However, there is one difference in between File.open and File.new methods. The difference is that the File.open method can be associated with a block, whereas you cannot do the same using the File.new method.
+File.open("filename", "mode") do |aFile|
+   # ... process the file
+end
+Here is a list of The Different Modes of opening a File − 
+Sr.No.
+Modes & Description
+1
+r
+Read-only mode. The file pointer is placed at the beginning of the file. This is the default mode.
+2
+r+
+Read-write mode. The file pointer will be at the beginning of the file.
+3
+w
+Write-only mode. Overwrites the file if the file exists. If the file does not exist, creates a new file for writing.
+4
+w+
+Read-write mode. Overwrites the existing file if the file exists. If the file does not exist, creates a new file for reading and writing.
+5
+a
+Write-only mode. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
+6
+a+
+Read and write mode. The file pointer is at the end of the file if the file exists. The file opens in the append mode. If the file does not exist, it creates a new file for reading and writing.
+
+Reading and Writing Files
+The sysread Method
+You can use the method sysread to read the contents of a file. You can open the file in any of the modes when using the method sysread. For example −
+Following is the input text file −
+This is a simple text file for testing purpose.
+Now let's try to read this file −
+#!/usr/bin/ruby
+
+aFile = File.new("input.txt", "r")
+if aFile
+   content = aFile.sysread(20)
+   puts content
+else
+   puts "Unable to open file!"
+end
+This statement will output the first 20 characters of the file. The file pointer will now be placed at the 21st character in the file.
+The syswrite Method
+You can use the method syswrite to write the contents into a file. You need to open the file in write mode when using the method syswrite. For example −
+#!/usr/bin/ruby
+
+aFile = File.new("input.txt", "r+")
+if aFile
+   aFile.syswrite("ABCDEF")
+else
+   puts "Unable to open file!"
+end
+This statement will write "ABCDEF" into the file.
+The each_byte Method
+This method belongs to the class File. The method each_byte is always associated with a block. Consider the following code sample −
+#!/usr/bin/ruby
+
+aFile = File.new("input.txt", "r+")
+if aFile
+   aFile.syswrite("ABCDEF")
+   aFile.each_byte {|ch| putc ch; putc ?. }
+else
+   puts "Unable to open file!"
+end
+Characters are passed one by one to the variable ch and then displayed on the screen as follows −
+s. .a. .s.i.m.p.l.e. .t.e.x.t. .f.i.l.e. .f.o.r. .t.e.s.t.i.n.g. .p.u.r.p.o.s.e...
+.
+.
+The IO.readlines Method
+The class File is a subclass of the class IO. The class IO also has some methods, which can be used to manipulate files.
+One of the IO class methods is IO.readlines. This method returns the contents of the file line by line. The following code displays the use of the method IO.readlines −
+#!/usr/bin/ruby
+
+arr = IO.readlines("input.txt")
+puts arr[0]
+puts arr[1]
+In this code, the variable arr is an array. Each line of the file input.txt will be an element in the array arr. Therefore, arr[0] will contain the first line, whereas arr[1] will contain the second line of the file.
+The IO.foreach Method
+This method also returns output line by line. The difference between the method foreach and the method readlines is that the method foreach is associated with a block. However, unlike the method readlines, the method foreach does not return an array. For example −
+#!/usr/bin/ruby
+
+IO.foreach("input.txt"){|block| puts block}
+This code will pass the contents of the file test line by line to the variable block, and then the output will be displayed on the screen.
+Renaming and Deleting Files
+# Rename a file from test1.txt to test2.txt
+File.rename( "test1.txt", "test2.txt" )
+# Delete file test2.txt
+File.delete("test2.txt")
+File Modes and Ownership
+Use the chmod method with a mask to change the mode or permissions/access list of a file −
+Following is the example to change mode of an existing file test.txt to a mask value −
+#!/usr/bin/ruby
+
+file = File.new( "test.txt", "w" )
+file.chmod( 0755 )
+Following is the table, which can help you to choose different mask for chmod method − 
+Sr.No.
+Mask & Description
+1
+0700
+rwx mask for owner
+2
+0400
+r for owner
+3
+0200
+w for owner
+4
+0100
+x for owner
+5
+0070
+rwx mask for group
+6
+0040
+r for group
+7
+0020
+w for group
+8
+0010
+x for group
+9
+0007
+rwx mask for other
+10
+0004
+r for other
+11
+0002
+w for other
+12
+0001
+x for other
+13
+4000
+Set user ID on execution
+14
+2000
+Set group ID on execution
+15
+1000
+Save swapped text, even after use
+File Inquiries
+The following command tests whether a file exists before opening it −
+File.open("file.rb") if File::exists?( "file.rb" )
+The following command inquire whether the file is really a file −
+# This returns either true or false
+File.file?( "text.txt" ) 
+The following command finds out if the given file name is a directory −
+#!/usr/bin/ruby
+
+# a directory
+File::directory?( "/usr/local/bin" ) # => true
+
+# a file
+File::directory?( "file.rb" ) # => false
+The following command finds whether the file is readable, writable or executable −
+#!/usr/bin/ruby
+
+File.readable?( "test.txt" )   # => true
+File.writable?( "test.txt" )   # => true
+File.executable?( "test.txt" ) # => false
+The following command finds whether the file has zero size or not −
+#!/usr/bin/ruby
+
+File.zero?( "test.txt" )      # => true
+The following command returns size of the file −
+#!/usr/bin/ruby
+
+File.size?( "text.txt" )     # => 1002
+The following command can be used to find out a type of file −
+#!/usr/bin/ruby
+
+File::ftype( "test.txt" )     # => file
+The ftype method identifies the type of the file by returning one of the following − file, directory, characterSpecial, blockSpecial, fifo, link, socket, or unknown.
+The following command can be used to find when a file was created, modified, or last accessed −
+#!/usr/bin/ruby
+
+File::ctime( "test.txt" ) # => Fri May 09 10:06:37 -0700 2008
+File::mtime( "text.txt" ) # => Fri May 09 10:44:44 -0700 2008
+File::atime( "text.txt" ) # => Fri May 09 10:45:01 -0700 2008
+Directories in Ruby
+All files are contained within various directories, and Ruby has no problem handling these too. Whereas the File class handles files, directories are handled with the Dir class.
+Navigating Through Directories
+To change directory within a Ruby program, use Dir.chdir as follows. This example changes the current directory to /usr/bin.
+Dir.chdir("/usr/bin")
+You can find out what the current directory is with Dir.pwd −
+puts Dir.pwd # This will return something like /usr/bin
+You can get a list of the files and directories within a specific directory using Dir.entries −
+puts Dir.entries("/usr/bin").join(' ')
+Dir.entries returns an array with all the entries within the specified directory. Dir.foreach provides the same feature −
+Dir.foreach("/usr/bin") do |entry|
+   puts entry
+end
+An even more concise way of getting directory listings is by using Dir's class array method −
+Dir["/usr/bin/*"]
+Creating a Directory
+The Dir.mkdir can be used to create directories −
+Dir.mkdir("mynewdir")
+You can also set permissions on a new directory (not one that already exists) with mkdir −
+NOTE − The mask 755 sets permissions owner, group, world [anyone] to rwxr-xr-x where r = read, w = write, and x = execute.
+Dir.mkdir( "mynewdir", 755 )
+Deleting a Directory
+Dir.delete("testdir")
+Creating Files & Temporary Directories
+Dir.tmpdir provides the path to the temporary directory on the current system, although the method is not available by default. To make Dir.tmpdir available it's necessary to use require 'tmpdir'.
+You can use Dir.tmpdir with File.join to create a platform-independent temporary file −
+require 'tmpdir'
+   tempfilename = File.join(Dir.tmpdir, "tingtong")
+   tempfile = File.new(tempfilename, "w")
+   tempfile.puts "This is a temporary file"
+   tempfile.close
+   File.delete(tempfilename)
+This code creates a temporary file, writes data to it, and deletes it. Ruby's standard library also includes a library called Tempfile that can create temporary files for you −
+require 'tempfile'
+   f = Tempfile.new('tingtong')
+   f.puts "Hello"
+   puts f.path
+   f.close
+Built-in Functions
+Here are the ruby built-in functions to process files and directories −
+File Class and Methods.
+A File represents an stdio object that connects to a regular file and returns an instance of this class for regular files.
+Class Methods
+Sr.No.
+Methods & Description
+1
+File::atime( path)
+Returns the last access time for path.
+2
+File::basename( path[, suffix])
+Returns the filename at the end of path. If suffix is specified, it's deleted from the end of the filename.
+e.g. File.basename("/home/users/bin/ruby.exe") #=> "ruby.exe"
+3
+File::blockdev?( path)
+Returns true if path is a block device.
+4
+File::chardev?( path)
+Returns true if path is a character device.
+5
+File::chmod( mode, path...)
+Changes the permission mode of the specified files.
+6
+File::chown( owner, group, path...)
+Changes the owner and group of the specified files.
+7
+File::ctime( path)
+Returns the last node change time for path.
+8
+File::delete( path...)
+File::unlink( path...)
+Deletes the specified files.
+9
+File::directory?( path)
+Returns true if path is a directory.
+10
+File::dirname( path)
+Returns the directory portion of path, without the final filename.
+11
+File::executable?( path)
+Returns true if path is executable.
+12
+File::executable_real?( path)
+Returns true if path is executable with real user permissions.
+13
+File::exist?( path)
+Returns true if path exists.
+14
+File::expand_path( path[, dir])
+Returns the absolute path of path, expanding ~ to the process owner's home directory, and ~user to the user's home directory. Relative paths are resolved from the directory specified by dir, or the current working directory if dir is omitted.
+15
+File::file?( path)
+Returns true if path is a regular file.
+16
+File::ftype( path)
+Returns one of the following strings representing a file type −
+file − Regular file
+directory − Directory
+characterSpecial − Character special file
+blockSpecial − Block special file
+fifo − Named pipe (FIFO)
+link − Symbolic link
+socket − Socket
+unknown − Unknown file type
+17
+File::grpowned?( path)
+Returns true if path is owned by the user's group.
+18
+File::join( item...)
+Returns a string consisting of the specified items joined together with File::Separator separating each item.
+e.g File::join("", "home", "usrs", "bin") # => "/home/usrs/bin"
+19
+File::link( old, new)
+Creates a hard link to file old.
+20
+File::lstat( path)
+Same as stat, except that it returns information on symbolic links themselves, not the files they point to.
+21
+File::mtime( path)
+Returns the last modification time for path.
+22
+File::new( path[, mode = "r"])
+File::open( path[, mode = "r"])
+File::open( path[, mode = "r"]) {|f| ...}
+Opens a file. If a block is specified, the block is executed with the new file passed as an argument. The file is closed automatically when the block exits. These methods differ from Kernel.open in that even if path begins with |, the following string isn't run as a command.
+23
+File::owned?( path)
+Returns true if path is owned by the effective user.
+24
+File::pipe?( path)
+Returns true if path is a pipe.
+25
+File::readable?( path)
+Returns true if path is readable.
+26
+File::readable_real?( path)
+Returns true if path is readable with real user permissions.
+27
+File::readlink( path)
+Returns the file pointed to by path.
+28
+File::rename( old, new)
+Changes the filename from old to new.
+29
+File::setgid?( path)
+Returns true if path's set-group-id permission bit is set.
+30
+File::setuid?( path)
+Returns true if path's set-user-id permission bit is set.
+31
+File::size( path)
+Returns the file size of path.
+32
+File::size?( path)
+Returns the file size of path, or nil if it's 0.
+33
+File::socket?( path)
+Returns true if path is a socket.
+34
+File::split( path)
+Returns an array containing the contents of path split into File::dirname(path) and File::basename(path).
+35
+File::stat( path)
+Returns a File::Stat object with information on path.
+36
+File::sticky?( path)
+Returns true if path's sticky bit is set.
+37
+File::symlink( old, new)
+Creates a symbolic link to file old.
+38
+File::symlink?( path)
+Returns true if path is a symbolic link.
+39
+File::truncate( path, len)
+Truncates the specified file to len bytes.
+40
+File::unlink( path...)
+Delete a file given at the path.
+41
+File::umask([ mask])
+Returns the current umask for this process if no argument is specified. If an argument is specified, the umask is set, and the old umask is returned.
+42
+File::utime( atime, mtime, path...)
+Changes the access and modification times of the specified files.
+43
+File::writable?( path)
+Returns true if path is writable.
+44
+File::writable_real?( path)
+Returns true if path is writable with real user permissions.
+45
+File::zero?( path)
+Returns true if the file size of path is 0.
+Instance Methods
+Assuming f is an instance of File class −
+Sr.No.
+Methods & Description
+1
+f.atime
+Returns the last access time for f.
+2
+f.chmode( mode)
+Changes the permission mode of f.
+3
+f.chown( owner, group)
+Changes the owner and group of f.
+4
+f.ctime
+Returns the last inode change time for f.
+5
+f.flock( op)
+Calls flock(2). op may be 0 or a logical or of the File class constants LOCK_EX, LOCK_NB, LOCK_SH, and LOCK_UN.
+6
+f.lstat
+Same as stat, except that it returns information on symbolic links themselves, not the files they point to.
+7
+f.mtime
+Returns the last modification time for f.
+8
+f.path
+Returns the pathname used to create f.
+9
+f.reopen( path[, mode = "r"])
+Reopens the file.
+10
+f.truncate( len)
+Truncates f to len bytes.
+
+Dir Class and Methods.
+
