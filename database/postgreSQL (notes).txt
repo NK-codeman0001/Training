@@ -1942,4 +1942,15 @@ How to Use ABS() Function (ABSOLUTE):
 ABS(numeric_expression);
 
 ________________________________________________________________________________
+RUN PSQL WITHOUT SUDO
+Psql -U postgres -h localhost 		(password changeit)
+________________________________________________________________________________
+Backup Database
+pg_dump -U postgres -h localhost cab_booking_db >> sqlfile.sql 
 
+//we can save it as .dump, .sql .txt etc
+//we can also use pg_dumpall to create backup of all db at once
+
+Restore : psql -d test_backup_db -h localhost -U postgres -f ./cab_backup.dump
+// we can also use pg_restore
+________________________________________________________________________________
