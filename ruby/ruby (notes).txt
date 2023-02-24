@@ -4442,3 +4442,532 @@ This will produce the following result −
 Rails are Rails, really good Ruby on Rails
 ________________________________________________________________________________
 
+Ruby/DBI - Database Access
+
+Architecture of a DBI Application
+ 
+The general architecture for Ruby DBI uses two layers −
+    • The database interface (DBI) layer. This layer is database independent and provides a set of common access methods that are used the same way regardless of the type of database server with which you're communicating.
+    • The database driver (DBD) layer. This layer is database dependent; different drivers provide access to different database engines. There is one driver for MySQL, another for PostgreSQL, another for InterBase, another for Oracle, and so forth. Each driver interprets requests from the DBI layer and maps them onto requests appropriate for a given type of database server.
+Obtaining and Installing Ruby/DBI
+You can install ruby DBI using the Ruby Gems packaging manager:
+gem install dbi
+Step 1
+$ tar zxf dbi-0.2.0.tar.gz
+Step 2
+$ ruby setup.rb config
+$ ruby setup.rb config --with = dbi,dbd_mysql
+Step 3
+$ ruby setup.rb setup
+$ ruby setup.rb install
+Database Connection
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   # get server version string and display it
+   row = dbh.select_one("SELECT VERSION()")
+   puts "Server version: " + row[0]
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+While running this script, it produces the following result at our Linux machine.
+Server version: 5.0.45
+If a connection is established with the data source, then a Database Handle is returned and saved into dbh for further use otherwise dbh is set to nil value and e.err and e::errstr return error code and an error string respectively.
+INSERT Operation
+INSERT operation is required when you want to create your records into a database table.
+Once a database connection is established, we are ready to create tables or records into the database tables using do method or prepare and execute method.
+Using do Statement
+dbh.do("DROP TABLE IF EXISTS EMPLOYEE")
+dbh.do("CREATE TABLE EMPLOYEE (
+   FIRST_NAME  CHAR(20) NOT NULL,
+   LAST_NAME  CHAR(20),
+   AGE INT,  
+   SEX CHAR(1),
+   INCOME FLOAT )" );
+Similarly, you can execute the SQL INSERT statement to create a record into the EMPLOYEE table.
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   dbh.do( "INSERT INTO EMPLOYEE(FIRST_NAME, LAST_NAME, AGE, SEX, INCOME)
+      VALUES ('Mac', 'Mohan', 20, 'M', 2000)" )
+   puts "Record has been created"
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+Using prepare and execute
+You can use prepare and execute methods of DBI class to execute the SQL statement through Ruby code.
+Record creation takes the following steps −
+    • Preparing SQL statement with INSERT statement. This will be done using the prepare method.
+    • Executing SQL query to select all the results from the database. This will be done using the execute method.
+    • Releasing Statement handle. This will be done using finish API
+    • If everything goes fine, then commit this operation otherwise you can rollback the complete transaction.
+Following is the syntax to use these two methods −
+sth = dbh.prepare(statement)
+sth.execute
+   ... zero or more SQL operations ...
+sth.finish
+These two methods can be used to pass bind values to SQL statements. There may be a case when values to be entered is not given in advance. In such a case, binding values are used. A question mark (?) is used in place of actual values and then actual values are passed through execute() API.
+Following is the example to create two records in the EMPLOYEE table −
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare( "INSERT INTO EMPLOYEE(FIRST_NAME, LAST_NAME, AGE, SEX, INCOME)
+      VALUES (?, ?, ?, ?, ?)" )
+   sth.execute('John', 'Poul', 25, 'M', 2300)
+   sth.execute('Zara', 'Ali', 17, 'F', 1000)
+   sth.finish
+   dbh.commit
+   puts "Record has been created"
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+READ Operation
+Record fetching takes following steps −
+    • Preparing SQL query based on required conditions. This will be done using the prepare method.
+    • Executing SQL query to select all the results from the database. This will be done using the execute method.
+    • Fetching all the results one by one and printing those results. This will be done using the fetch method.
+    • Releasing Statement handle. This will be done using the finish method.
+Following is the procedure to query all the records from EMPLOYEE table having salary more than 1000.
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare("SELECT * FROM EMPLOYEE WHERE INCOME > ?")
+   sth.execute(1000)
+
+   sth.fetch do |row|
+   printf "First Name: %s, Last Name : %s\n", row[0], row[1]
+   printf "Age: %d, Sex : %s\n", row[2], row[3]
+   printf "Salary :%d \n\n", row[4]
+end
+   sth.finish
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+This will produce the following result −
+First Name: Mac, Last Name : Mohan
+Age: 20, Sex : M
+Salary :2000
+
+First Name: John, Last Name : Poul
+Age: 25, Sex : M
+Salary :2300
+There are more short cut methods to fetch records from the database.
+Ruby DBI Methods for Read Operation
+
+DBI provides several different methods to fetch records from the database. Assuming dbh is a database handle and sth is a statement handle −
+Sr.No.
+Methods with Description
+1
+db.select_one( stmt, *bindvars ) = > aRow | nil
+Executes the stmt statement with the bindvars binding beforehand to parameter markers. Returns the first row or nil if the result-set is empty.
+2
+db.select_all( stmt, *bindvars ) => [aRow, ...] | nil
+db.select_all( stmt, *bindvars ){ |aRow| aBlock }
+Executes the stmt statement with the bindvars binding beforehand to parameter markers. Calling this method without block returns an array containing all rows. If a block is given, this will be called for each row.
+3
+sth.fetch => aRow | nil
+Returns the next row. Returns nil if no further rows are in the result-set.
+4
+sth.fetch { |aRow| aBlock }
+Invokes the given block for the remaining rows of the result-set.
+5
+sth.fetch_all => [aRow, ...]
+Returns all remaining rows of the result-set collected in an array.
+6
+sth.fetch_many( count ) => [aRow, ...]
+Returns the next count rows collected in an [aRow, ...] array.
+7
+sth.fetch_scroll( direction, offset=1 ) => aRow | nil
+Returns the row specified by the direction parameter and offset. Parameter offset is discarded for all but SQL_FETCH_ABSOLUTE and SQL_FETCH_RELATIVE. See a table below for possible values of direction parameter.
+8
+sth.column_names => anArray
+Returns the names of the columns.
+9
+column_info => [ aColumnInfo, ... ]
+Returns an array of DBI::ColumnInfo objects. Each object stores information about one column and contains its name, type, precision and more.
+10
+sth.rows => rpc
+Returns the Row Processed Count of the executed statement or nil if no such exist.
+11
+sth.fetchable? => true | false
+Returns true if it's possible to fetch rows, otherwise false.
+12
+sth.cancel
+Frees the resources held by the result-set. After calling this method, it is no longer possible to fetch rows until you again call execute.
+13
+sth.finish
+Frees the resources held by the prepared statement. After calling this method no further methods can be called onto this object.
+The direction Parameter
+Following values could be used for the direction Parameter of the fetch_scroll Method −
+Sr.No.
+Constant & Description
+1
+DBI::SQL_FETCH_FIRST
+Fetches first row.
+2
+DBI::SQL_FETCH_LAST
+Fetches last row.
+3
+DBI::SQL_FETCH_NEXT
+Fetches next row.
+4
+DBI::SQL_FETCH_PRIOR
+Fetches previous row.
+5
+DBI::SQL_FETCH_ABSOLUTE
+Fetches row at position offset.
+6
+DBI::SQL_FETCH_RELATIVE
+Fetches the row that is offset rows away from the current.
+Example
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare("SELECT * FROM EMPLOYEE WHERE INCOME > ?")
+   sth.execute(1000)
+   if sth.column_names.size == 0 then
+      puts "Statement has no result set"
+      printf "Number of rows affected: %d\n", sth.rows
+   else
+      puts "Statement has a result set"
+      rows = sth.fetch_all
+      printf "Number of rows: %d\n", rows.size
+      printf "Number of columns: %d\n", sth.column_names.size
+      sth.column_info.each_with_index do |info, i|
+         printf "--- Column %d (%s) ---\n", i, info["name"]
+         printf "sql_type:         %s\n", info["sql_type"]
+         printf "type_name:        %s\n", info["type_name"]
+         printf "precision:        %s\n", info["precision"]
+         printf "scale:            %s\n", info["scale"]
+         printf "nullable:         %s\n", info["nullable"]
+         printf "indexed:          %s\n", info["indexed"]
+         printf "primary:          %s\n", info["primary"]
+         printf "unique:           %s\n", info["unique"]
+         printf "mysql_type:       %s\n", info["mysql_type"]
+         printf "mysql_type_name:  %s\n", info["mysql_type_name"]
+         printf "mysql_length:     %s\n", info["mysql_length"]
+         printf "mysql_max_length: %s\n", info["mysql_max_length"]
+         printf "mysql_flags:      %s\n", info["mysql_flags"]
+      end
+   end
+   sth.finish
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+This will produce the following result −
+Statement has a result set
+Number of rows: 5
+Number of columns: 5
+--- Column 0 (FIRST_NAME) ---
+sql_type:         12
+type_name:        VARCHAR
+precision:        20
+scale:            0
+nullable:         true
+indexed:          false
+primary:          false
+unique:           false
+mysql_type:       254
+mysql_type_name:  VARCHAR
+mysql_length:     20
+mysql_max_length: 4
+mysql_flags:      0
+--- Column 1 (LAST_NAME) ---
+sql_type:         12
+type_name:        VARCHAR
+precision:        20
+scale:            0
+nullable:         true
+indexed:          false
+primary:          false
+unique:           false
+mysql_type:       254
+mysql_type_name:  VARCHAR
+mysql_length:     20
+mysql_max_length: 5
+mysql_flags:      0
+--- Column 2 (AGE) ---
+sql_type:         4
+type_name:        INTEGER
+precision:        11
+scale:            0
+nullable:         true
+indexed:          false
+primary:          false
+unique:           false
+mysql_type:       3
+mysql_type_name:  INT
+mysql_length:     11
+mysql_max_length: 2
+mysql_flags:      32768
+--- Column 3 (SEX) ---
+sql_type:         12
+type_name:        VARCHAR
+precision:        1
+scale:            0
+nullable:         true
+indexed:          false
+primary:          false
+unique:           false
+mysql_type:       254
+mysql_type_name:  VARCHAR
+mysql_length:     1
+mysql_max_length: 1
+mysql_flags:      0
+--- Column 4 (INCOME) ---
+sql_type:         6
+type_name:        FLOAT
+precision:        12
+scale:            31
+nullable:         true
+indexed:          false
+primary:          false
+unique:           false
+mysql_type:       4
+mysql_type_name:  FLOAT
+mysql_length:     12
+mysql_max_length: 4
+mysql_flags:      32768
+Update Operation
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare("UPDATE EMPLOYEE SET AGE = AGE + 1 WHERE SEX = ?")
+   sth.execute('M')
+   sth.finish
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+DELETE Operation
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare("DELETE FROM EMPLOYEE WHERE AGE > ?")
+   sth.execute(20)
+   sth.finish
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+
+Performing Transactions
+The DBI provides two methods to either commit or rollback a transaction. There is one more method called transaction which can be used to implement transactions. There are two simple approaches to implement transactions −
+Approach I
+The first approach uses DBI's commit and rollback methods to explicitly commit or cancel the transaction −
+dbh['AutoCommit'] = false # Set auto commit to false.
+begin
+   dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 WHERE FIRST_NAME = 'John'")
+   dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 WHERE FIRST_NAME = 'Zara'")
+   dbh.commit
+rescue
+   puts "transaction failed"
+   dbh.rollback
+end
+dbh['AutoCommit'] = true
+Approach II
+The second approach uses the transaction method. This is simpler, because it takes a code block containing the statements that make up the transaction. The transaction method executes the block, then invokes commit or rollback automatically, depending on whether the block succeeds or fails −
+dbh['AutoCommit'] = false # Set auto commit to false.
+dbh.transaction do |dbh|
+   dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 WHERE FIRST_NAME = 'John'")
+   dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 WHERE FIRST_NAME = 'Zara'")
+end
+dbh['AutoCommit'] = true
+COMMIT Operation
+Commit is the operation, which gives a green signal to database to finalize the changes, and after this operation, no change can be reverted back.
+Here is a simple example to call the commit method.
+dbh.commit
+ROLLBACK Operation
+If you are not satisfied with one or more of the changes and you want to revert back those changes completely, then use the rollback method.
+Here is a simple example to call the rollback method.
+dbh.rollback
+Disconnecting Database
+To disconnect Database connection, use disconnect API.
+dbh.disconnect
+Handling Errors
+If a DBI method fails, DBI raises an exception. DBI methods may raise any of several types of exception but the two most important exception classes are DBI::InterfaceError and DBI::DatabaseError.
+    • err − Returns an integer representation of the occurred error or nil if this is not supported by the DBD.The Oracle DBD for example returns the numerical part of an ORA-XXXX error message.
+    • errstr − Returns a string representation of the occurred error.
+    • state − Returns the SQLSTATE code of the occurred error.The SQLSTATE is a five-character-long string. Most DBDs do not support this and return nil instead.
+You have seen following code above in most of the examples −
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+To get debugging information about what your script is doing as it executes, you can enable tracing. To do this, you must first load the dbi/trace module and then call the trace method that controls the trace mode and output destination −
+require "dbi/trace"
+..............
+
+trace(mode, destination)
+The mode value may be 0 (off), 1, 2, or 3, and the destination should be an IO object. The default values are 2 and STDERR, respectively.
+Code Blocks with Methods
+    • DBI.connect − This method generates a database handle and it is recommended to call disconnect at the end of the block to disconnect the database.
+    • dbh.prepare − This method generates a statement handle and it is recommended to finish at the end of the block. Within the block, you must invoke execute method to execute the statement.
+    • dbh.execute − This method is similar except we don't need to invoke execute within the block. The statement handle is automatically executed.
+Example 1
+DBI.connect can take a code block, passes the database handle to it, and automatically disconnects the handle at the end of the block as follows.
+dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123") do |dbh|
+Example 2
+dbh.prepare can take a code block, passes the statement handle to it, and automatically calls finish at the end of the block as follows.
+dbh.prepare("SHOW DATABASES") do |sth|
+   sth.execute
+   puts "Databases: " + sth.fetch_all.join(", ")
+end
+Example 3
+dbh.execute can take a code block, passes the statement handle to it, and automatically calls finish at the end of the block as follows −
+dbh.execute("SHOW DATABASES") do |sth|
+   puts "Databases: " + sth.fetch_all.join(", ")
+end
+DBI transaction method also takes a code block which has been described in above.
+Driver-specific Functions and Attributes
+The DBI lets the database drivers provide additional database-specific functions, which can be called by the user through the func method of any Handle object.
+Driver-specific attributes are supported and can be set or gotten using the []= or [] methods.
+DBD::Mysql implements the following driver-specific functions − 
+Sr.No.
+Functions & Description
+1
+dbh.func(:createdb, db_name)
+Creates a new database.
+2
+dbh.func(:dropdb, db_name)
+Drops a database.
+3
+dbh.func(:reload)
+Performs a reload operation.
+4
+dbh.func(:shutdown)
+Shuts down the server.
+5
+dbh.func(:insert_id) => Fixnum
+Returns the most recent AUTO_INCREMENT value for a connection.
+6
+dbh.func(:client_info) => String
+Returns MySQL client information in terms of version.
+7
+dbh.func(:client_version) => Fixnum
+Returns client information in terms of version. It's similar to :client_info but it return a fixnum instead of sting.
+8
+dbh.func(:host_info) => String
+Returns host information.
+9
+dbh.func(:proto_info) => Fixnum
+Returns protocol being used for the communication.
+10
+dbh.func(:server_info) => String
+Returns MySQL server information in terms of version.
+11
+dbh.func(:stat) => String
+Returns current state of the database.
+12
+dbh.func(:thread_id) => Fixnum
+Returns current thread ID.
+Example
+#!/usr/bin/ruby
+
+require "dbi"
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123") 
+   puts dbh.func(:client_info)
+   puts dbh.func(:client_version)
+   puts dbh.func(:host_info)
+   puts dbh.func(:proto_info)
+   puts dbh.func(:server_info)
+   puts dbh.func(:thread_id)
+   puts dbh.func(:stat)
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   dbh.disconnect if dbh
+end
+This will produce the following result −
+5.0.45
+50045
+Localhost via UNIX socket
+10
+5.0.45
+150621
+Uptime: 384981  Threads: 1  Questions: 1101078  Slow queries: 4 \
+Opens: 324  Flush tables: 1  Open tables: 64  \
+Queries per second avg: 2.860
+________________________________________________________________________________
+
+
+
+.
+
