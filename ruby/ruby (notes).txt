@@ -4071,4 +4071,374 @@ Type of self = Class
 Name of self = Box
 This means that a class definition is executed with that class as the current object. This means that methods in the metaclass and its superclasses will be available during the execution of the method definition.
 ________________________________________________________________________________
+Ruby - Regular Expressions
+
+A regular expression literal is a pattern between slashes or between arbitrary delimiters followed by %r as follows −
+Syntax
+/pattern/
+/pattern/im    # option can be specified
+%r!/usr/local! # general delimited regular expression
+Example
+#!/usr/bin/ruby
+
+line1 = "Cats are smarter than dogs";
+line2 = "Dogs also like meat";
+
+if ( line1 =~ /Cats(.*)/ )
+   puts "Line1 contains Cats"
+end
+if ( line2 =~ /Cats(.*)/ )
+   puts "Line2 contains  Dogs"
+end
+This will produce the following result −
+Line1 contains Cats
+Regular-Expression Modifiers
+Regular expression literals may include an optional modifier to control various aspects of matching. The modifier is specified after the second slash character, as shown previously and may be represented by one of these characters −
+Sr.No.
+Modifier & Description
+1
+i
+Ignores case when matching text.
+2
+o
+Performs #{} interpolations only once, the first time the regexp literal is evaluated.
+3
+x
+Ignores whitespace and allows comments in regular expressions.
+4
+m
+Matches multiple lines, recognizing newlines as normal characters.
+5
+u,e,s,n
+Interprets the regexp as Unicode (UTF-8), EUC, SJIS, or ASCII. If none of these modifiers is specified, the regular expression is assumed to use the source encoding.
+Like string literals delimited with %Q, Ruby allows you to begin your regular expressions with %r followed by a delimiter of your choice. This is useful when the pattern you are describing contains a lot of forward slash characters that you don't want to escape −
+# Following matches a single slash character, no escape required
+%r|/|
+
+# Flag characters are allowed with this syntax, too
+%r[</(.*)>]i
+Regular-Expression Patterns
+Except for control characters, (+ ? . * ^ $ ( ) [ ] { } | \), all characters match themselves. You can escape a control character by preceding it with a backslash.
+Following table lists the regular expression syntax that is available in Ruby. 
+Sr.No.
+Pattern & Description
+1
+^
+Matches beginning of line.
+2
+$
+Matches end of line.
+3
+.
+Matches any single character except newline. Using m option allows it to match newline as well.
+4
+[...]
+Matches any single character in brackets.
+5
+[^...]
+Matches any single character not in brackets
+6
+re*
+Matches 0 or more occurrences of preceding expression.
+7
+re+
+Matches 1 or more occurrence of preceding expression.
+8
+re?
+Matches 0 or 1 occurrence of preceding expression.
+9
+re{ n}
+Matches exactly n number of occurrences of preceding expression.
+10
+re{ n,}
+Matches n or more occurrences of preceding expression.
+11
+re{ n, m}
+Matches at least n and at most m occurrences of preceding expression.
+12
+a| b
+Matches either a or b.
+13
+(re)
+Groups regular expressions and remembers matched text.
+14
+(?imx)
+Temporarily toggles on i, m, or x options within a regular expression. If in parentheses, only that area is affected.
+15
+(?-imx)
+Temporarily toggles off i, m, or x options within a regular expression. If in parentheses, only that area is affected.
+16
+(?: re)
+Groups regular expressions without remembering matched text.
+17
+(?imx: re)
+Temporarily toggles on i, m, or x options within parentheses.
+18
+(?-imx: re)
+Temporarily toggles off i, m, or x options within parentheses.
+19
+(?#...)
+Comment.
+20
+(?= re)
+Specifies position using a pattern. Doesn't have a range.
+21
+(?! re)
+Specifies position using pattern negation. Doesn't have a range.
+22
+(?> re)
+Matches independent pattern without backtracking.
+23
+\w
+Matches word characters.
+24
+\W
+Matches nonword characters.
+25
+\s
+Matches whitespace. Equivalent to [\t\n\r\f].
+26
+\S
+Matches nonwhitespace.
+27
+\d
+Matches digits. Equivalent to [0-9].
+28
+\D
+Matches nondigits.
+29
+\A
+Matches beginning of string.
+30
+\Z
+Matches end of string. If a newline exists, it matches just before newline.
+31
+\z
+Matches end of string.
+32
+\G
+Matches point where last match finished.
+33
+\b
+Matches word boundaries when outside brackets. Matches backspace (0x08) when inside brackets.
+34
+\B
+Matches non-word boundaries.
+35
+\n, \t, etc.
+Matches newlines, carriage returns, tabs, etc.
+36
+\1...\9
+Matches nth grouped subexpression.
+37
+\10
+Matches nth grouped subexpression if it matched already. Otherwise refers to the octal representation of a character code.
+Regular-Expression Examples
+Literal Characters 
+Sr.No.
+Example & Description
+1
+/ruby/
+Matches "ruby".
+2
+¥
+Matches Yen sign. Multibyte characters are supported in Ruby 1.9 and Ruby 1.8.
+Character Classes 
+Sr.No.
+Example & Description
+1
+/[Rr]uby/
+Matches "Ruby" or "ruby".
+2
+/rub[ye]/
+Matches "ruby" or "rube".
+3
+/[aeiou]/
+Matches any one lowercase vowel.
+4
+/[0-9]/
+Matches any digit; same as /[0123456789]/.
+5
+/[a-z]/
+Matches any lowercase ASCII letter.
+6
+/[A-Z]/
+Matches any uppercase ASCII letter.
+7
+/[a-zA-Z0-9]/
+Matches any of the above.
+8
+/[^aeiou]/
+Matches anything other than a lowercase vowel.
+9
+/[^0-9]/
+Matches anything other than a digit.
+Special Character Classes 
+Sr.No.
+Example & Description
+1
+/./
+Matches any character except newline.
+2
+/./m
+In multi-line mode, matches newline, too.
+3
+/\d/
+Matches a digit: /[0-9]/.
+4
+/\D/
+Matches a non-digit: /[^0-9]/.
+5
+/\s/
+Matches a whitespace character: /[ \t\r\n\f]/.
+6
+/\S/
+Matches non-whitespace: /[^ \t\r\n\f]/.
+7
+/\w/
+Matches a single word character: /[A-Za-z0-9_]/.
+8
+/\W/
+Matches a non-word character: /[^A-Za-z0-9_]/.
+Repetition Cases 
+Sr.No.
+Example & Description
+1
+/ruby?/
+Matches "rub" or "ruby": the y is optional.
+2
+/ruby*/
+Matches "rub" plus 0 or more ys.
+3
+/ruby+/
+Matches "rub" plus 1 or more ys.
+4
+/\d{3}/
+Matches exactly 3 digits.
+5
+/\d{3,}/
+Matches 3 or more digits.
+6
+/\d{3,5}/
+Matches 3, 4, or 5 digits.
+Non-greedy Repetition 
+This matches the smallest number of repetitions −
+Sr.No.
+Example & Description
+1
+/<.*>/
+Greedy repetition: matches "<ruby>perl>".
+2
+/<.*?>/
+Non-greedy: matches "<ruby>" in "<ruby>perl>".
+Grouping with Parentheses 
+Sr.No.
+Example & Description
+1
+/\D\d+/
+No group: + repeats \d
+2
+/(\D\d)+/
+Grouped: + repeats \D\d pair
+3
+/([Rr]uby(, )?)+/
+Match "Ruby", "Ruby, ruby, ruby", etc.
+Back References 
+This matches a previously matched group again −
+Sr.No.
+Example & Description
+1
+/([Rr])uby&\1ails/
+Matches ruby&rails or Ruby&Rails.
+2
+/(['"])(?:(?!\1).)*\1/
+Single or double-quoted string. \1 matches whatever the 1st group matched . \2 matches whatever the 2nd group matched, etc.
+Alternatives 
+Sr.No.
+Example & Description
+1
+/ruby|rube/
+Matches "ruby" or "rube".
+2
+/rub(y|le))/
+Matches "ruby" or "ruble".
+3
+/ruby(!+|\?)/
+"ruby" followed by one or more ! or one ?
+Anchors 
+It needs to specify match position.
+Sr.No.
+Example & Description
+1
+/^Ruby/
+Matches "Ruby" at the start of a string or internal line.
+2
+/Ruby$/
+Matches "Ruby" at the end of a string or line.
+3
+/\ARuby/
+Matches "Ruby" at the start of a string.
+4
+/Ruby\Z/
+Matches "Ruby" at the end of a string.
+5
+/\bRuby\b/
+Matches "Ruby" at a word boundary.
+6
+/\brub\B/
+\B is non-word boundary: matches "rub" in "rube" and "ruby" but not alone.
+7
+/Ruby(?=!)/
+Matches "Ruby", if followed by an exclamation point.
+8
+/Ruby(?!!)/
+Matches "Ruby", if not followed by an exclamation point.
+Special Syntax with Parentheses 
+Sr.No.
+Example & Description
+1
+/R(?#comment)/
+Matches "R". All the rest is a comment.
+2
+/R(?i)uby/
+Case-insensitive while matching "uby".
+3
+/R(?i:uby)/
+Same as above.
+4
+/rub(?:y|le))/
+Group only without creating \1 backreference.
+Search and Replace
+Some of the most important String methods that use regular expressions are sub and gsub, and their in-place variants sub! and gsub!.
+All of these methods perform a search-and-replace operation using a Regexp pattern. The sub & sub! replaces the first occurrence of the pattern and gsub & gsub! replaces all occurrences.
+The sub and gsub returns a new string, leaving the original unmodified where as sub! and gsub! modify the string on which they are called.
+Following is the example −
+#!/usr/bin/ruby
+
+phone = "2004-959-559 #This is Phone Number"
+
+# Delete Ruby-style comments
+phone = phone.sub!(/#.*$/, "")   
+puts "Phone Num : #{phone}"
+
+# Remove anything other than digits
+phone = phone.gsub!(/\D/, "")    
+puts "Phone Num : #{phone}"
+This will produce the following result −
+Phone Num : 2004-959-559
+Phone Num : 2004959559
+Following is another example −
+#!/usr/bin/ruby
+
+text = "rails are rails, really good Ruby on Rails"
+
+# Change "rails" to "Rails" throughout
+text.gsub!("rails", "Rails")
+
+# Capitalize the word "Rails" throughout
+text.gsub!(/\brails\b/, "Rails")
+puts "#{text}"
+This will produce the following result −
+Rails are Rails, really good Ruby on Rails
+________________________________________________________________________________
 
