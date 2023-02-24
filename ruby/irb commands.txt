@@ -1,0 +1,43 @@
+$ irb
+
+//STDOUT
+print "hello system"
+hello system => nil 
+
+puts "hello system"
+hello system
+ => nil       
+ 
+putc "hello system"
+h => "hello system" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              
