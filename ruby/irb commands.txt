@@ -219,13 +219,25 @@ ________________________________________________________________________________
  => 1.0 
 
 ########## Numbers ###########
+emp_id = 101
+puts ("emp id :  #{emp_id}")
 
+emp_id = -101
+puts ("emp id : "+emp_id.to_s)
 
+puts emp_id.abs       ##absolute functions
+puts emp_id.abs()
 
+puts emp_id.round()
+puts emp_id.ceil()
+puts emp_id.floor()
 
+puts Math.sqrt(36)
+puts Math.log(36)   ##sin,cos, etc is also there
 
-
-
+_____________________________________________________________________________________
+Getting Inputs
+_____________________________________________________________________________________
 
 
               
