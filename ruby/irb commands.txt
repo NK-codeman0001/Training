@@ -238,6 +238,24 @@ puts Math.log(36)   ##sin,cos, etc is also there
 _____________________________________________________________________________________
 Getting Inputs
 _____________________________________________________________________________________
+########## gets ###########
+when we store input in a variable and press enter, a newline also get store in it.
 
-
+name = gets
+puts "hello " + name + ", Good Morning"
+=> 
+Neeraj
+hello Neeraj
+, Good Morning
               
+to remove the extra newline stored with the variable use .chomp() function
+name = gets
+puts "hello " + name.chomp() + ", Good Morning"
+=>
+Neeraj
+hello Neeraj, Good Morning
+b
+_____________________________________________________________________________________
+Arrays
+_____________________________________________________________________________________
+########## [] ###########
