@@ -295,8 +295,25 @@ Returns a new array containing elements common to the two arrays, with no duplic
 3.2.1 :145 > arr3 = arr*3
  => [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5] 
 
-##########  ###########
+########## array * str ###########
+3.2.1 :146 > str =['Ram','Shayam','Radha']
+ => ["Ram", "Shayam", "Radha"] 
+3.2.1 :147 > str *,
+3.2.1 :148 > 
+^C                                      
+3.2.1 :147 > str * ","
+ => "Ram,Shayam,Radha" 
+3.2.1 :148 > str * "R"
+ => "RamRShayamRRadha" 
+3.2.1 :149 > str * "<+>"
+ => "Ram<+>Shayam<+>Radha" 
+ 
+ 3.2.1 :150 > arr*","
+ => "1,2,3,4,5" 
+3.2.1 :151 > arr*"=>"
+ => "1=>2=>3=>4=>5" 
 
+ 
 ##########  ###########
 
 ##########  ###########
