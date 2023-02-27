@@ -4123,13 +4123,39 @@ rvm remove 2.3.5
 ________________________________________________________________________________
 
 
+ARRAY
+Creating Arrays
+names = Array.new
+
+You can set the size of an array at the time of creating array −
+names = Array.new(20)
 
 
+You can assign a value to each element in the array as follows −
+names = Array.new(4, "mac")
+puts "#{names}"
+This will produce the following result −
+["mac", "mac", "mac", "mac"]
 
+nums = Array.new(10) { |e| e = e * 2 }
+puts "#{nums}"
+This will produce the following result −
+[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
 
+There is another method of Array, []. It works like this −
+nums = Array.[](1, 2, 3, 4,5)
+One more form of array creation is as follows −
+nums = Array[1, 2, 3, 4,5]
 
+digits = Array(0..9)
+puts "#{digits}"
+This will produce the following result −
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-
-
+digits = Array(0..9)
+num = digits.at(6)
+puts "#{num}"
+This will produce the following result −
+6
 
 
