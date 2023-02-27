@@ -662,8 +662,25 @@ array.eql?(other)
 Returns true if array and other are the same object, or are both arrays
 with the same content.
  
-##########  ###########
+########## array.each { |item| block } and array.each_index { |index| block } ###########
 
+array.each { |item| block }
+Calls block once for each element in self, passing that element as a
+parameter.
+
+array.each_index { |index| block }
+Same as Array#each, but passes the index of the element instead of the
+element itself.
+
+3.2.1 :170 > arr.each {|i|}
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+3.2.1 :171 > arr.each_index {|i|}
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+ 
+ 3.2.1 :173 > arr.each_index {|i| print i.to_s + " :"}
+0 :1 :2 :3 :4 :5 :6 :7 :8 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+3.2.1 :174 > arr.each {|i| print i.to_s + " :"}
+2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
  
 ##########  ###########
 
