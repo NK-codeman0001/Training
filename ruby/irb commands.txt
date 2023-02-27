@@ -466,7 +466,16 @@ Searches through an array whose elements are also arrays comparing obj with the 
 3.2.1 :068 > arr.rassoc(2)
  => [1, 2, 3, 4] 
 
-##########  ###########
+########## array.clear ###########
+Removes all elements from array.
+3.2.1 :070 > arr
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :071 > arr.clear
+ => [] 
+3.2.1 :072 > arr
+ => [] 
+
+
 ##########  ###########
 ##########  ###########
 ##########  ###########
