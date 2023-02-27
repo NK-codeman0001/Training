@@ -780,10 +780,30 @@ array.ﬁll(range) { |index| block }
  => [1, 2, 3, 3, 404, 6, 7, 8, 9, 10, 11] 
 3.2.1 :075 > 
 
-
   
-##########  ###########
+########## array.first  ###########
+array.ﬁrst [or]
+array.ﬁrst(n)
+Returns the ﬁrst element, or the ﬁrst n elements, of the array. If the
+array is empty, the ﬁrst form returns nil, and the second form returns an
+empty array.
 
+array.ﬁrst
+3.2.1 :078 > arr
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+3.2.1 :079 > arr.first
+ => 1 
+
+3.2.1 :082 > arr1=[]
+ => [] 
+3.2.1 :084 > arr1.first
+ => nil 
+
+array.ﬁrst(n)
+3.2.1 :080 > arr.first(5)
+ => [1, 2, 3, 4, 5] 
+3.2.1 :085 > arr1.first(5)
+ => [] 
  
 ##########  ###########
 
