@@ -402,7 +402,31 @@ array[range] = obj or an_array or nil
 3.2.1 :012 > arr
  => [500, 404, nil, 100, 200] 
 
-##########  ###########
+########## array.abbrev(pattern = nil) ###########
+Calculates the set of unambiguous abbreviations for the strings in self. If passed a pattern or a string, only the strings matching the pattern or starting with the string are considered.
+
+3.2.1 :023 > require 'abbrev'
+ => true 
+3.2.1 :024 > arr.abbrev
+/usr/share/rvm/rubies/ruby-3.2.1/lib/ruby/3.2.0/abbrev.rb:82:in `block in abbrev': undefined method `empty?' for 500:Integer (NoMethodError)
+
+      next if word.empty?
+      
+3.2.1 :020 > str=['Neeraj','Kumar']
+ => ["Neeraj", "Kumar"] 
+3.2.1 :021 > str.abbrev
+ => 
+{"Neeraj"=>"Neeraj",                             
+ "Neera"=>"Neeraj",                              
+ "Neer"=>"Neeraj",                               
+ "Nee"=>"Neeraj",                                
+ "Ne"=>"Neeraj",                                 
+ "N"=>"Neeraj",                                  
+ "Kumar"=>"Kumar",                               
+ "Kuma"=>"Kumar",                                
+ "Kum"=>"Kumar",                                 
+ "Ku"=>"Kumar",                                  
+ "K"=>"Kumar"}  
 
 ##########  ###########
 ##########  ###########
