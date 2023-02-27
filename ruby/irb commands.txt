@@ -566,7 +566,46 @@ array.map! { |item| block } (it will change the original value of arr #inplace) 
 3.2.1 :108 > }
 (irb):105:in `block in <top (required)>': undefined method `%' for nil:NilClass (NoMethodError)
 
-##########  ###########
+########## array.compact & array.compact! (inplace)  ###########
+array.compact
+Returns a copy of self with all nil elements removed.
+
+array.compact!
+Removes nil elements from array. Returns nil if no changes were made.
+
+3.2.1 :132 > arr=Array(1..18)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+3.2.1 :133 > arr.map!{|i| 
+3.2.1 :134 >   if i%2==0
+3.2.1 :135 >     i
+3.2.1 :136 >   end
+3.2.1 :137 > }.compact
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+3.2.1 :138 > arr
+ => 
+[nil,                                                                 
+ 2,                                                                   
+ nil,                 
+ 4,                   
+ nil,                 
+ 6,                   
+ nil,
+ 8,
+ nil,
+ 10,
+ nil,
+ 12,
+ nil,
+ 14,
+ nil,
+ 16,
+ nil,
+ 18] 
+3.2.1 :139 > arr.compact!
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+3.2.1 :140 > arr
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18]
+ 
 ##########  ###########
 _____________________________________________________________________________________
 Hashes (map in C++, dictonary in python)
