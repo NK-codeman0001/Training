@@ -805,8 +805,34 @@ array.ﬁrst(n)
 3.2.1 :085 > arr1.first(5)
  => [] 
  
-##########  ###########
+########## array.ﬂatten ###########
+array.ﬂatten
+Returns a new array that is a one-dimensional ﬂattening of this array
+(recursively).
 
+array.ﬂatten!
+Flattens array in place. Returns nil if no modiﬁcations were made. (array
+contains no subarrays.)
+
+array.ﬂatten
+ 3.2.1 :018 > arr=Array(1..5)
+ => [1, 2, 3, 4, 5] 
+3.2.1 :019 > arr1=Array(6..8)
+ => [6, 7, 8] 
+3.2.1 :020 > arr[5]=arr1
+ => [6, 7, 8] 
+3.2.1 :021 > arr
+ => [1, 2, 3, 4, 5, [6, 7, 8]] 
+3.2.1 :022 > arr.flatten
+ => [1, 2, 3, 4, 5, 6, 7, 8] 
+3.2.1 :023 > arr
+ => [1, 2, 3, 4, 5, [6, 7, 8]] 
+ 
+array.ﬂatten!
+3.2.1 :024 > arr.flatten!
+ => [1, 2, 3, 4, 5, 6, 7, 8] 
+3.2.1 :025 > arr
+ => [1, 2, 3, 4, 5, 6, 7, 8] 
  
 ##########  ###########
 
