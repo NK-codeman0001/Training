@@ -634,9 +634,33 @@ if the item is not found.
 3.2.1 :155 > arr.delete(16)
  => 16 
 
- 
-##########  ###########
 
+array.delete_at(index)
+Deletes the element at the speciﬁed index, returning that element, or
+nil if the index is out of range.
+3.2.1 :156 > arr
+ => [2, 4, 6, 8, 10, 18, 19, 20, 21, 22, 23, 24, 25] 
+3.2.1 :157 > arr.delete_at(10)
+ => 23 
+3.2.1 :158 > arr
+ => [2, 4, 6, 8, 10, 18, 19, 20, 21, 22, 24, 25] 
+
+array.delete_if { |item| block }
+
+Deletes every element of self for which block evaluates to true.
+3.2.1 :161 > arr=Array(1..18)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+3.2.1 :162 > arr.delete_if{|i| i%2==1}
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+ 
+ 
+########## array.empty?  and array.eql?(other)###########
+array.empty?
+Returns true if the self array contains no elements.
+
+array.eql?(other)
+Returns true if array and other are the same object, or are both arrays
+with the same content.
  
 ##########  ###########
 
