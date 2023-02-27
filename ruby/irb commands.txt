@@ -359,6 +359,27 @@ Pushes the given object onto the end of array. This expression returns the array
 3.2.1 :176 > arr<<404
  => [1, 2, 3, 4, 5, 404] 
  
+ //recuring values (bad practice)
+ 3.2.1 :039 > arr<<arr
+ => [500, 404, nil, 100, 200, [...]] 
+3.2.1 :040 > arr
+ => [500, 404, nil, 100, 200, [...]] 
+3.2.1 :041 > arr[5]
+ => [500, 404, nil, 100, 200, [...]] 
+3.2.1 :042 > arr[5][5]
+ => [500, 404, nil, 100, 200, [...]] 
+3.2.1 :043 > arr[5][5][5][5]
+ => [500, 404, nil, 100, 200, [...]] 
+3.2.1 :044 > str
+ => ["Neeraj", "Kumar"] 
+3.2.1 :045 > str[1]
+ => "Kumar" 
+3.2.1 :046 > str[1][1]
+ => "u" 
+3.2.1 :047 > str[1][1][1]
+ => nil 
+
+ 
 ########## range,slice,index ###########
 array[range]
 3.2.1 :180 > arr=Array(1..9)
@@ -428,7 +449,23 @@ Calculates the set of unambiguous abbreviations for the strings in self. If pass
  "Ku"=>"Kumar",                                  
  "K"=>"Kumar"}  
 
-##########  ###########
+########## array.assoc(obj) ###########
+Searches through an array whose elements are also arrays comparing obj with the ﬁrst element of each contained array using obj.==. Returns the ﬁrst contained array that matches or nil if no match is found.
+3.2.1 :062 > arr
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :063 > arr.assoc(1)
+ => [1, 2, 3, 4] 
+3.2.1 :064 > arr.assoc(500)
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :065 > arr.rassoc(500)
+ => nil 
+3.2.1 :066 > arr.rassoc(404)
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :067 > arr.rassoc(1)
+ => nil 
+3.2.1 :068 > arr.rassoc(2)
+ => [1, 2, 3, 4] 
+
 ##########  ###########
 ##########  ###########
 ##########  ###########
