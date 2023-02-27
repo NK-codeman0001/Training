@@ -331,7 +331,13 @@ Returns a new array built by concatenating the two arrays together to produce a 
  => [1, 2, 3, 4, 5, 1, 3, 6, 3, 6, 7, 5] 
 
 
-##########  ###########
+########## array - other_array ###########
+Returns a new array that is a copy of the original array, removing any items that also appear in other_array.
+3.2.1 :157 > arr3
+ => [1, 2, 3, 4, 5, "Ram", "Shayam", "Radha"] 
+3.2.1 :158 > arr3-arr
+ => ["Ram", "Shayam", "Radha"] 
+
 
 ##########  ###########
 ##########  ###########
