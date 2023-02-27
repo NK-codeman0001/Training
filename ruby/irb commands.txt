@@ -476,8 +476,96 @@ Removes all elements from array.
  => [] 
 
 
-##########  ###########
-##########  ###########
+########## array.collect { |item| block } [or]
+array.map { |item| block } (return new array) ###########
+
+3.2.1 :087 > arr=Array(1..18)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+3.2.1 :088 > arr.map{|i| 
+3.2.1 :089 >   if i%2==0
+3.2.1 :090 >     i
+3.2.1 :091 >   end
+3.2.1 :092 > }
+ => 
+[nil,                                               
+ 2,                                                 
+ nil,                                               
+ 4,                                                 
+ nil,                                               
+ 6,                                                 
+ nil,                                               
+ 8,                                                 
+ nil,                                           
+ 10,                                           
+ nil,
+ 12,
+ nil,
+ 14,
+ nil,
+ 16,
+ nil,
+ 18] 
+3.2.1 :093 > arr.map{|i| 
+3.2.1 :094 >   if i%2==0
+3.2.1 :095 >     i
+3.2.1 :096 >   end
+3.2.1 :097 > }
+ => 
+[nil,
+ 2,
+ nil,
+ 4,
+ nil,
+ 6,
+ nil,
+ 8,
+ nil,
+ 10,
+ nil,
+ 12,
+ nil,
+ 14,
+ nil,
+ 16,
+ nil,
+ 18] 
+
+
+########## array.collect! { |item| block } [or]
+array.map! { |item| block } (it will change the original value of arr #inplace) ###########
+3.2.1 :098 > arr=Array(1..18)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+3.2.1 :099 > arr.map!{|i| 
+3.2.1 :100 >   if i%2==0
+3.2.1 :101 >     i
+3.2.1 :102 >   end
+3.2.1 :103 > }
+ => 
+[nil,
+ 2,
+ nil,
+ 4,
+ nil,
+ 6,
+ nil,
+ 8,
+ nil,
+ 10,
+ nil,
+ 12,
+ nil,
+ 14,
+ nil,
+ 16,
+ nil,
+ 18] 
+3.2.1 :104 > arr.map!{|i| 
+3.2.1 :105 >   if i%2==0
+3.2.1 :106 >     i
+3.2.1 :107 >   end
+3.2.1 :108 > }
+(irb):105:in `block in <top (required)>': undefined method `%' for nil:NilClass (NoMethodError)
+
 ##########  ###########
 ##########  ###########
 _____________________________________________________________________________________
