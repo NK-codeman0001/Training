@@ -49,8 +49,20 @@ Enter 3 Integers:
 Max of 404,200 and -505 is 404
 
 
+Q2) Create a exponantial funtion
+code:
+ def pow(base_num,pow_num)
+    ans=1
+    pow_num.times do |i|
+        ans= ans* base_num
+    end
+    return ans
+end
 
- 
+puts pow(2,5)
+
+output:
+32
  
  
  
