@@ -358,7 +358,27 @@ Pushes the given object onto the end of array. This expression returns the array
  => [1, 2, 3, 4, 5] 
 3.2.1 :176 > arr<<404
  => [1, 2, 3, 4, 5, 404] 
-##########  ###########
+ 
+########## range,slice,index ###########
+array[range]
+3.2.1 :180 > arr=Array(1..9)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+array.slice(index) 
+3.2.1 :186 > arr=Array(1..9)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9] 
+3.2.1 :187 > arr.slice(5,8)
+ => [6, 7, 8, 9] 
+ 
+ array.slice(range)
+ 3.2.1 :188 > arr.slice(5..8)
+ => [6, 7, 8, 9] 
+ 
+ array[start, length]
+ 3.2.1 :189 > arr[2,3]
+ => [3, 4, 5]
+ 
+ 
 ##########  ###########
 ##########  ###########
 ##########  ###########
