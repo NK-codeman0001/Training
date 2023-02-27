@@ -682,9 +682,33 @@ element itself.
 3.2.1 :174 > arr.each {|i| print i.to_s + " :"}
 2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
  
-##########  ###########
-
+########## array.fetch ###########
+array.fetch(index) [or]
+array.fetch(index, default) [or]
+array.fetch(index) { |index| block }
+Tries to return the element at position index. If index lies outside the array, the ﬁrst form throws an IndexError exception, the second form returns default, and the third form returns the value of invoking block, passing in index. Negative values of index count from the end of the array.
  
+array.fetch(index) 
+3.2.1 :011 > arr.fetch(10)
+ => 11 
+3.2.1 :012 > arr.fetch(11)
+(irb):12:in `fetch': index 11 outside of array bounds: -11...11 (IndexError)         
+
+
+array.fetch(index, default) 
+3.2.1 :013 > arr.fetch(11,404)
+ => 404 
+
+array.fetch(index) { |index| block }
+3.2.1 :015 > arr.fetch(10){|i| put i}
+ => 11 
+3.2.1 :016 > arr.fetch(11){|i|}
+ => nil 
+3.2.1 :017 > arr.fetch(11){|i| i*2}
+ => 22 
+3.2.1 :018 > arr.fetch(11){|i| i}
+ => 11 
+
 ##########  ###########
 
  
