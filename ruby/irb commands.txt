@@ -616,7 +616,23 @@ Appends the elements in other_array to self.
  => [2, 4, 6, 8, 10, 12, 14, 16, 18, 19, 20, 21, 22, 23, 24, 25] 
 3.2.1 :145 > 
  
-##########  ###########
+########## array.delete(obj) [or]
+array.delete(obj) { block } ###########
+
+Deletes items from self that are equal to obj. If the item is not found,
+returns nil. If the optional code block is given, returns the result of block
+if the item is not found.
+
+3.2.1 :151 > arr
+ => [2, 4, 6, 8, 10, 12, 16, 18, 19, 20, 21, 22, 23, 24, 25] 
+3.2.1 :152 > arr.delete(12){"not found"}
+ => 12 
+3.2.1 :153 > arr.delete(12){"not found"}
+ => "not found" 
+3.2.1 :154 > arr.delete(12)
+ => nil 
+3.2.1 :155 > arr.delete(16)
+ => 16 
 
  
 ##########  ###########
