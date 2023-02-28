@@ -623,21 +623,11 @@ Pushes the given object onto the end of array. This expression returns the array
  => nil 
 
  
-########## range,slice,index ###########
+########## range,index ###########
 array[range]
 3.2.1 :180 > arr=Array(1..9)
  => [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-array.slice(index) 
-3.2.1 :186 > arr=Array(1..9)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9] 
-3.2.1 :187 > arr.slice(5,8)
- => [6, 7, 8, 9] 
- 
- array.slice(range)
- 3.2.1 :188 > arr.slice(5..8)
- => [6, 7, 8, 9] 
- 
  array[start, length]
  3.2.1 :189 > arr[2,3]
  => [3, 4, 5]
@@ -692,22 +682,6 @@ Calculates the set of unambiguous abbreviations for the strings in self. If pass
  "Ku"=>"Kumar",                                  
  "K"=>"Kumar"}  
 
-########## array.assoc(obj) ###########
-Searches through an array whose elements are also arrays comparing obj with the ﬁrst element of each contained array using obj.==. Returns the ﬁrst contained array that matches or nil if no match is found.
-3.2.1 :062 > arr
- => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
-3.2.1 :063 > arr.assoc(1)
- => [1, 2, 3, 4] 
-3.2.1 :064 > arr.assoc(500)
- => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
-3.2.1 :065 > arr.rassoc(500)
- => nil 
-3.2.1 :066 > arr.rassoc(404)
- => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
-3.2.1 :067 > arr.rassoc(1)
- => nil 
-3.2.1 :068 > arr.rassoc(2)
- => [1, 2, 3, 4] 
 
 ########## array.clear ###########
 Removes all elements from array.
@@ -809,46 +783,6 @@ array.map! { |item| block } (it will change the original value of arr #inplace) 
 3.2.1 :108 > }
 (irb):105:in `block in <top (required)>': undefined method `%' for nil:NilClass (NoMethodError)
 
-########## array.compact & array.compact! (inplace)  ###########
-array.compact
-Returns a copy of self with all nil elements removed.
-
-array.compact!
-Removes nil elements from array. Returns nil if no changes were made.
-
-3.2.1 :132 > arr=Array(1..18)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
-3.2.1 :133 > arr.map!{|i| 
-3.2.1 :134 >   if i%2==0
-3.2.1 :135 >     i
-3.2.1 :136 >   end
-3.2.1 :137 > }.compact
- => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
-3.2.1 :138 > arr
- => 
-[nil,                                                                 
- 2,                                                                   
- nil,                 
- 4,                   
- nil,                 
- 6,                   
- nil,
- 8,
- nil,
- 10,
- nil,
- 12,
- nil,
- 14,
- nil,
- 16,
- nil,
- 18] 
-3.2.1 :139 > arr.compact!
- => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
-3.2.1 :140 > arr
- => [2, 4, 6, 8, 10, 12, 14, 16, 18]
- 
 ########## array.concat(other_array) ###########
 Appends the elements in other_array to self.
 3.2.1 :142 > arr
@@ -922,33 +856,6 @@ element itself.
 3.2.1 :174 > arr.each {|i| print i.to_s + " :"}
 2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
  
-########## array.fetch ###########
-array.fetch(index) [or]
-array.fetch(index, default) [or]
-array.fetch(index) { |index| block }
-Tries to return the element at position index. If index lies outside the array, the ﬁrst form throws an IndexError exception, the second form returns default, and the third form returns the value of invoking block, passing in index. Negative values of index count from the end of the array.
- 
-array.fetch(index) 
-3.2.1 :011 > arr.fetch(10)
- => 11 
-3.2.1 :012 > arr.fetch(11)
-(irb):12:in `fetch': index 11 outside of array bounds: -11...11 (IndexError)         
-
-
-array.fetch(index, default) 
-3.2.1 :013 > arr.fetch(11,404)
- => 404 
-
-array.fetch(index) { |index| block }
-3.2.1 :015 > arr.fetch(10){|i| put i}
- => 11 
-3.2.1 :016 > arr.fetch(11){|i|}
- => nil 
-3.2.1 :017 > arr.fetch(11){|i| i*2}
- => 22 
-3.2.1 :018 > arr.fetch(11){|i| i}
- => 11 
-
 ########## arr.fill ###########
 array.ﬁll(obj) [or]
 array.ﬁll(obj, start , length) [or]
@@ -1019,58 +926,8 @@ array.ﬁll(range) { |index| block }
 3.2.1 :074 > }
  => [1, 2, 3, 3, 404, 6, 7, 8, 9, 10, 11] 
 3.2.1 :075 > 
-
-  
-########## array.first  ###########
-array.ﬁrst [or]
-array.ﬁrst(n)
-Returns the ﬁrst element, or the ﬁrst n elements, of the array. If the
-array is empty, the ﬁrst form returns nil, and the second form returns an
-empty array.
-
-array.ﬁrst
-3.2.1 :078 > arr
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
-3.2.1 :079 > arr.first
- => 1 
-
-3.2.1 :082 > arr1=[]
- => [] 
-3.2.1 :084 > arr1.first
- => nil 
-
-array.ﬁrst(n)
-3.2.1 :080 > arr.first(5)
- => [1, 2, 3, 4, 5] 
-3.2.1 :085 > arr1.first(5)
- => [] 
  
-########## array.last(n) , take(n) , drop(n)  ###########
-//last(n)
 
-3.2.1 :026 > arr
- => [1, 2, 3, 4, 5] 
-3.2.1 :027 > arr.last
- => 5 
-3.2.1 :028 > arr.last(3)
- => [3, 4, 5] 
- 
-//take(n) 
-to return the first n elements of an array, use take
-
-3.2.1 :020 > arr.take(5)
- => [1, 2, 3, 4, 5] 
-3.2.1 :021 > arr.take(6)
- => [1, 2, 3, 4, 5] 
-3.2.1 :022 > arr.take(10)
- => [1, 2, 3, 4, 5] 
-
-//drop(n)
-drop does the opposite of take, by returning the elements after n elements have been dropped:
-3.2.1 :024 > arr.drop(1)
- => [2, 3, 4, 5] 
-3.2.1 :025 > arr
- => [1, 2, 3, 4, 5]
 
 ########## array.ﬂatten ###########
 array.ﬂatten
@@ -1133,7 +990,538 @@ array.index(obj)
  => nil 
  
 ########## Methods for Fetching ###########
+These methods do not modify self.
 
+    [] or slice: Returns one or more elements.
+    a = [:foo, 'bar', 2]
+    a[0] # => :foo
+    a[2] # => 2
+    a # => [:foo, "bar", 2]
+
+    a[-1] # => 2
+    a[-2] # => "bar"
+
+    a[0, 2] # => [:foo, "bar"]
+    a[1, 2] # => ["bar", 2]
+
+    If start + length is greater than self.length, returns all elements from offset start to the end:
+
+    a = [:foo, 'bar', 2]
+    a[0, 4] # => [:foo, "bar", 2]
+    a[1, 3] # => ["bar", 2]
+    a[2, 2] # => [2]
+
+    If start + length is greater than self.length, returns all elements from offset start to the end:
+
+    a = [:foo, 'bar', 2]
+    a[0, 4] # => [:foo, "bar", 2]
+    a[1, 3] # => ["bar", 2]
+    a[2, 2] # => [2]
+
+    If start == self.size and length >= 0, returns a new empty Array.
+
+    If length is negative, returns nil.
+
+    When a single Range argument range is given, treats range.min as start above and range.size as length above:
+
+    a = [:foo, 'bar', 2]
+    a[0..1] # => [:foo, "bar"]
+    a[1..2] # => ["bar", 2]
+
+    Special case: If range.start == a.size, returns a new empty Array.
+
+    If range.end is negative, calculates the end index from the end:
+
+    a = [:foo, 'bar', 2]
+    a[0..-1] # => [:foo, "bar", 2]
+    a[0..-2] # => [:foo, "bar"]
+    a[0..-3] # => [:foo]
+    
+    If range.start is negative, calculates the start index from the end:
+    
+    a = [:foo, 'bar', 2]
+    a[-1..2] # => [2]
+    a[-2..2] # => ["bar", 2]
+    a[-3..2] # => [:foo, "bar", 2]
+    
+    If range.start is larger than the array size, returns nil.
+    
+    a = [:foo, 'bar', 2]
+    a[4..1] # => nil
+    a[4..0] # => nil
+    a[4..-1] # => nil
+    
+
+
+    fetch: Returns the element at a given offset.
+    ########## array.fetch ###########
+    array.fetch(index) [or]
+    array.fetch(index, default) [or]
+    array.fetch(index) { |index| block }
+    Tries to return the element at position index. If index lies outside the array, the ﬁrst form throws an IndexError exception, the second form returns default, and the third form returns the value of invoking block, passing in index. Negative values of index count from the end of the array.
+     
+    array.fetch(index) 
+    3.2.1 :011 > arr.fetch(10)
+     => 11 
+    3.2.1 :012 > arr.fetch(11)
+    (irb):12:in `fetch': index 11 outside of array bounds: -11...11 (IndexError)         
+    
+    
+    array.fetch(index, default) 
+    3.2.1 :013 > arr.fetch(11,404)
+     => 404 
+    
+    array.fetch(index) { |index| block }
+    3.2.1 :015 > arr.fetch(10){|i| put i}
+     => 11 
+    3.2.1 :016 > arr.fetch(11){|i|}
+     => nil 
+    3.2.1 :017 > arr.fetch(11){|i| i*2}
+     => 22 
+    3.2.1 :018 > arr.fetch(11){|i| i}
+     => 11 
+    
+
+    first: Returns one or more leading elements.
+    ########## array.first  ###########
+    array.ﬁrst [or]
+    array.ﬁrst(n)
+    Returns the ﬁrst element, or the ﬁrst n elements, of the array. If the
+    array is empty, the ﬁrst form returns nil, and the second form returns an
+    empty array.
+    
+    array.ﬁrst
+    3.2.1 :078 > arr
+     => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+    3.2.1 :079 > arr.first
+     => 1 
+    
+    3.2.1 :082 > arr1=[]
+     => [] 
+    3.2.1 :084 > arr1.first
+     => nil 
+    
+    array.ﬁrst(n)
+    3.2.1 :080 > arr.first(5)
+     => [1, 2, 3, 4, 5] 
+    3.2.1 :085 > arr1.first(5)
+     => [] 
+    
+    last: Returns one or more trailing elements.
+    ########## array.last(n) ###########
+    //last(n)
+    
+    3.2.1 :026 > arr
+     => [1, 2, 3, 4, 5] 
+    3.2.1 :027 > arr.last
+     => 5 
+    3.2.1 :028 > arr.last(3)
+     => [3, 4, 5] 
+
+
+    max: Returns one or more maximum-valued elements, as determined by <=> or a given block.
+    irb(main):025:0> arr
+    => [:one, "two", "3", 4]
+    irb(main):026:0> arr.max
+    (irb):26:in `max': comparison of Symbol with String failed (ArgumentError)
+
+    irb(main):027:0> nums=Array(1..6)
+    => [1, 2, 3, 4, 5, 6]
+    irb(main):028:0> nums.max
+    => 6
+    irb(main):029:0> nums.max(2)
+    => [6, 5]
+    irb(main):030:0> nums.max(10)
+    => [6, 5, 4, 3, 2, 1]
+    irb(main):031:0> arr.max {|a,b| a.size <=> b.size}
+    => 4
+    irb(main):032:0> 4.size
+    => 4
+    irb(main):033:0> arr[0].size
+    => 3
+    irb(main):034:0> arr.max(2) {|a,b| a.size <=> b.size}
+    => [4, "two"]
+    
+    
+    min: Returns one or more minimum-valued elements, as determined by <=> or a given block.
+
+=>>similar to max it will return min value
+
+
+    minmax: Returns the minimum-valued and maximum-valued elements, as determined by <=> or a given block.
+    irb(main):040:0> nums
+    => [1, 2, 3, 4, 5, 6]
+    irb(main):041:0> arr
+    => [:one, "two", "3", 4]
+    irb(main):042:0> nums.minmax
+    => [1, 6]
+    irb(main):043:0> arr.minmax { |a,b| a.size <=> b.size }
+    => ["3", 4]
+
+
+    assoc: Returns the first element that is an array whose first element == a given object.
+########## array.assoc(obj) ###########
+Searches through an array whose elements are also arrays comparing obj with the ﬁrst element of each contained array using obj.==. Returns the ﬁrst contained array that matches or nil if no match is found.
+3.2.1 :062 > arr
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :063 > arr.assoc(1)
+ => [1, 2, 3, 4] 
+3.2.1 :064 > arr.assoc(500)
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :065 > arr.rassoc(500)
+ => nil 
+3.2.1 :066 > arr.rassoc(404)
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :067 > arr.rassoc(1)
+ => nil 
+3.2.1 :068 > arr.rassoc(2)
+ => [1, 2, 3, 4] 
+
+
+    rassoc: Returns the first element that is an array whose second element == a given object.
+3.2.1 :062 > arr
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :065 > arr.rassoc(500)
+ => nil 
+3.2.1 :066 > arr.rassoc(404)
+ => [500, 404, nil, 100, 200, [...], [1, 2, 3, 4]] 
+3.2.1 :067 > arr.rassoc(1)
+ => nil 
+3.2.1 :068 > arr.rassoc(2)
+ => [1, 2, 3, 4] 
+
+
+    at: Returns the element at a given offset.
+ 
+    irb(main):040:0> nums
+    => [1, 2, 3, 4, 5, 6]
+    irb(main):041:0> arr
+    => [:one, "two", "3", 4]
+    irb(main):044:0> arr.at(0)
+    => :one
+    irb(main):045:0> nums.at(6)
+    => nil
+    irb(main):046:0> nums.at(3)
+    => 4
+
+    values_at: Returns the elements at given offsets.
+    irb(main):047:0> nums.at(0..3)
+    
+    (irb):47:in `at': no implicit conversion of Range into Integer (TypeError)
+            
+    irb(main):048:0> nums.at(0,3)
+    (irb):48:in `at': wrong number of arguments (given 2, expected 1) (ArgumentError)
+
+    irb(main):049:0> nums.values_at(0..3)
+    => [1, 2, 3, 4]
+    irb(main):050:0> nums.values_at(1,3)
+    => [2, 4]
+    irb(main):051:0> nums.values_at(3,1,2,0)
+    => [4, 2, 3, 1]
+    irb(main):052:0> nums
+    => [1, 2, 3, 4, 5, 6]
+    irb(main):053:0> nums.values_at(-3,-1,-2,-0)
+    => [4, 6, 5, 1]
+
+    dig: Returns the object in nested objects that is specified by a given index and additional arguments.
+    Finds and returns the object in nested objects that is specified by index and identifiers. The nested objects may be instances of various classes. See Dig Methods.
+
+    Examples:
+    
+    a = [:foo, [:bar, :baz, [:bat, :bam]]]
+    a.dig(1) # => [:bar, :baz, [:bat, :bam]]
+    a.dig(1, 2) # => [:bat, :bam]
+    a.dig(1, 2, 0) # => :bat
+    a.dig(1, 2, 3) # => nil
+   
+
+    drop: Returns trailing elements as determined by a given index.
+
+    //drop(n)
+    drop does the opposite of take, by returning the elements after n elements have been dropped:
+    3.2.1 :024 > arr.drop(1)
+     => [2, 3, 4, 5] 
+    3.2.1 :025 > arr
+     => [1, 2, 3, 4, 5]
+
+
+    take: Returns leading elements as determined by a given index.
+
+    //take(n) 
+    to return the first n elements of an array, use take
+    
+    3.2.1 :020 > arr.take(5)
+     => [1, 2, 3, 4, 5] 
+    3.2.1 :021 > arr.take(6)
+     => [1, 2, 3, 4, 5] 
+    3.2.1 :022 > arr.take(10)
+     => [1, 2, 3, 4, 5] 
+
+    drop_while: Returns trailing elements as determined by a given block.
+
+    //drop_while  (it is similar to use while loop with drop function)
+ 
+    3.2.1 :097 > num.drop_while {|i| i>3}  (the while loop breaks since the initial condition is not meet for first element)
+     => [1, 2, 3, 4, 5] 
+    3.2.1 :101 > num.drop_while { |i| i < 3}
+     => [3, 4, 5] 
+    
+    take_while: Returns leading elements as determined by a given block.
+=>> similar to drop_while but it return values which satisgy the condition
+
+    slice & slice!: Returns consecutive elements as determined by a given argument.
+    array.slice(index) 
+    3.2.1 :186 > arr=Array(1..9)
+     => [1, 2, 3, 4, 5, 6, 7, 8, 9] 
+    3.2.1 :187 > arr.slice(5,8)
+     => [6, 7, 8, 9] 
+     
+     array.slice(range)
+     3.2.1 :188 > arr.slice(5..8)
+     => [6, 7, 8, 9] 
+     
+    
+    sort and sort!: Returns all elements in an order determined by <=> or a given block.
+
+    a = 'abcde'.split('').shuffle
+    a # => ["e", "b", "d", "a", "c"]
+    a1 = a.sort
+    a1 # => ["a", "b", "c", "d", "e"]
+
+    a1 = a.sort {|a, b| a <=> b }
+    a1 # => ["a", "b", "c", "d", "e"]
+    a2 = a.sort {|a, b| b <=> a }
+    a2 # => ["e", "d", "c", "b", "a"]
+
+    //sort_by
+    a = ['aaaa', 'bbb', 'cc', 'd']
+    a.sort_by! {|element| element.size }
+    a # => ["d", "cc", "bbb", "aaaa"]
+
+    a = ['aaaa', 'bbb', 'cc', 'd']
+    a.sort_by! # => #<Enumerator: ["aaaa", "bbb", "cc", "d"]:sort_by!>
+
+    reverse and reverse!: Returns all elements in reverse order.
+    a = ['foo', 'bar', 'two']
+    a1 = a.reverse
+    a1 # => ["two", "bar", "foo"]
+
+    a = [:foo, 'bar', 2]
+    a.reverse_each {|element|  puts "#{element.class} #{element}" }
+    Output:
+
+    Integer 2
+    String bar
+    Symbol foo
+    
+    a = [:foo, 'bar', 2]
+    a.reverse_each {|element| puts element; a.clear if element.to_s.start_with?('b') }
+    Output:
+
+    2
+    bar
+    
+
+    compact: Returns an array containing all non-nil elements.
+    ########## array.compact & array.compact! (inplace)  ###########
+    array.compact
+    Returns a copy of self with all nil elements removed.
+    
+    array.compact!
+    Removes nil elements from array. Returns nil if no changes were made.
+    
+    3.2.1 :132 > arr=Array(1..18)
+     => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+    3.2.1 :133 > arr.map!{|i| 
+    3.2.1 :134 >   if i%2==0
+    3.2.1 :135 >     i
+    3.2.1 :136 >   end
+    3.2.1 :137 > }.compact
+     => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+    3.2.1 :138 > arr
+     => 
+    [nil,2,nil,4,nil,6,nil,8,nil,10,nil,12,nil,14,nil,16,nil,18] 
+    3.2.1 :139 > arr.compact!
+     => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+    3.2.1 :140 > arr
+     => [2, 4, 6, 8, 10, 12, 14, 16, 18]
+     
+//compact and compact! 
+A useful method if you need to remove nil values from an array is compact:
+3.2.1 :072 > arr.compact
+ => [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
+3.2.1 :073 > arr
+ => [404, "one", 1, 2, 3, 4, 5, nil, nil, 200, 6, "Apple", nil, nil, nil, nil, "sixteen"] 
+3.2.1 :074 > arr.compact!
+ => [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
+3.2.1 :075 > arr
+ => [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
+
+
+    select, filter: Returns an array containing elements selected by a given block.
+    3.2.1 :094 > num
+    => [1, 2, 3, 4, 5] 
+    //select
+   3.2.1 :095 > num.select {|i| i>3}
+    => [4, 5]
+
+    a = [:foo, 'bar', 2, :bam]
+    a.select # => #<Enumerator: [:foo, "bar", 2, :bam]:select>
+
+    uniq and uniq! : Returns an array containing non-duplicate elements.
+    a = [0, 0, 1, 1, 2, 2]
+    a.uniq # => [0, 1, 2]
+
+    a = ['a', 'aa', 'aaa', 'b', 'bb', 'bbb']
+    a.uniq {|element| element.size } # => ["a", "aa", "aaa"]
+
+
+    rotate and rotate!: Returns all elements with some rotated from one end to the other.
+
+    When no argument given, returns a new Array that is like self, except that the first element has been rotated to the last position:
+
+    a = [:foo, 'bar', 2, 'bar']
+    a1 = a.rotate
+    a1 # => ["bar", 2, "bar", :foo]
+    
+    When given a non-negative Integer count, returns a new Array with count elements rotated from the beginning to the end:
+    
+    a = [:foo, 'bar', 2]
+    a1 = a.rotate(2)
+    a1 # => [2, :foo, "bar"]
+    
+    If count is large, uses count % array.size as the count:
+    
+    a = [:foo, 'bar', 2]
+    a1 = a.rotate(20)
+    a1 # => [2, :foo, "bar"]
+    
+    If count is zero, returns a copy of self, unmodified:
+    
+    a = [:foo, 'bar', 2]
+    a1 = a.rotate(0)
+    a1 # => [:foo, "bar", 2]
+    
+    When given a negative Integer count, rotates in the opposite direction, from end to beginning:
+    
+    a = [:foo, 'bar', 2]
+    a1 = a.rotate(-2)
+    a1 # => ["bar", 2, :foo]
+    
+    If count is small (far from zero), uses count % array.size as the count:
+    
+    a = [:foo, 'bar', 2]
+    a1 = a.rotate(-5)
+    a1 # => ["bar", 2, :foo]
+    
+
+(unable to perform)    bsearch: Returns an element selected via a binary search as determined by a given block.
+
+static VALUE
+rb_ary_bsearch(VALUE ary)
+{
+    VALUE index_result = rb_ary_bsearch_index(ary);
+
+    if (FIXNUM_P(index_result)) {
+        return rb_ary_entry(ary, FIX2LONG(index_result));
+    }
+    return index_result;
+}
+
+(unable to perform)    bsearch_index: Returns the index of an element selected via a binary search as determined by a given block.
+
+static VALUE
+rb_ary_bsearch_index(VALUE ary)
+{
+    long low = 0, high = RARRAY_LEN(ary), mid;
+    int smaller = 0, satisfied = 0;
+    VALUE v, val;
+
+    RETURN_ENUMERATOR(ary, 0, 0);
+    while (low < high) {
+        mid = low + ((high - low) / 2);
+        val = rb_ary_entry(ary, mid);
+        v = rb_yield(val);
+        if (FIXNUM_P(v)) {
+            if (v == INT2FIX(0)) return INT2FIX(mid);
+            smaller = (SIGNED_VALUE)v < 0; /* Fixnum preserves its sign-bit */
+        }
+        else if (v == Qtrue) {
+            satisfied = 1;
+            smaller = 1;
+        }
+        else if (!RTEST(v)) {
+            smaller = 0;
+        }
+        else if (rb_obj_is_kind_of(v, rb_cNumeric)) {
+            const VALUE zero = INT2FIX(0);
+            switch (rb_cmpint(rb_funcallv(v, id_cmp, 1, &zero), v, zero)) {
+              case 0: return INT2FIX(mid);
+              case 1: smaller = 1; break;
+              case -1: smaller = 0;
+            }
+        }
+        else {
+            rb_raise(rb_eTypeError, "wrong argument type %"PRIsVALUE
+                     " (must be numeric, true, false or nil)",
+                     rb_obj_class(v));
+        }
+        if (smaller) {
+            high = mid;
+        }
+        else {
+            low = mid + 1;
+        }
+    }
+    if (!satisfied) return Qnil;
+    return INT2FIX(low);
+}
+
+
+    sample: Returns one or more random elements.
+
+    Returns random elements from self.
+
+    When no arguments are given, returns a random element from self:
+    
+    a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    a.sample # => 3
+    a.sample # => 8
+    
+    If self is empty, returns nil.
+    
+    When argument n is given, returns a new Array containing n random elements from self:
+    
+    a.sample(3) # => [8, 9, 2]
+    a.sample(6) # => [9, 6, 10, 3, 1, 4]
+    
+    Returns no more than a.size elements (because no new duplicates are introduced):
+    
+    a.sample(a.size * 2) # => [6, 4, 1, 8, 5, 9, 10, 2, 3, 7]
+    
+    But self may contain duplicates:
+    
+    a = [1, 1, 1, 2, 2, 3]
+    a.sample(a.size * 2) # => [1, 1, 3, 2, 1, 2]
+    
+    The argument n must be a non-negative numeric value. The order of the result array is unrelated to the order of self. Returns a new empty Array if self is empty.
+    
+    The optional random argument will be used as the random number generator:
+    
+    a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    a.sample(random: Random.new(1))     #=> 6
+    a.sample(4, random: Random.new(1))  #=> [6, 10, 9, 2]
+    
+
+    shuffle and shuffle!: Returns elements in a random order.
+    a = [1, 2, 3] #=> [1, 2, 3]
+    a.shuffle     #=> [2, 3, 1]
+    a             #=> [1, 2, 3]
+
+    The optional random argument will be used as the random number generator:
+
+    a.shuffle(random: Random.new(1))  #=> [1, 3, 2]
+    
  
 ##########  ###########
 
