@@ -492,6 +492,34 @@ have the same hash code.
  => 3624524072152072368
 
 
+########## Methods for Comparing ###########
+
+
+    <=>: Returns -1, 0, or 1 * as self is less than, equal to, or greater than a given object.
+Returns -1 if any result is -1
+Returns 1 if any result is 1:
+Returns 1 both are equal:
+
+3.2.1 :071 > [0,1,2,3] <=> [0,1,2,3]
+ => 0 
+3.2.1 :072 > [0,1,2,3] <=> [0,1,2,3,4]
+ => -1 
+3.2.1 :073 > [0,1,2,3,4] <=> [0,1,2,3]
+ => 1 
+3.2.1 :074 > [0,1,2,3,5] <=> [0,1,2,3,6]
+ => -1 
+3.2.1 :075 > [0,1,2,3,5,8] <=> [0,1,2,3,6,7]
+ => -1 
+
+    ==: Returns whether each element in self is == to the corresponding element in a given object.
+=>check if both array is same
+syntax: arr1==arr2
+
+    eql?: Returns whether each element in self is eql? to the corresponding element in a given object.
+
+=>similar to ==
+syntax: arr1.eql?(arr2)
+
 ########## array & other_array ###########
 Returns a new array containing elements common to the two arrays, with no duplicates.
 
@@ -869,13 +897,10 @@ Deletes every element of self for which block evaluates to true.
  => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
  
  
-########## array.empty?  and array.eql?(other)###########
+########## array.empty?###########
 array.empty?
 Returns true if the self array contains no elements.
 
-array.eql?(other)
-Returns true if array and other are the same object, or are both arrays
-with the same content.
  
 ########## array.each { |item| block } and array.each_index { |index| block } ###########
 
