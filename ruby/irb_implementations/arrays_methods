@@ -249,6 +249,80 @@ Similar to select vs. reject, delete_if and keep_if have the exact opposite resu
 3.2.1 :107 > num
  => [] 
 
+######### Methods for Creating an Array ###########
+
+    ::[]: Returns a new array populated with given objects.
+
+3.2.1 :003 > Array.[](1,'2','three')
+ => [1, "2", "three"] 
+3.2.1 :004 > Array.[](1..6)
+ => [1..6]        
+3.2.1 :006 > Array[1..6]
+ => [1..6] 
+3.2.1 :007 > Array[1,'2','three']
+ => [1, "2", "three"] 
+3.2.1 :008 > [1..6]
+ => [1..6] 
+3.2.1 :009 > [1,'2','three']
+ => [1, "2", "three"] 
+
+
+    ::new: Returns a new array.
+With no block and a single Array argument array, returns a new Array formed from array:
+
+3.2.1 :017 > a=Array.new([1,:to,'three','5'])
+ => [1, :to, "three", "5"] 
+
+3.2.1 :018 > a.class # => Array
+
+3.2.1 :018 > a 
+ => [1, :to, "three", "5"] 
+ 
+
+With no block and a single Integer argument size, returns a new Array of the given size whose elements are all nil:
+
+3.2.1 :018 > Array.new(5)
+ => [nil, nil, nil, nil, nil] 
+
+
+With no block and arguments size and default_value, returns an Array of the given size; each element is that same default_value:
+
+3.2.1 :019 > Array.new(5,404)
+ => [404, 404, 404, 404, 404] 
+
+
+With a block and argument size, returns an Array of the given size; the block is called with each successive integer index; the element for that index is the return value from the block:
+
+3.2.1 :020 > Array.new(5) {|i| "item #{i}"}
+ => ["item 0", "item 1", "item 2", "item 3", "item 4"] 
+
+
+=>>Raises ArgumentError if size is negative.
+=>>With a block and no argument, or a single argument 0, ignores the block and returns a new empty Array.
+
+
+(unable to run)    ::try_convert: Returns a new array created from a given object.
+Method: Array.try_convert
+
+.try_convert(object) ⇒ Object?
+
+If object is an Array object, returns object.
+
+Otherwise if object responds to :to_ary, calls object.to_ary and returns the result.
+
+Returns nil if object does not respond to :to_ary
+
+Raises an exception unless object.to_ary returns an Array object.
+
+Returns:
+
+    (Object, nil)
+
+static VALUE
+rb_ary_s_try_convert(VALUE dummy, VALUE ary)
+{
+    return rb_check_array_type(ary);
+}
 
 ########## array & other_array ###########
 Returns a new array containing elements common to the two arrays, with no duplicates.
