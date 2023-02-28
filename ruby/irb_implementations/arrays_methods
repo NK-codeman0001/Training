@@ -324,6 +324,174 @@ rb_ary_s_try_convert(VALUE dummy, VALUE ary)
     return rb_check_array_type(ary);
 }
 
+########## Methods for Querying ###########
+
+
+    length, size: Returns the count of elements.
+
+    include?: Returns whether any element == a given object.
+
+    empty?: Returns whether there are no elements.
+
+    all?: Returns whether all elements meet a given criterion.
+
+    any?: Returns whether any element meets a given criterion.
+
+    none?: Returns whether no element == a given object.
+
+    one?: Returns whether exactly one element == a given object.
+
+    count: Returns the count of elements that meet a given criterion.
+
+    find_index, index: Returns the index of the first element that meets a given criterion.
+
+    rindex: Returns the index of the last element that meets a given criterion.
+
+    hash: Returns the integer hash code.
+
+
+3.2.1 :001 > arr=Array(1..5)
+ => [1, 2, 3, 4, 5]
+ 
+ //length , size, count, empty?, include?
+ 
+ 3.2.1 :030 > arr.length
+ => 5 
+3.2.1 :031 > arr.size
+ => 5 
+3.2.1 :032 > arr.count
+ => 5 
+3.2.1 :034 > arr.empty?
+ => false 
+ 
+ 
+3.2.1 :035 > arr[6]=nil
+ => nil 
+3.2.1 :036 > arr
+ => [1, 2, 3, 4, 5, nil, nil] 
+3.2.1 :037 > arr.length
+ => 7 
+3.2.1 :038 > arr.size
+ => 7 
+3.2.1 :039 > arr.count
+ => 7 
+3.2.1 :040 > arr.empty?
+ => false 
+
+3.2.1 :041 > arr.include?5
+ => true 
+3.2.1 :042 > arr.include?(5)
+ => true 
+ 3.2.1 :044 > arr.include?nil
+ => true 
+ 
+//all?, any?, none?, one?, find_index, index, rindex, hash
+
+#all?
+Returns true if all elements of self meet a given criterion.
+
+With no block given and no argument, returns true if self contains only truthy elements, false otherwise:
+
+3.2.1 :034 > [0, 1, :foo].all?
+ => true 
+3.2.1 :035 > [0, 1, :foo].all?nil
+ => false 
+3.2.1 :036 > [0, nil, 2].all?
+ => false 
+3.2.1 :037 > [0, nil, 2].all?nil
+ => false 
+3.2.1 :038 > [].all?
+ => true 
+3.2.1 :039 > [].all?nil
+ => true 
+
+3.2.1 :041 > num=Array(1..8)
+ => [1, 2, 3, 4, 5, 6, 7, 8] 
+ 
+3.2.1 :043 > num.all? {|i| i>0}
+ => true 
+3.2.1 :044 > num.all? {|i| i<7}
+ => false 
+
+If argument obj is given, returns true if obj.=== every element, false otherwise:
+3.2.1 :045 > ['food', 'fool', 'foot'].all?(/foo/)
+ => true 
+3.2.1 :046 > ['food', 'drink'].all?(/bar/)
+ => false 
+3.2.1 :047 > [].all?(/foo/)
+ => true 
+3.2.1 :048 > [].all?(/bar/)
+ => true 
+3.2.1 :049 > [0, 0, 0].all?(0)
+ => true 
+3.2.1 :050 > [0, 1, 2].all?(1)
+ => false 
+
+
+#any?
+Returns true if any element of self meets a given criterion.
+
+With no block given and no argument, returns true if self has any truthy element, false otherwise:
+
+##similar to all?
+
+
+
+#none?
+Returns true if no element of self meet a given criterion.
+
+With no block given and no argument, returns true if self has no truthy elements, false otherwise:
+
+##similar to all?
+
+
+#one?
+Returns true if exactly one element of self meets a given criterion.
+
+With no block given and no argument, returns true if self has exactly one truthy element, false otherwise:
+
+3.2.1 :062 > num
+ => [1, 2, 3, 4, 5, 5, 7, 8] 
+3.2.1 :063 > num.one?
+ => false 
+3.2.1 :064 > [].one?
+ => false 
+
+3.2.1 :067 > num.one? {|i| i>0}
+ => false 
+3.2.1 :068 > num.one? {|i| i>7}
+ => true 
+
+3.2.1 :069 > ['food', 'drink'].one?(/bar/)
+ => false 
+3.2.1 :070 > ['food', 'drink'].one?(/foo/)
+ => true 
+
+
+#find_index or index
+
+array.index(obj)
+Returns the index of obj 
+
+arr=[1,2,3,4,5,6,7,7,8]
+3.2.1 :036 > arr.index(7)
+ => 6 
+3.2.1 :037 > arr.index(10)
+ => nil 
+
+#rindex
+=> similar to index(obj) but it returns the last matching obj
+
+#array.hash
+Computes a hash-code for array. Two arrays with the same content will
+have the same hash code.
+
+3.2.1 :027 > arr.hash
+ => -4241591116995688593 
+3.2.1 :028 > arr1.hash
+ => 3624524072152072368
+
+
 ########## array & other_array ###########
 Returns a new array containing elements common to the two arrays, with no duplicates.
 
@@ -908,14 +1076,6 @@ array.ﬂatten!
 3.2.1 :025 > arr
  => [1, 2, 3, 4, 5, 6, 7, 8] 
  
-########## array.hash ###########
-Computes a hash-code for array. Two arrays with the same content will
-have the same hash code.
-
-3.2.1 :027 > arr.hash
- => -4241591116995688593 
-3.2.1 :028 > arr1.hash
- => 3624524072152072368
  
 ########## array.frozen? ###########
 array.frozen?
@@ -930,9 +1090,6 @@ Returns true if array is frozen (or temporarily frozen while being sorted)
 array.include?(obj)
 Returns true if obj is present in self, false otherwise.
  
-array.index(obj)
-Returns the index of t 
-
 array.include?(obj)
 3.2.1 :033 > arr
  => [1, 2, 3, 4, 5, 6, 7, 8] 
@@ -940,6 +1097,9 @@ array.include?(obj)
  => true 
 3.2.1 :035 > arr.include?(10)
  => false 
+ 
+array.index(obj)
+Returns the index of t 
  
 array.index(obj)
 3.2.1 :036 > arr.index(7)
