@@ -1,0 +1,38 @@
+print "hello system"
+hello system => nil 
+
+puts "hello system"	#print + \n
+hello system
+ => nil       
+ 
+putc "hello system"    #print on first char
+h => "hello system" 
+
+//variables
+emp_name="Neeraj"      #string Class
+ => "Neeraj" 
+emp_name.class
+ => String 
+
+emp_id = 101		#integer class
+ => 101 
+emp_id.class
+ => Integer 
+
+isMale = true		# Trueclass
+ => true 
+isMale.class
+ => TrueClass 
+
+isMarried = false	# Falseclass
+ => false 
+isMarried.class
+ => FalseClass 
+
+leaves = nil		# Nilclass
+ => nil 
+leaves.class
+ => NilClass 
+leaves.nil?
+ => true
+

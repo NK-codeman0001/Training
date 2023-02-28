@@ -5,4 +5,4 @@
 /ruby/*.pdf
 /ruby/*.odt
 /*/test*
-
+/*/.vscode

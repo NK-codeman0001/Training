@@ -1,0 +1,9 @@
+Ruby undef Statement
+This cancels the method definition. An undef cannot appear in the method body.
+By using undef and alias, the interface of the class can be modified independently from the superclass, but notice it may be broke programs by the internal method call to self.
+Syntax
+undef method-name
+Example
+To undefine a method called bar do the following −
+undef bar
+

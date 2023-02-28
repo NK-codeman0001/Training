@@ -1,0 +1,36 @@
+class Shape
+  attr_accessor :length, :breadth, :height
+  def initialize(length,breadth,height)
+    @length = length
+    @breadth = breadth
+    @height = height
+  end
+
+  def area 
+    @length*@breadth*@height
+  end
+
+  def isSqaure
+    if @length == @height and @length==@breadth
+      return true
+    else 
+      return false
+    end
+  end
+  
+  def to_s
+    return "\nLength: #{@length}\nBreadth: #{@breadth}\nHeight: #{@height}" 
+  end
+
+end
+
+shape1 = Shape.new(2,3,4)
+shape2 = Shape.new(4,4,4)
+
+puts shape1
+puts shape1.area()
+puts shape1.isSqaure()
+
+puts shape2
+puts shape2.area()
+puts shape2.isSqaure()

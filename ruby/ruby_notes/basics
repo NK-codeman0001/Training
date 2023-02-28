@@ -1,0 +1,97 @@
+﻿Whitespace in Ruby Program
+Whitespace characters such as spaces and tabs are generally ignored in Ruby code, except when they appear in strings. Sometimes, however, they are used to interpret ambiguous statements. Interpretations of this sort produce warnings when the -w option is enabled.
+Example
+a + b is interpreted as a+b ( Here a is a local variable)
+a  +b is interpreted as a(+b) ( Here a is a method call)
+________________________________________________________________________________
+Line Endings in Ruby Program
+Ruby interprets semicolons and newline characters as the ending of a statement. However, if Ruby encounters operators, such as +, −, or backslash at the end of a line, they indicate the continuation of a statement.
+________________________________________________________________________________
+Ruby Identifiers
+Identifiers are names of variables, constants, and methods. Ruby identifiers are case sensitive. It means Ram and RAM are two different identifiers in Ruby.
+Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
+________________________________________________________________________________
+Reserved Words
+The following list shows the reserved words in Ruby. These reserved words may not be used as constant or variable names. They can, however, be used as method names.
+BEGIN
+do
+next
+then
+END
+else
+nil
+true
+alias
+elsif
+not
+undef
+and
+end
+or
+unless
+begin
+ensure
+redo
+until
+break
+false
+rescue
+when
+case
+for
+retry
+while
+class
+if
+return
+while
+def
+in
+self
+__FILE__
+defined?
+module
+super
+__LINE__
+
+________________________________________________________________________________
+Ruby BEGIN Statement
+Syntax
+BEGIN {
+   code
+}
+Declares code to be called before the program is run.
+Example
+#!/usr/bin/ruby
+
+puts "This is main Ruby Program"
+
+BEGIN {
+   puts "Initializing Ruby Program"
+}
+This will produce the following result −
+Initializing Ruby Program
+This is main Ruby Program
+________________________________________________________________________________
+Ruby END Statement
+Syntax
+END {
+   code
+}
+Declares code to be called at the end of the program.
+Example
+#!/usr/bin/ruby
+
+puts "This is main Ruby Program"
+
+END {
+   puts "Terminating Ruby Program"
+}
+BEGIN {
+   puts "Initializing Ruby Program"
+}
+This will produce the following result −
+Initializing Ruby Program
+This is main Ruby Program
+Terminating Ruby Program
+

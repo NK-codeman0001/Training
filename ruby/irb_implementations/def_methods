@@ -1,0 +1,59 @@
+_____________________________________________________________________________________
+Methods (functions)
+_____________________________________________________________________________________
+########## [] ###########
+3.2.1 :006 > def sayhi
+3.2.1 :007 >   puts "Hi, Good Morning"
+3.2.1 :008 > end
+ => :sayhi 
+3.2.1 :012 > sayhi.class   	##it prints NilClass because return type is void
+Hi, Good Morning
+ => NilClass
+
+
+3.2.1 :013 > def sayhi(name,age)
+3.2.1 :014 >   puts ("Hello, #{name}. Your age is #{age}")
+3.2.1 :015 > end
+ => :sayhi 
+3.2.1 :016 > sayhi("Neeraj",22)
+Hello, Neeraj. Your age is 22
+ => nil       
+
+
+3.2.1 :019 > def sayhi(name="Unkown",age=-1)
+3.2.1 :020 >   puts ("Hello, #{name}. Your age is #{age}")
+3.2.1 :021 > end
+ => :sayhi 
+3.2.1 :022 > sayhi
+Hello, Unkown. Your age is -1
+ => nil 
+ 
+ ## returning a value
+3.2.1 :029 > def cube(num)
+3.2.1 :030 >   num*num*num
+3.2.1 :031 > end
+ => :cube 
+3.2.1 :032 > cube(5)
+ => 125 
+ 
+ or
+  
+##using return statatement
+3.2.1 :029 > def cube(num)
+3.2.1 :030 >   return num*num*num
+3.2.1 :031 > end
+ => :cube 
+3.2.1 :032 > cube(5)
+ => 125 
+
+3.2.1 :036 > def cube(num)
+3.2.1 :037 >  return num*num*num,num
+3.2.1 :038 > end
+ => :cube 
+3.2.1 :039 > cube(5)
+ => [125, 5] 
+3.2.1 :040 > cube(5)[0]
+ => 125 
+3.2.1 :041 > cube(5)[1]
+ => 5 
+

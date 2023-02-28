@@ -1,0 +1,10 @@
+Ruby alias Statement
+This gives alias to methods or global variables. Aliases cannot be defined within the method body. The alias of the method keeps the current definition of the method, even when methods are overridden.
+Making aliases for the numbered global variables ($1, $2,...) is prohibited. Overriding the built-in global variables may cause serious problems.
+Syntax
+alias method-name method-name
+alias global-variable-name global-variable-name
+Example
+alias foo bar
+alias $MATCH $&
+Here we have defined foo alias for bar, and $MATCH is an alias for $&

@@ -1,0 +1,48 @@
+RVM AND RUBY INSTALLATION
+
+Install GPG keys:
+gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+
+Ubuntu: https://github.com/rvm/ubuntu_rvm
+Or 
+sudo apt-get install software-properties-common
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get update
+sudo apt-get install rvm
+sudo usermod -a -G rvm $USER
+
+Change your terminal window
+At terminal window, open the application menu, then Preferences. Click on Unnamed profile, select the Command tab and check Run command as login shell.
+
+
+or echo 'source "/etc/profile.d/rvm.sh"' >> ~/.bashrc
+
+Reboot
+Install a ruby
+rvm install ruby
+RVM Usage
+man rvm
+
+rvm list
+rvm instal ruby-[version] || rvm install [version]
+ruby -v
+rvm use [version] || rvm use 3.2.1
+
+Note: for good practice make your project inside a folder with name containg the version of ruby
+eg. mkdir my-pr-2.4.5 etc
+
+
+To automatically switch between versions of ruby in project folder:
+create a file .ruby-version 
+and write the version in it
+
+eg 1) mkdir my-pr-3.2.1
+2) cd my-pr-3.2.1
+3) nano .ruby-version 	//(enter the verion in it)
+	3.2.1
+^+W  to save
+^+X to exit
+
+REMOVE a ruby version:
+rvm remove 2.3.5
+

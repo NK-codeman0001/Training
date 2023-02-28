@@ -1,0 +1,22 @@
+_____________________________________________________________________________________
+writing files
+_____________________________________________________________________________________
+########## [a] ###########
+File.open("/home/beryl/Neeraj/test","a") do |file|
+    file.write("\n this line will be append in new line of test file")
+end
+
+########## [w] ###########
+File.open("/home/beryl/Neeraj/test2","w") do |file|
+    file.write("it will first clear the previous content then overwrite this value int the file")
+    file.write("\n if the given file doesnot exist it will create new file the overwrite it")
+end
+
+########## [r+] ###########
+File.open("/home/beryl/Neeraj/test2","r+") do |file|
+    file.readline() #it will read the first line of the file and move the postion of curr pointer to nextline
+    file.readchar() #it will read the first character of the file and move the postion of curr pointer to next character
+    file.write("it will overwrite from the positon of curr position of the file")
+    file.write("\n in this case it will overwrite from 2nd line's 2nd character")
+end
+
