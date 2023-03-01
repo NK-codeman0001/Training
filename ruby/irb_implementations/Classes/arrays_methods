@@ -818,28 +818,6 @@ Deletes every element of self for which block evaluates to true.
 array.empty?
 Returns true if the self array contains no elements.
 
- 
-########## array.each { |item| block } and array.each_index { |index| block } ###########
-
-array.each { |item| block }
-Calls block once for each element in self, passing that element as a
-parameter.
-
-array.each_index { |index| block }
-Same as Array#each, but passes the index of the element instead of the
-element itself.
-
-3.2.1 :170 > arr.each {|i|}
- => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
-3.2.1 :171 > arr.each_index {|i|}
- => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
- 
- 3.2.1 :173 > arr.each_index {|i| print i.to_s + " :"}
-0 :1 :2 :3 :4 :5 :6 :7 :8 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
-3.2.1 :174 > arr.each {|i| print i.to_s + " :"}
-2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
- 
-
 
 ########## array.ﬂatten ###########
 array.ﬂatten
@@ -1879,9 +1857,311 @@ Output:
 [1]
 [2]
   
-##########  ###########
+########## Methods for Iterating ###########
 
- 
+    each: Passes each element to a given block.
+    			&
+    each_index: Passes each element index to a given block.
+    
+########## array.each { |item| block } and array.each_index { |index| block } ###########
+
+array.each { |item| block }
+Calls block once for each element in self, passing that element as a
+parameter.
+
+array.each_index { |index| block }
+Same as Array#each, but passes the index of the element instead of the
+element itself.
+
+arr.each {|i| print "#{i} "}
+66 67 68 69 70 71  => [66, 67, 68, 69, 70, 71] 
+
+arr.each_index {|i| print "#{i} "}
+0 1 2 3 4 5  => [66, 67, 68, 69, 70, 71] 
+
+
+arr.each {|i| print i.to_s + " :"}
+2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+
+arr.each_index {|i| print i.to_s + " :"}
+0 :1 :2 :3 :4 :5 :6 :7 :8 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+
+
+Allows the array to be modified during iteration:
+
+a = [:foo, 'bar', 2]
+a.each {|element| puts element; a.clear if element.to_s.start_with?('b') } 
+Output:
+foo
+bar
+
+a = [:foo, 'bar', 2]
+a.each_index {|index| puts index; a.clear if index > 0 }
+Output:
+0
+1
+
+
+
+    reverse_each: Passes each element, in reverse order, to a given block.
+
+arr.reverse_each {|i| print i, " "}
+sixteen Apple 6 200 5 4 3 2 1 one 404  => [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"]                                               
+
+words=%w[hello world ruby]
+ => ["hello", "world", "ruby"] 
+str=""
+ => "" 
+words.reverse_each {|i| str += "#{i}"}
+ => ["hello", "world", "ruby"] 
+str
+ => "rubyworldhello" 
+
+str=""
+ => "" 
+words.reverse_each {|i| str += "#{i} "}
+ => ["hello", "world", "ruby"]  
+words.reverse_each {|i| str += "#{i} "}
+ => ["hello", "world", "ruby"] 
+a = [:foo, 'bar', 2]
+
+a.reverse_each {|element|  puts "#{element.class} #{element}" }
+Output:
+    Integer 2
+    String bar
+    Symbol foo
+    
+    a = [:foo, 'bar', 2]
+    a.reverse_each {|element| puts element; a.clear if element.to_s.start_with?('b') }
+    Output:
+
+    2
+    bar
+    
+
+    cycle: Calls a given block with each element, then does so again, for a specified number of times, or forever.
+
+output = []
+[0, 1].cycle(2) {|element| output.push(element) } # => nil
+output # => [0, 1, 0, 1]
+
+If count is zero or negative, does not call the block:
+
+[0, 1].cycle(0) {|element| fail 'Cannot happen' } # => nil
+[0, 1].cycle(-1) {|element| fail 'Cannot happen' } # => nil
+
+When a block is given, and argument is omitted or nil, cycles forever:
+
+# Prints 0 and 1 forever.
+[0, 1].cycle {|element| puts element }
+[0, 1].cycle(nil) {|element| puts element }
+
+When no block is given, returns a new Enumerator:
+
+[0, 1].cycle(2) # => #<Enumerator: [0, 1]:cycle(2)>
+[0, 1].cycle # => # => #<Enumerator: [0, 1]:cycle>
+[0, 1].cycle.first(5) # => [0, 1, 0, 1, 0]
+
+
+
+    combination: Calls a given block with combinations of elements of self; a combination does not use the same element more than once.
+a = [0, 1, 2]
+a.combination(2) {|combination| p combination }
+Output:
+[0, 1]
+[0, 2]
+[1, 2]
+
+Another example:
+a = [0, 1, 2]
+a.combination(3) {|combination| p combination }
+Output:
+[0, 1, 2]
+
+When n is zero, calls the block once with a new empty Array:
+a = [0, 1, 2]
+a1 = a.combination(0) {|combination| p combination }
+Output:
+[]
+
+
+When n is out of range (negative or larger than self.size), does not call the block:
+a = [0, 1, 2]
+a.combination(-1) {|combination| fail 'Cannot happen' }
+a.combination(4) {|combination| fail 'Cannot happen' }
+
+
+Returns a new Enumerator if no block given:
+a = [0, 1, 2]
+a.combination(2) # => #<Enumerator: [0, 1, 2]:combination(2)>
+
+
+When a block given but no argument, it throws error
+a.combination {|combination| p combination }
+(irb):148:in `combination': wrong number of arguments (given 0, expected 1) (ArgumentError) 
+
+
+
+    permutation: Calls a given block with permutations of elements of self; a permutation does not use the same element more than once.
+a = [0, 1, 2]
+a.permutation(2) {|permutation| p permutation }
+Output:
+[0, 1]
+[0, 2]
+[1, 0]
+[1, 2]
+[2, 0]
+[2, 1]
+
+Another example:
+a = [0, 1, 2]
+a.permutation(3) {|permutation| p permutation }
+Output:
+[0, 1, 2]
+[0, 2, 1]
+[1, 0, 2]
+[1, 2, 0]
+[2, 0, 1]
+[2, 1, 0]
+
+
+When n is zero, calls the block once with a new empty Array:
+a = [0, 1, 2]
+a.permutation(0) {|permutation| p permutation }
+Output:
+[]
+
+
+When n is out of range (negative or larger than self.size), does not call the block:
+a = [0, 1, 2]
+a.permutation(-1) {|permutation| fail 'Cannot happen' }
+a.permutation(4) {|permutation| fail 'Cannot happen' }
+
+
+When a block given but no argument, behaves the same as a.permutation(a.size):
+a = [0, 1, 2]
+a.permutation {|permutation| p permutation }
+Output:
+[0, 1, 2]
+[0, 2, 1]
+[1, 0, 2]
+[1, 2, 0]
+[2, 0, 1]
+[2, 1, 0]
+
+
+Returns a new Enumerator if no block given:
+a = [0, 1, 2]
+a.permutation # => #<Enumerator: [0, 1, 2]:permutation>
+a.permutation(2) # => #<Enumerator: [0, 1, 2]:permutation(2)>
+
+
+
+
+
+============== the difference it that the can be called with itself also in repeated P or C i.e 00,11,22, etc if n=2 =============
+
+
+    repeated_combination: Calls a given block with combinations of elements of self; a combination may use the same element more than once.
+
+a = [0, 1, 2]
+a.repeated_combination(1) {|combination| p combination }
+
+Output:
+
+[0]
+[1]
+[2]
+
+n = 2:
+
+a.repeated_combination(2) {|combination| p combination }
+
+Output:
+
+[0, 0]
+[0, 1]
+[0, 2]
+[1, 1]
+[1, 2]
+[2, 2]
+
+If n is zero, calls the block once with an empty Array.
+
+If n is negative, does not call the block:
+
+a.repeated_combination(-1) {|combination| fail 'Cannot happen' }
+
+Returns a new Enumerator if no block given:
+
+a = [0, 1, 2]
+a.repeated_combination(2) # => #<Enumerator: [0, 1, 2]:combination(2)>
+
+Using Enumerators, it’s convenient to show the combinations and counts for some values of n:
+
+e = a.repeated_combination(0)
+e.size # => 1
+e.to_a # => [[]]
+e = a.repeated_combination(1)
+e.size # => 3
+e.to_a # => [[0], [1], [2]]
+e = a.repeated_combination(2)
+e.size # => 6
+e.to_a # => [[0, 0], [0, 1], [0, 2], [1, 1], [1, 2], [2, 2]]
+
+
+    repeated_permutation: Calls a given block with permutations of elements of self; a permutation may use the same element more than once.
+
+a = [0, 1, 2]
+a.repeated_permutation(1) {|permutation| p permutation }
+
+Output:
+
+[0]
+[1]
+[2]
+
+n = 2:
+
+a.repeated_permutation(2) {|permutation| p permutation }
+
+Output:
+
+[0, 0]
+[0, 1]
+[0, 2]
+[1, 0]
+[1, 1]
+[1, 2]
+[2, 0]
+[2, 1]
+[2, 2]
+
+If n is zero, calls the block once with an empty Array.
+
+If n is negative, does not call the block:
+
+a.repeated_permutation(-1) {|permutation| fail 'Cannot happen' }
+
+Returns a new Enumerator if no block given:
+
+a = [0, 1, 2]
+a.repeated_permutation(2) # => #<Enumerator: [0, 1, 2]:permutation(2)>
+
+Using Enumerators, it’s convenient to show the permutations and counts for some values of n:
+
+e = a.repeated_permutation(0)
+e.size # => 1
+e.to_a # => [[]]
+e = a.repeated_permutation(1)
+e.size # => 3
+e.to_a # => [[0], [1], [2]]
+e = a.repeated_permutation(2)
+e.size # => 9
+e.to_a # => [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
+
+
+
 ##########  ###########
 
  
