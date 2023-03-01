@@ -1706,7 +1706,109 @@ a # => ["foo", :bar, 3]
 ==> inplace version of sort_by method
 
  
-##########  ###########
+ 
+########## Methods for Deleting ###########
+
+
+    pop: Removes and returns the last element.
+a = [:foo, 'bar', 2]
+a.pop # => 2
+a # => [:foo, "bar"]
+
+a = [:foo, 'bar', 2]
+a.pop(2) # => ["bar", 2]
+
+a = [:foo, 'bar', 2]
+a.pop(50) # => [:foo, "bar", 2]
+
+   
+
+    shift: Removes and returns the first element.
+a = [:foo, 'bar', 2]
+a.shift # => :foo
+a # => ['bar', 2]
+
+a = [:foo, 'bar', 2]
+a.shift(2) # => [:foo, 'bar']
+a # => [2]
+
+a = [:foo, 'bar', 2]	# => [:foo, "bar", 2] 
+a.shift(10)	# => [:foo, "bar", 2]  
+a	# => [] 
+a.shift		# => nil 
+a.shift(10)	# => [] 
+
+a = [:foo, 'bar', 2]	# => [:foo, "bar", 2] 
+a.shift(0)	# => [] 
+a	# => [:foo, "bar", 2] 
+
+
+    compact!: Removes all nil elements.
+==>>in place version of compact method
+
+    delete: Removes elements equal to a given object.
+s1 = 'bar'; s2 = 'bar'
+a = [:foo, s1, 2, s2]
+a.delete('bar') # => "bar"
+a # => [:foo, 2]
+
+If any such elements are found, ignores the block and returns the last deleted element:
+
+s1 = 'bar'; s2 = 'bar'
+a = [:foo, s1, 2, s2]
+deleted_obj = a.delete('bar') {|obj| fail 'Cannot happen' }
+a # => [:foo, 2]
+
+If no such elements are found, returns the block’s return value:
+
+a = [:foo, 'bar', 2]
+a.delete(:nosuch) {|obj| "#{obj} not found" } # => "nosuch not found"
+
+
+    delete_at: Removes the element at a given offset.
+a = [:foo, 'bar', 2]
+a.delete_at(1) # => "bar"
+a # => [:foo, 2]
+
+a = [:foo, 'bar', 2]  	# => [:foo, "bar", 2] 
+a.delete_at(5)		# => nil 
+
+
+    delete_if: Removes elements specified by a given block.
+
+3.2.1 :103 > num.delete_if {|i| i>3}
+ => [1, 2, 3] 
+3.2.1 :104 > num
+ => [1, 2, 3]
+  
+array.delete_if { |item| block }
+
+Deletes every element of self for which block evaluates to true.
+3.2.1 :161 > arr=Array(1..18)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+3.2.1 :162 > arr.delete_if{|i| i%2==1}
+ => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
+
+
+    keep_if: Removes elements not specified by a given block.
+ 
+num.keep_if {|i| i>3}	# => []  
+num	# => [] 
+
+a = [:foo, 'bar', 2, :bam]
+a.keep_if {|element| element.to_s.start_with?('b') } # => ["bar", :bam]
+
+    reject!: Removes elements specified by a given block.
+==> inplace version of reject method
+
+    select!, filter!: Removes elements not specified by a given block.
+==> inplace version of select method
+
+    slice!: Removes and returns a sequence of elements.
+==> inplace version of slice method
+
+    uniq!: Removes duplicates.
+==> inplace version of uniq method
 
  
 ##########  ###########
