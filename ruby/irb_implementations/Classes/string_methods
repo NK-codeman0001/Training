@@ -1,137 +1,131 @@
-emp_name = "Neeraj Kumar"
- => "Neeraj Kumar" 
-puts emp_name
-Neeraj Kumar
- => nil                                      
-
+emp_name = "Neeraj Kumar"   # => "Neeraj Kumar" 
+puts emp_name   #=>Neeraj Kumar
+                                       
 ########## Using indexes in String ###########
-puts emp_name.length
-12
- => nil                                                    
-
-> puts emp_name[0]
-N
- => nil                                                    
-
-> puts emp_name[12]
-
- => nil                                                    
-
-> puts emp_name[11]
-r
- => nil 
-
+puts emp_name.length    #=>12
+                                                     
+puts emp_name[0]    #=>N
+                                                     
+> puts emp_name[12]    #=>nil
+> puts emp_name[11] #=>r
 > puts emp_name[1,4]         #it will print 4 char from index 1
 eera
- => nil                                                    
-
 > puts emp_name[2,4]	    #it will print 4 char from index 2
 eraj
- => nil
 
 > puts emp_name.index("N")    #it return index of first matching char from left to right
-0
- => nil                                                    
-
-> puts emp_name.index("E")
-
- => nil                                                    
-
-> puts emp_name.index("e")
-1
- => nil 
-
-> puts emp_name.index("a")
-4
- => nil 
-
-> puts emp_name.index("K")
-7
- => nil 
- 
- > puts emp_name.index("ee")
-1
- => nil 
+    #=>0
+> puts emp_name.index("E")    #=>nil
+> puts emp_name.index("e")    #=>1
+> puts emp_name.index("a")    #=>4
+> puts emp_name.index("K")    #=>7
+ > puts emp_name.index("ee")    #=>1
+  
 
 ########## Escape Characters in String ###########
-emp_name = "Neeraj-Kumar"
- => "Neeraj-Kumar" 
-puts emp_name
-Neeraj-Kumar
- => nil                                      
+emp_name = "Neeraj-Kumar"    #=> => "Neeraj-Kumar" 
+puts emp_name    #=>Neeraj-Kumar
+                                       
+emp_name = "Neeraj/nKumar"    #=> => "Neeraj/nKumar" 
+puts emp_name    #=>Neeraj/nKumar
 
-emp_name = "Neeraj/nKumar"
- => "Neeraj/nKumar" 
+emp_name = "Neeraj\nKumar"     #=> => "Neeraj\nKumar" 
 puts emp_name
-Neeraj/nKumar
- => nil                                      
-
-emp_name = "Neeraj\nKumar"
- => "Neeraj\nKumar" 
-puts emp_name
+#=>
 Neeraj
 Kumar
- => nil 
-
+ 
 puts "Neeraj\nKumar" 			#to print in newline
+#=>
 Neeraj
 Kumar                                        
- => nil 
 
 emp_name = "Neeraj\"Kumar"		#'\' escape charater to print '"'
- => "Neeraj\"Kumar" 
-puts emp_name
-Neeraj"Kumar
- => nil 
+#=> => "Neeraj\"Kumar" 
+puts emp_name    #=>Neeraj"Kumar
+
 
 ########## Upper Case the String ###########
-emp_name = "Neeraj Kumar"
- => "Neeraj Kumar" 
-> puts emp_name.upcase
-NEERAJ KUMAR
- => nil                                          
-> puts emp_name.upcase()
-NEERAJ KUMAR
- => nil  
+emp_name = "Neeraj Kumar"    #=> => "Neeraj Kumar" 
+puts emp_name.upcase    #=>NEERAJ KUMAR                       
+puts emp_name.upcase()    #=>NEERAJ KUMAR
 
 ########## Down Case the String ###########
-> puts emp_name.downcase
-neeraj kumar
- => nil     
+> puts emp_name.downcase    #=>neeraj kumar
 
 ########## Stripe Function ###########
-emp_name = "     Neeraj Kumar     "
- => "     Neeraj Kumar     " 
-> puts emp_name
-     Neeraj Kumar     
- => nil 
+emp_name = "     Neeraj Kumar     "    #=> => "     Neeraj Kumar     " 
+puts emp_name    #=>     Neeraj Kumar     
+puts emp_name.strip		# remove extra spaces at start and end of string
+    #=>Neeraj Kumar
 
-> puts emp_name.strip		# remove extra spaces at start and end of string
-Neeraj Kumar
- => nil  
+emp_name = "     Neeraj     Kumar     "     #=> => "     Neeraj     Kumar     " 
+puts emp_name.strip    #=>Neeraj     Kumar
  
-emp_name = "     Neeraj     Kumar     "
- => "     Neeraj     Kumar     " 
-> puts emp_name.strip
-Neeraj     Kumar
- => nil
-       
 ########## Length of String ###########
-emp_name = "     Neeraj     Kumar     "
- => "     Neeraj     Kumar     " 
-> puts emp_name.length
-26
- => nil                                                    
-
-> puts emp_name.strip.length
-16
- => nil                                                               
-                                                           
+emp_name = "     Neeraj     Kumar     " #=> => "     Neeraj     Kumar     " 
+ puts emp_name.length    #=>26
+puts emp_name.strip.length    #=>16
+                                                                                          
 ########## Include Method in String ###########
-> puts emp_name.include? "kumar"
-false
- => nil                                                               
-> puts emp_name.include? "Kumar"
-true
- => nil 
+puts emp_name.include? "kumar"    #=>false                                                                
+puts emp_name.include? "Kumar"    #=>true
+  
+##########  Methods for Creating a String ###########
+::new: Returns a new string.
+s = String.new
+s # => ""
+s.encoding # => #<Encoding:ASCII-8BIT>
 
+String.new('foo')               # => "foo"
+String.new('тест')              # => "тест"
+String.new('こんにちは')          # => "こんにちは"
+
+String.new('foo', encoding: Encoding::US_ASCII).encoding # => #<Encoding:US-ASCII>
+String.new('foo', encoding: 'US-ASCII').encoding         # => #<Encoding:US-ASCII>
+String.new('foo', encoding: 'ASCII').encoding            # => #<Encoding:US-ASCII>
+
+String.new(capacity: 1)
+String.new('foo', capacity: 4096)
+
+String.new('hello', encoding: 'UTF-8', capacity: 25)
+
+::try_convert: Returns a new string created from a given object.
+If object is a String object, returns object.
+Otherwise if object responds to :to_str, calls object.to_str and returns the result.
+Returns nil if object does not respond to :to_str.
+Raises an exception unless object.to_str returns a String object.
+
+str     #=> "Neeraj Kumar"
+String.try_convert(str)    #=> "Neeraj Kumar"
+String.try_convert([9,9])    #=> nil
+String.try_convert(9)    #=> nil
+String.try_convert(true)   #=> nil
+
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
+  
+##########   ###########
