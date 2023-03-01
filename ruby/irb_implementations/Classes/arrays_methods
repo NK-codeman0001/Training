@@ -605,31 +605,6 @@ array[range] = obj or an_array or nil
 3.2.1 :012 > arr
  => [500, 404, nil, 100, 200] 
 
-########## array.abbrev(pattern = nil) ###########
-Calculates the set of unambiguous abbreviations for the strings in self. If passed a pattern or a string, only the strings matching the pattern or starting with the string are considered.
-
-3.2.1 :023 > require 'abbrev'
- => true 
-3.2.1 :024 > arr.abbrev
-/usr/share/rvm/rubies/ruby-3.2.1/lib/ruby/3.2.0/abbrev.rb:82:in `block in abbrev': undefined method `empty?' for 500:Integer (NoMethodError)
-
-      next if word.empty?
-      
-3.2.1 :020 > str=['Neeraj','Kumar']
- => ["Neeraj", "Kumar"] 
-3.2.1 :021 > str.abbrev
- => 
-{"Neeraj"=>"Neeraj",                             
- "Neera"=>"Neeraj",                              
- "Neer"=>"Neeraj",                               
- "Nee"=>"Neeraj",                                
- "Ne"=>"Neeraj",                                 
- "N"=>"Neeraj",                                  
- "Kumar"=>"Kumar",                               
- "Kuma"=>"Kumar",                                
- "Kum"=>"Kumar",                                 
- "Ku"=>"Kumar",                                  
- "K"=>"Kumar"}  
 
 
 ########## array.clear ###########
@@ -2225,7 +2200,119 @@ Output:
 [:a3, :b3, :c3]
 
  
-##########  ###########
+########## Other Methods ###########
+
+
+    *: Returns one of the following:
+
+        With integer argument n, a new array that is the concatenation of n copies of self.
+
+        With string argument field_separator, a new string that is equivalent to join(field_separator).
+
+########## array * int ###########
+Returns a new array built by concatenating the int copies of self. With a String argument, equivalent to self.join(str).
+
+arr3 = arr*1
+ => [1, 2, 3, 4, 5] 
+
+arr3 = arr*2
+ => [1, 2, 3, 4, 5, 1, 2, 3, 4, 5] 
+
+arr3 = arr*3
+ => [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5] 
+ 
+str * 1
+ => ["Ram", "Shayam", "Radha"] 
+str * 2
+ => ["Ram", "Shayam", "Radha", "Ram", "Shayam", "Radha"] 
+
+########## array * str ###########
+Returns a new array built by concatenating the int copies of self. With a String argument, equivalent to array.join(string_separator: str):
+
+str =['Ram','Shayam','Radha']
+ => ["Ram", "Shayam", "Radha"] 
+
+str * ","
+ => "Ram,Shayam,Radha" 
+
+str * "R"
+ => "RamRShayamRRadha" 
+
+str * "<+>"
+ => "Ram<+>Shayam<+>Radha" 
+ 
+arr*","
+ => "1,2,3,4,5" 
+
+arr*"=>"
+ => "1=>2=>3=>4=>5" 
+
+  
+    abbrev: Returns a hash of unambiguous abbreviations for elements.
+    ########## array.abbrev(pattern = nil) ###########
+
+
+require 'abbrev'
+ => true 
+
+str=['Neeraj','Kumar']
+ => ["Neeraj", "Kumar"] 
+
+str.abbrev
+ => 
+{"Neeraj"=>"Neeraj",                             
+ "Neera"=>"Neeraj",                              
+ "Neer"=>"Neeraj",                               
+ "Nee"=>"Neeraj",                                
+ "Ne"=>"Neeraj",                                 
+ "N"=>"Neeraj",                                  
+ "Kumar"=>"Kumar",                               
+ "Kuma"=>"Kumar",                                
+ "Kum"=>"Kumar",                                 
+ "Ku"=>"Kumar",                                  
+ "K"=>"Kumar"}  
+
+%w{ car cone }.abbrev
+#=> {"car"=>"car", "ca"=>"car", "cone"=>"cone", "con"=>"cone", "co"=>"cone"}
+
+
+
+The optional pattern parameter is a pattern or a string. Only input strings that match the pattern or start with the string are included in the output hash.
+%w{ fast boat day }.abbrev(/^.a/)
+#=> {"fast"=>"fast", "fas"=>"fast", "fa"=>"fast", "day"=>"day", "da"=>"day"}
+
+Abbrev.abbrev(%w{car box cone}, "ca")
+#=> {"car"=>"car", "ca"=>"car"}
+    
+    sum: Returns a sum of elements according to either + or a given block.
+  
+sum(init = 0) → object
+sum(init = 0) {|element| ... } → object
+
+For example, [e1, e2, e3].sum returns init + e1 + e2 + e3.
+
+Examples:
+
+a = [0, 1, 2, 3]
+a.sum # => 6
+a.sum(100) # => 106
+
+The elements need not be numeric, but must be +-compatible with each other and with init:
+
+a = ['abc', 'def', 'ghi']
+a.sum('jkl') # => "jklabcdefghi"
+
+When a block is given, it is called with each element and the block’s return value (instead of the element itself) is used as the addend:
+
+a = ['zero', 1, :two]
+s = a.sum('Coerced and concatenated: ') {|element| element.to_s }
+s # => "Coerced and concatenated: zero1two"
+
+Notes:
+
+    Array#join and Array#flatten may be faster than Array#sum for an Array of Strings or an Array of Arrays.
+
+    Array#sum method may not respect method redefinition of “+” methods such as Integer#+.
 
  
 ##########  ###########
