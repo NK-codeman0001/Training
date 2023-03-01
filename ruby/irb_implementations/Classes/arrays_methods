@@ -204,16 +204,18 @@ sixteen Apple 6 200 5 4 3 2 1 one 404  => [404, "one", 1, 2, 3, 4, 5, 200, 6, "A
  => ["hello", "world", "ruby"] 
  
 //map
+
 The map method can be used to create a new array based on the original array, but with the values modified by the supplied block
 
-3.2.1 :090 > arr.map {|i| i*2}
- => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
-3.2.1 :091 > arr
- => [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
-3.2.1 :092 > arr.map! {|i| i*2}
- => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
-3.2.1 :093 > arr
- => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+arr.map {|i| i*2}	#=> [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+arr	#=> [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
+arr.map! {|i| i*2}	# => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+arr	# => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+ 
+Returns a new Enumerator if no block given:
+a = [:foo, 'bar', 2]
+a1 = a.map
+a1 # => #<Enumerator: [:foo, "bar", 2]:map>
 
 ########## Selecting Items from an Array ###########
 select! and reject! are the corresponding destructive methods to select and reject
@@ -541,42 +543,6 @@ syntax: arr1==arr2
 syntax: arr1.eql?(arr2)
 
 
-########## array * int ###########
-Returns a new array built by concatenating the int copies of self. With a String argument, equivalent to self.join(str).
-
-3.2.1 :143 > arr3 = arr*1
- => [1, 2, 3, 4, 5] 
-3.2.1 :144 > arr3 = arr*2
- => [1, 2, 3, 4, 5, 1, 2, 3, 4, 5] 
-3.2.1 :145 > arr3 = arr*3
- => [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5] 
- 
- 3.2.1 :152 > str * 1
- => ["Ram", "Shayam", "Radha"] 
-3.2.1 :153 > str * 2
- => ["Ram", "Shayam", "Radha", "Ram", "Shayam", "Radha"] 
-
-########## array * str ###########
-Returns a new array built by concatenating the int copies of self. With a String argument, equivalent to self.join(str).
-
-3.2.1 :146 > str =['Ram','Shayam','Radha']
- => ["Ram", "Shayam", "Radha"] 
-3.2.1 :147 > str *,
-3.2.1 :148 > 
-^C                                      
-3.2.1 :147 > str * ","
- => "Ram,Shayam,Radha" 
-3.2.1 :148 > str * "R"
- => "RamRShayamRRadha" 
-3.2.1 :149 > str * "<+>"
- => "Ram<+>Shayam<+>Radha" 
- 
- 3.2.1 :150 > arr*","
- => "1,2,3,4,5" 
-3.2.1 :151 > arr*"=>"
- => "1=>2=>3=>4=>5" 
-
-
 ########## array << obj ###########
 Pushes the given object onto the end of array. This expression returns the array itself, so several appends may be chained together.
 //push_back
@@ -676,96 +642,6 @@ Removes all elements from array.
  => [] 
 
 
-########## array.collect { |item| block } [or]
-array.map { |item| block } (return new array) ###########
-
-3.2.1 :087 > arr=Array(1..18)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
-3.2.1 :088 > arr.map{|i| 
-3.2.1 :089 >   if i%2==0
-3.2.1 :090 >     i
-3.2.1 :091 >   end
-3.2.1 :092 > }
- => 
-[nil,                                               
- 2,                                                 
- nil,                                               
- 4,                                                 
- nil,                                               
- 6,                                                 
- nil,                                               
- 8,                                                 
- nil,                                           
- 10,                                           
- nil,
- 12,
- nil,
- 14,
- nil,
- 16,
- nil,
- 18] 
-3.2.1 :093 > arr.map{|i| 
-3.2.1 :094 >   if i%2==0
-3.2.1 :095 >     i
-3.2.1 :096 >   end
-3.2.1 :097 > }
- => 
-[nil,
- 2,
- nil,
- 4,
- nil,
- 6,
- nil,
- 8,
- nil,
- 10,
- nil,
- 12,
- nil,
- 14,
- nil,
- 16,
- nil,
- 18] 
-
-
-########## array.collect! { |item| block } [or]
-array.map! { |item| block } (it will change the original value of arr #inplace) ###########
-3.2.1 :098 > arr=Array(1..18)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
-3.2.1 :099 > arr.map!{|i| 
-3.2.1 :100 >   if i%2==0
-3.2.1 :101 >     i
-3.2.1 :102 >   end
-3.2.1 :103 > }
- => 
-[nil,
- 2,
- nil,
- 4,
- nil,
- 6,
- nil,
- 8,
- nil,
- 10,
- nil,
- 12,
- nil,
- 14,
- nil,
- 16,
- nil,
- 18] 
-3.2.1 :104 > arr.map!{|i| 
-3.2.1 :105 >   if i%2==0
-3.2.1 :106 >     i
-3.2.1 :107 >   end
-3.2.1 :108 > }
-(irb):105:in `block in <top (required)>': undefined method `%' for nil:NilClass (NoMethodError)
-
 ########## array.concat(other_array) ###########
 Appends the elements in other_array to self.
 3.2.1 :142 > arr
@@ -818,36 +694,6 @@ Deletes every element of self for which block evaluates to true.
 array.empty?
 Returns true if the self array contains no elements.
 
-
-########## array.ﬂatten ###########
-array.ﬂatten
-Returns a new array that is a one-dimensional ﬂattening of this array
-(recursively).
-
-array.ﬂatten!
-Flattens array in place. Returns nil if no modiﬁcations were made. (array
-contains no subarrays.)
-
-array.ﬂatten
- 3.2.1 :018 > arr=Array(1..5)
- => [1, 2, 3, 4, 5] 
-3.2.1 :019 > arr1=Array(6..8)
- => [6, 7, 8] 
-3.2.1 :020 > arr[5]=arr1
- => [6, 7, 8] 
-3.2.1 :021 > arr
- => [1, 2, 3, 4, 5, [6, 7, 8]] 
-3.2.1 :022 > arr.flatten
- => [1, 2, 3, 4, 5, 6, 7, 8] 
-3.2.1 :023 > arr
- => [1, 2, 3, 4, 5, [6, 7, 8]] 
- 
-array.ﬂatten!
-3.2.1 :024 > arr.flatten!
- => [1, 2, 3, 4, 5, 6, 7, 8] 
-3.2.1 :025 > arr
- => [1, 2, 3, 4, 5, 6, 7, 8] 
- 
  
 ########## array.frozen? ###########
 array.frozen?
@@ -2161,8 +2007,222 @@ e.size # => 9
 e.to_a # => [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
 
 
+########## Methods for Converting ###########
 
-##########  ###########
+    map, collect: Returns an array containing the block return-value for each element.
+    				&
+    map!, collect!: Replaces each element with a block return-value.
+
+arr.map {|i| i*2}	#=> [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+arr	#=> [404, "one", 1, 2, 3, 4, 5, 200, 6, "Apple", "sixteen"] 
+arr.map! {|i| i*2}	# => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+arr	# => [808, "oneone", 2, 4, 6, 8, 10, 400, 12, "AppleApple", "sixteensixteen"] 
+ 
+Returns a new Enumerator if no block given:
+a = [:foo, 'bar', 2]
+a1 = a.map
+a1 # => #<Enumerator: [:foo, "bar", 2]:map>
+
+########## array.collect { |item| block } [or]
+array.map { |item| block } (return new array) ###########
+
+arr=Array(1..18)	# => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+arr.map{|i| 
+  if i%2==0
+    i
+  end
+}	# => [nil,2,nil,4,nil,6,nil,8,nil,10,nil,12,nil,14,nil,16,nil,18] 
+
+arr.map{|i| 
+  if i%2==0
+    i
+  end
+}	#=>[nil,2,nil,4,nil,6,nil,8,nil,10,nil,12,nil,14,nil,16,nil,18] 
+
+
+########## array.collect! { |item| block } [or]
+array.map! { |item| block } (it will change the original value of arr #inplace) ###########
+arr=Array(1..18)	# => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] 
+arr.map!{|i| 
+  if i%2==0
+    i
+  end
+}	# => [nil,2,nil,4,nil,6,nil,8,nil,10,nil,12,nil,14,nil,16,nil,18]
+ 
+arr.map!{|i| 
+  if i%2==0
+    i
+  end
+}
+(irb):105:in `block in <top (required)>': undefined method `%' for nil:NilClass (NoMethodError)
+
+
+
+    flatten: Returns an array that is a recursive flattening of self.
+				&
+    flatten!: Replaces each nested array in self with the elements from that array.
+
+array.ﬂatten
+arr=Array(1..5)		# => [1, 2, 3, 4, 5] 
+arr1=Array(6..8)	# => [6, 7, 8] 
+arr[5]=arr1		# => [6, 7, 8] 
+arr		# => [1, 2, 3, 4, 5, [6, 7, 8]] 
+arr.flatten	# => [1, 2, 3, 4, 5, 6, 7, 8] 
+arr	# => [1, 2, 3, 4, 5, [6, 7, 8]] 
+ 
+array.ﬂatten!
+arr.flatten!	# => [1, 2, 3, 4, 5, 6, 7, 8] 
+arr	# => [1, 2, 3, 4, 5, 6, 7, 8] 
+
+
+With non-negative Integer argument level, flattens recursively through level levels:
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(0) # => [0, [1, [2, 3], 4], 5]
+
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(1) # => [0, 1, [2, 3], 4, 5]
+
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(2) # => [0, 1, 2, 3, 4, 5]
+
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(3) # => [0, 1, 2, 3, 4, 5]
+
+With no argument, a nil argument, or with negative argument level, flattens all levels:
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten # => [0, 1, 2, 3, 4, 5]
+
+[0, 1, 2].flatten # => [0, 1, 2]
+
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(nil) # => [0, 1, 2, 3, 4, 5]
+
+a = [ 0, [ 1, [2, 3], 4 ], 5 ]
+a.flatten(-2) # => [0, 1, 2, 3, 4, 5]
+
+[0, 1, 2].flatten(-1) # => [0, 1, 2]
+
+
+
+    inspect, to_s: Returns a new String containing the elements.
+
+a = [:foo, 'bar', 2]
+a.inspect # => "[:foo, \"bar\", 2]"
+
+
+
+    join: Returns a newsString containing the elements joined by the field separator.
+
+With no argument, joins using the output field separator, $,:
+
+a = [:foo, 'bar', 2]
+$, # => nil
+a.join # => "foobar2"
+
+With string argument separator, joins using that separator:
+
+a = [:foo, 'bar', 2]
+a.join("\n") # => "foo\nbar\n2"
+
+Joins recursively for nested Arrays:
+
+a = [:foo, [:bar, [:baz, :bat]]]
+a.join # => "foobarbazbat"
+
+
+    to_a: Returns self or a new array containing all elements.
+
+When self is an instance of Array, returns self:
+
+a = [:foo, 'bar', 2]
+a.to_a # => [:foo, "bar", 2]
+
+Otherwise, returns a new Array containing the elements of self:
+
+class MyArray < Array; end
+a = MyArray.new(['foo', 'bar', 'two'])
+a.instance_of?(Array) # => false
+a.kind_of?(Array) # => true
+a1 = a.to_a
+a1 # => ["foo", "bar", "two"]
+a1.class # => Array # Not MyArray
+
+
+    to_ary: (similar to to_a but different in working) Returns self.
+    
+
+==>>to_ary allows an object to be treated as an array, whereas to_a actually tries to convert the parameter into an array.
+
+==>>to_ary can be useful for parallel assignment, whereas to_a is more suited for an actual conversion.
+
+==>>Calling #to_a will convert the receiver to an Array, while #to_ary will not.
+
+ruby-1.9.2-p290 :001 > class A < Array; end
+
+ruby-1.9.2-p290 :004 > A[].to_a.class
+ => Array
+
+ruby-1.9.2-p290 :005 > A[].to_ary.class
+ => A 
+    
+    to_h: Returns a new hash formed from the elements.
+
+[].to_h # => {}
+a = [['foo', 'zero'], ['bar', 'one'], ['baz', 'two']]
+h = a.to_h
+h # => {"foo"=>"zero", "bar"=>"one", "baz"=>"two"}
+
+When a block is given, calls the block with each array element; the block must return a 2-element Array whose two elements form a key-value pair in the returned Hash:
+a = ['foo', :bar, 1, [2, 3], {baz: 4}]
+h = a.to_h {|item| [item, item] }
+h # => {"foo"=>"foo", :bar=>:bar, 1=>1, [2, 3]=>[2, 3], {:baz=>4}=>{:baz=>4}}
+
+    transpose: Transposes self, which must be an array of arrays.
+Transposes the rows and columns in an Array of Arrays; the nested Arrays must all be the same size:
+
+a = [[:a0, :a1], [:b0, :b1], [:c0, :c1]]
+a.transpose # => [[:a0, :b0, :c0], [:a1, :b1, :c1]]
+
+
+    zip: Returns a new array of arrays containing self and given arrays;
+    
+If all other_arrays and self are the same size:
+
+a = [:a0, :a1, :a2, :a3]
+b = [:b0, :b1, :b2, :b3]
+c = [:c0, :c1, :c2, :c3]
+d = a.zip(b, c)
+d # => [[:a0, :b0, :c0], [:a1, :b1, :c1], [:a2, :b2, :c2], [:a3, :b3, :c3]]
+
+If any array in other_arrays is smaller than self, fills to self.size with nil:
+
+a = [:a0, :a1, :a2, :a3]
+b = [:b0, :b1, :b2]
+c = [:c0, :c1]
+d = a.zip(b, c)
+d # => [[:a0, :b0, :c0], [:a1, :b1, :c1], [:a2, :b2, nil], [:a3, nil, nil]]
+
+If any array in other_arrays is larger than self, its trailing elements are ignored:
+
+a = [:a0, :a1, :a2, :a3]
+b = [:b0, :b1, :b2, :b3, :b4]
+c = [:c0, :c1, :c2, :c3, :c4, :c5]
+d = a.zip(b, c)
+d # => [[:a0, :b0, :c0], [:a1, :b1, :c1], [:a2, :b2, :c2], [:a3, :b3, :c3]]
+
+When a block is given, calls the block with each of the sub-arrays (formed as above); returns nil:
+
+a = [:a0, :a1, :a2, :a3]
+b = [:b0, :b1, :b2, :b3]
+c = [:c0, :c1, :c2, :c3]
+a.zip(b, c) {|sub_array| p sub_array} # => nil
+
+Output:
+
+[:a0, :b0, :c0]
+[:a1, :b1, :c1]
+[:a2, :b2, :c2]
+[:a3, :b3, :c3]
 
  
 ##########  ###########
