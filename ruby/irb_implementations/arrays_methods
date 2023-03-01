@@ -1852,7 +1852,32 @@ If no argument is given, returns an Array of 1-element Arrays, each containing a
 
 a.product # => [[0], [1], [2]]
 
+When a block is given, yields each combination as an Array; returns self:
 
+a.product(a1) {|combination| p combination }
+
+Output:
+
+[0, 3]
+[0, 4]
+[1, 3]
+[1, 4]
+[2, 3]
+[2, 4]
+
+If any argument is an empty Array, does not call the block:
+
+a.product(a1, a2, []) {|combination| fail 'Cannot happen' }
+
+If no argument is given, yields each element of self as a 1-element Array:
+
+a.product {|combination| p combination }
+
+Output:
+
+[0]
+[1]
+[2]
   
 ##########  ###########
 
