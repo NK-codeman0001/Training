@@ -488,22 +488,12 @@ Bonus Tips and Tricks:
     • Press Ctrl + E to bring you to the end of the line. 
     • When executing multiple commands in a single line, use (;) to separate them. Alternatively, use && to only allow the next command to run if the previous one is successful. 
 
-
-
-
-
-
-
-
 __________________________________________________________________
 
 rwx == read write execute   (execute== to run the program)
 d= directory
      drwerwerwe
      directory    user        group       others
-
-
-
 
 soft link: if cmd: ln -s filename linkname
 if link file move: 
@@ -514,144 +504,6 @@ if mainfile is lost then link will break;
 in hard link         cmd: ln filename linkname
 if link file move:  ==> linkfile will work
 if mainfile is lost then==> link will break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ______________________________________________________________________________
 rev will print in horizontal reverse (mirror image) (Neeraj == jareeN)
 tac will print in vertical reverse  (first line will become last line)
@@ -694,10 +546,6 @@ For example, if the user's primary group is users and the user is also a member 
 usermod -G groupa,groupb user-name
 where user-name is the user name. 
 
-
-
-
-
 Linux ls command options
 ls option
 Description
@@ -739,15 +587,6 @@ ls --version
 It checks the version of ls command.
 
 version of ls in current system:  8.30
-
-
-
-
-
-
-
-
-
 
 Linux Directory Commands
 1. pwd Command
@@ -1074,10 +913,6 @@ Output:
 The host command is used to display the IP address for a given domain name and vice versa. It performs the DNS lookups for the DNS Query.
 Syntax:
     1. host <domain name> or <ip address>  
-Output:
- 
-
-
 
 vi:
 If you want to quit without saving the file, use :q. This command will only work when you have not made any changes in the file.
@@ -1188,21 +1023,7 @@ Action
 Replace forward with backward from first line to the last line
 :3,6 s/letters/neww/g 
 Replace forward with backward from third line to the ninth line 
-
-
 ________________________________________________________________________________
-
-
-
-
-
-
-
-
-
-
-
-
 
 system commands Following are some of the important system commands in Linux. 
 uname
