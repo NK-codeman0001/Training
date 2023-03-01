@@ -856,77 +856,6 @@ element itself.
 3.2.1 :174 > arr.each {|i| print i.to_s + " :"}
 2 :4 :6 :8 :10 :12 :14 :16 :18 : => [2, 4, 6, 8, 10, 12, 14, 16, 18] 
  
-########## arr.fill ###########
-array.ﬁll(obj) [or]
-array.ﬁll(obj, start , length) [or]
-array.ﬁll(obj, range) [or]
-array.ﬁll { |index| block } [or]
-array.ﬁll(start [, length] ) { |index| block } [or]
-array.ﬁll(range) { |index| block }
-The ﬁrst three forms set the selected elements of self to obj. A start of
-nil is equivalent to zero. A length of nil is equivalent to self.length. The
-last three forms ﬁll the array with the value of the block. The block is
-passed with the absolute index of each element to be ﬁlled.
- 
-array.ﬁll(obj)
-3.2.1 :019 > arr
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
-3.2.1 :020 > arr.fill(404)
- => [404, 404, 404, 404, 404, 404, 404, 404, 404, 404, 404] 
-3.2.1 :021 > arr
- => [404, 404, 404, 404, 404, 404, 404, 404, 404, 404, 404]
- 
- 
-array.ﬁll(obj, start , length)
-3.2.1 :029 > arr.fill(404,3 ,4)
- => [1, 2, 3, 404, 404, 404, 404, 8, 9, 10, 11] 
- 
-  
-array.ﬁll(obj, range)
-3.2.1 :031 > arr.fill(404,3..4)
- => [1, 2, 3, 404, 404, 6, 7, 8, 9, 10, 11] 
- 
-
-array.ﬁll { |index| block } 
-3.2.1 :044 > arr= Array(1..11)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
-
-3.2.1 :045 > arr.fill{|i|
-3.2.1 :046 >   if i%2==0
-3.2.1 :047 >     404
-3.2.1 :048 >   else 
-3.2.1 :049 >     i
-3.2.1 :050 >   end
-3.2.1 :051 > }
- => [404, 1, 404, 3, 404, 5, 404, 7, 404, 9, 404] 
- 
-
-array.ﬁll(start , length) { |index| block }
-3.2.1 :059 > arr= Array(1..11)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
-3.2.1 :060 > arr.fill(3,4){|i|
-3.2.1 :061 >   if i%2==0
-3.2.1 :062 >     404
-3.2.1 :063 >   else 
-3.2.1 :064 >     i
-3.2.1 :065 >   end
-3.2.1 :066 > }
- => [1, 2, 3, 3, 404, 5, 404, 8, 9, 10, 11] 
-
-
-array.ﬁll(range) { |index| block }
-3.2.1 :067 > arr= Array(1..11)
- => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
-3.2.1 :068 > arr.fill(3..4){|i|
-3.2.1 :069 >   if i%2==0
-3.2.1 :070 >     404
-3.2.1 :071 >   else 
-3.2.1 :072 >     i
-3.2.1 :073 >   end
-3.2.1 :074 > }
- => [1, 2, 3, 3, 404, 6, 7, 8, 9, 10, 11] 
-3.2.1 :075 > 
- 
 
 
 ########## array.ﬂatten ###########
@@ -1523,7 +1452,258 @@ rb_ary_bsearch_index(VALUE ary)
     a.shuffle(random: Random.new(1))  #=> [1, 3, 2]
     
  
-##########  ###########
+########## Methods for Assigning ###########
+
+    []=: Assigns specified elements with a given object.
+a = [:foo, 'bar', 2]
+a[0] = 'foo' # => "foo"
+a # => ["foo", "bar", 2]
+
+If index is greater than self.length, extends the array:
+
+a = [:foo, 'bar', 2]
+a[7] = 'foo' # => "foo"
+a # => [:foo, "bar", 2, nil, nil, nil, nil, "foo"]
+
+If index is negative, counts backwards from the end of the array:
+
+a = [:foo, 'bar', 2]
+a[-1] = 'two' # => "two"
+a # => [:foo, "bar", "two"]
+    
+ a = [:foo, 'bar', 2]  # => [:foo, "bar", 2] 
+ a[-2, 0]=200  # => 200 
+ a       # => [:foo, 200, "bar", 2] 
+ 
+When Integer arguments start and length are given and object is not an Array, removes length - 1 elements beginning at offset start, and assigns object at offset start:
+
+a = [:foo, 'bar', 2]
+a[0, 2] = 'foo' # => "foo"
+a # => ["foo", 2]
+
+If start is negative, counts backwards from the end of the array:
+
+a = [:foo, 'bar', 2]
+a[-2, 2] = 'foo' # => "foo"
+a # => [:foo, "foo"]
+
+If start is non-negative and outside the array ( >= self.size), extends the array with nil, assigns object at offset start, and ignores length:
+
+a = [:foo, 'bar', 2]
+a[6, 50] = 'foo' # => "foo"
+a # => [:foo, "bar", 2, nil, nil, nil, "foo"]
+
+If length is zero, shifts elements at and following offset start and assigns object at offset start:
+
+a = [:foo, 'bar', 2]
+a[1, 0] = 'foo' # => "foo"
+a # => [:foo, "foo", "bar", 2]
+
+If length is too large for the existing array, does not extend the array:
+
+a = [:foo, 'bar', 2]
+a[1, 5] = 'foo' # => "foo"
+a # => [:foo, "foo"]
+
+When Range argument range is given and object is an Array, removes length - 1 elements beginning at offset start, and assigns object at offset start:
+
+a = [:foo, 'bar', 2]
+a[0..1] = 'foo' # => "foo"
+a # => ["foo", 2]
+
+if range.begin is negative, counts backwards from the end of the array:
+
+a = [:foo, 'bar', 2]
+a[-2..2] = 'foo' # => "foo"
+a # => [:foo, "foo"]
+
+If the array length is less than range.begin, assigns object at offset range.begin, and ignores length:
+
+a = [:foo, 'bar', 2]
+a[6..50] = 'foo' # => "foo"
+a # => [:foo, "bar", 2, nil, nil, nil, "foo"]
+
+If range.end is zero, shifts elements at and following offset start and assigns object at offset start:
+
+a = [:foo, 'bar', 2]
+a[1..0] = 'foo' # => "foo"
+a # => [:foo, "foo", "bar", 2]
+
+If range.end is negative, assigns object at offset start, retains range.end.abs -1 elements past that, and removes those beyond:
+
+a = [:foo, 'bar', 2]
+a[1..-1] = 'foo' # => "foo"
+a # => [:foo, "foo"]
+a = [:foo, 'bar', 2]
+a[1..-2] = 'foo' # => "foo"
+a # => [:foo, "foo", 2]
+a = [:foo, 'bar', 2]
+a[1..-3] = 'foo' # => "foo"
+a # => [:foo, "foo", "bar", 2]
+a = [:foo, 'bar', 2]
+
+If range.end is too large for the existing array, replaces array elements, but does not extend the array with nil values:
+
+a = [:foo, 'bar', 2]
+a[1..5] = 'foo' # => "foo"
+a # => [:foo, "foo"]
+
+
+
+    push, append, <<: Appends trailing elements.
+
+a = [:foo, 'bar', 2]
+a.push(:baz, :bat) # => [:foo, "bar", 2, :baz, :bat]
+
+Appends each argument as one element, even if it is another Array:
+
+//push & append
+a = [:foo, 'bar', 2]
+a1 = a.push([:baz, :bat], [:bam, :bad])
+a1 # => [:foo, "bar", 2, [:baz, :bat], [:bam, :bad]]
+
+//<<
+a = [:foo, 'bar', 2]
+a << :baz # => [:foo, "bar", 2, :baz]
+
+a = [:foo, 'bar', 2]	#=> [:foo, "bar", 2] 
+a1=a<<[3,4]	# => [:foo, "bar", 2, [3, 4]] 
+a	# => [:foo, "bar", 2, [3, 4]] 
+a1	# => [:foo, "bar", 2, [3, 4]] 
+
+
+
+    unshift, prepend: add obj at start of array.
+Prepends the given objects to self:
+
+a = [:foo, 'bar', 2]
+a.unshift(:bam, :bat) # => [:bam, :bat, :foo, "bar", 2]
+
+
+
+    insert: Inserts given objects at a given offset; does not replace elements.
+a = [:foo, 'bar', 2]
+a.insert(1, :bat, :bam) # => [:foo, :bat, :bam, "bar", 2]
+
+Extends the array if index is beyond the array (index >= self.size):
+
+a = [:foo, 'bar', 2]
+a.insert(5, :bat, :bam)
+a # => [:foo, "bar", 2, nil, nil, :bat, :bam]
+
+Does nothing if no objects given:
+
+a = [:foo, 'bar', 2]
+a.insert(1)
+a.insert(50)
+a.insert(-50)
+a # => [:foo, "bar", 2]
+
+When index is negative, inserts all given objects after the element at offset index+self.size:
+
+a = [:foo, 'bar', 2]
+a.insert(-2, :bat, :bam)
+a # => [:foo, "bar", :bat, :bam, 2]
+
+    concat: Appends all elements from given arrays.
+a = [0, 1]
+a.concat([2, 3], [4, 5]) # => [0, 1, 2, 3, 4, 5]
+
+
+    fill: Replaces specified elements with specified objects.
+########## arr.fill ###########
+array.ﬁll(obj) [or]
+array.ﬁll(obj, start , length) [or]
+array.ﬁll(obj, range) [or]
+array.ﬁll { |index| block } [or]
+array.ﬁll([start , length] ) { |index| block } [or]
+array.ﬁll(range) { |index| block }
+The ﬁrst three forms set the selected elements of self to obj. A start of
+nil is equivalent to zero. A length of nil is equivalent to self.length. The
+last three forms ﬁll the array with the value of the block. The block is
+passed with the absolute index of each element to be ﬁlled.
+ 
+array.ﬁll(obj)
+3.2.1 :019 > arr
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+3.2.1 :020 > arr.fill(404)
+ => [404, 404, 404, 404, 404, 404, 404, 404, 404, 404, 404] 
+3.2.1 :021 > arr
+ => [404, 404, 404, 404, 404, 404, 404, 404, 404, 404, 404]
+ 
+ 
+array.ﬁll(obj, start , length)
+3.2.1 :029 > arr.fill(404,3 ,4)
+ => [1, 2, 3, 404, 404, 404, 404, 8, 9, 10, 11] 
+ 
+  
+array.ﬁll(obj, range)
+3.2.1 :031 > arr.fill(404,3..4)
+ => [1, 2, 3, 404, 404, 6, 7, 8, 9, 10, 11] 
+ 
+
+array.ﬁll { |index| block } 
+3.2.1 :044 > arr= Array(1..11)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+
+3.2.1 :045 > arr.fill{|i|
+3.2.1 :046 >   if i%2==0
+3.2.1 :047 >     404
+3.2.1 :048 >   else 
+3.2.1 :049 >     i
+3.2.1 :050 >   end
+3.2.1 :051 > }
+ => [404, 1, 404, 3, 404, 5, 404, 7, 404, 9, 404] 
+ 
+
+array.ﬁll(start , length) { |index| block }
+3.2.1 :059 > arr= Array(1..11)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+3.2.1 :060 > arr.fill(3,4){|i|
+3.2.1 :061 >   if i%2==0
+3.2.1 :062 >     404
+3.2.1 :063 >   else 
+3.2.1 :064 >     i
+3.2.1 :065 >   end
+3.2.1 :066 > }
+ => [1, 2, 3, 3, 404, 5, 404, 8, 9, 10, 11] 
+
+
+array.ﬁll(range) { |index| block }
+3.2.1 :067 > arr= Array(1..11)
+ => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+3.2.1 :068 > arr.fill(3..4){|i|
+3.2.1 :069 >   if i%2==0
+3.2.1 :070 >     404
+3.2.1 :071 >   else 
+3.2.1 :072 >     i
+3.2.1 :073 >   end
+3.2.1 :074 > }
+ => [1, 2, 3, 3, 404, 6, 7, 8, 9, 10, 11] 
+3.2.1 :075 > 
+ 
+
+
+    replace: Replaces the content of self with the content of a given array.
+
+a = [:foo, 'bar', 2]
+a.replace(['foo', :bar, 3]) # => ["foo", :bar, 3]
+a # => ["foo", :bar, 3] 
+
+    reverse!: Replaces self with its elements reversed.
+==> inplace version of Replace method
+
+    rotate!: Replaces self with its elements rotated.
+==> inplace version of rotate method
+
+    shuffle!: Replaces self with its elements in random order.
+==> inplace version of shuffle method
+
+    sort!: Replaces self with its elements sorted, as determined by <=> or a given block.
+==> inplace version of sort method
+
+    sort_by!: Replaces self with its elements sorted, as determined by a given block.
+==> inplace version of sort_by method
 
  
 ##########  ###########
