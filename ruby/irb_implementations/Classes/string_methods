@@ -417,7 +417,302 @@ Returns nil if the two values are incomparable:
 'foo'.casecmp?(1) # => nil
 
   
-##########   ###########
+########## Methods for Modifying a String  ###########
+@@@@Insertion
+_________________
+
+    insert: Returns self with a given string inserted at a given offset.
+    
+insert(index, other_string) → self
+
+'foo'.insert(1, 'bar') # => "fbaroo"
+'foo'.insert(-2, 'bar') # => "fobaro"
+
+__________________________________________________________________________
+    <<: Returns self concatenated with a given string or integer.
+
+string << object → string
+
+s = 'foo'
+s << 'bar' # => "foobar"
+s          # => "foobar"
+
+If object is an Integer, the value is considered a codepoint and converted to a character before concatenation:
+
+s = 'foo'
+s << 33 	# => "foo!"
+
+__________________________________________________________________________
+@@@@Substitution
+________________
+
+    sub!: Replaces the first substring that matches a given pattern with a given replacement string; returns self if any changes, nil otherwise.
+
+sub!(pattern, replacement) → self or nil
+sub!(pattern) {|match| ... } → self or nil
+
+s = 'hello'
+s.sub(/[aeiou]/, '*')# => "h*llo"
+s.sub(/ell/, 'al')   # => "halo"
+
+Hash replacement
+If argument replacement is a hash, and pattern matches one of its keys, the replacing string is the value for that key:
+
+h = {'foo' => 'bar', 'baz' => 'bat'}
+'food'.sub('foo', h) # => "bard"
+
+
+Note that a symbol key does not match:
+h = {foo: 'bar', baz: 'bat'}
+'food'.sub('foo', h) # => "d"
+
+
+__________________________________________________________________________
+    gsub!: Replaces each substring that matches a given pattern with a given replacement string; returns self if any changes, nil otherwise.
+
+s.gsub(/[aeiou]/, '*') # => "h*ll*"
+s.gsub(/[aeiou]/, '')# => "hll"
+s.gsub(/xyzzy/, '*') # => "hello"
+'THX1138'.gsub(/\d/, '00')  # => "THX00000000"
+'THX1138'.gsub('\d+', '00') # => "THX1138"
+'THX1138'.gsub(/\d+/, '00') # => "THX00"
+
+Block
+
+In the block form, the current match string is passed to the block; the block’s return value becomes the replacing string:
+
+ s = '@'
+'1234'.gsub(/\d/) {|match| s.succ! } # => "ABCD"
+
+__________________________________________________________________________
+    succ!, next!: Returns self modified to become its own successor.
+
+succ → new_str
+
+Returns the successor to self. The successor is calculated by incrementing characters.
+'THX1138'.succ # => "THX1139"
+'<<koala>>'.succ # => "<<koalb>>"
+'***'.succ # => '**+'
+
+'00'.succ # => "01"
+'09'.succ # => "10"
+'99'.succ # => "100"
+
+'aa'.succ # => "ab"
+'az'.succ # => "ba"
+'zz'.succ # => "aaa"
+'AA'.succ # => "AB"
+'AZ'.succ # => "BA"
+'ZZ'.succ # => "AAA"
+
+The successor to a non-alphanumeric character is the next character in the underlying character set’s collating sequence, carrying to the next-left character for a rollover, and prepending another character if necessary:
+
+s = 0.chr * 3
+s # => "\x00\x00\x00"
+s.succ # => "\x00\x00\x01"
+s = 255.chr * 3
+s # => "\xFF\xFF\xFF"
+s.succ # => "\x01\x00\x00\x00"
+
+Carrying can occur between and among mixtures of alphanumeric characters:
+
+s = 'zz99zz99'
+s.succ # => "aaa00aa00"
+s = '99zz99zz'
+s.succ # => "100aa00aa"
+
+The successor to an empty String is a new empty String:
+
+''.succ # => ""
+
+__________________________________________________________________________
+    replace: Returns self with its entire content replaced by a given string.
+
+
+replace(other_string) → self
+
+Replaces the contents of self with the contents of other_string:
+
+s = 'foo'        # => "foo"
+s.replace('bar') # => "bar"
+__________________________________________________________________________
+    reverse!: Returns self with its characters in reverse order.
+
+reverse → string
+
+Returns a new string with the characters from self in reverse order.
+
+'stressed'.reverse # => "desserts"
+
+reverse! → self
+
+Returns self with its characters reversed:
+
+s = 'stressed'
+s.reverse! # => "desserts"
+s          # => "desserts"
+
+__________________________________________________________________________
+    setbyte: Sets the byte at a given integer offset to a given value; returns the argument.
+
+Sets the byte at zero-based index to integer; returns integer:
+
+s = 'abcde'      # => "abcde"
+s.setbyte(0, 98) # => 98
+s                # => "bbcde"
+
+__________________________________________________________________________
+    tr!: Replaces specified characters in self with specified replacement characters; returns self if any changes, nil otherwise.
+
+
+str.tr(from_str, to_str) => new_str
+"hello".tr('el', 'ip')      #=> "hippo"
+"hello".tr('aeiou', '*')    #=> "h*ll*"
+"hello".tr('aeiou', 'AA*')  #=> "hAll*"
+
+"hello".tr('a-y', 'b-z')    #=> "ifmmp"
+"hello".tr('^aeiou', '*')   #=> "*e**o"
+
+"hello^world\\".tr("^aeiou", "*")	#=> "*e**o**o****" 
+"hello^world\\".tr("\^aeiou", "*")	# => "*e**o**o****" 
+"hello^world\\".tr("\\^aeiou", "*")	# => "h*ll**w*rld\\" 
+"hello^world\\".tr("\\\^aeiou", "*")	# => "h*ll**w*rld\\" 
+"hello^world\\".tr("\\\\^aeiou", "*")	# => "h*ll**w*rld*" 
+
+"X['\\b']".tr("X\\", "")   #=> "['b']"
+"X['\\b']".tr("X-\\]", "") #=> "'b'"
+
+__________________________________________________________________________
+    tr_s!: Replaces specified characters in self with specified replacement characters, removing duplicates from the substrings that were modified; returns self if any changes, nil otherwise.
+
+"hello".tr_s('l', 'r')     #=> "hero"
+ "hello".tr('l', 'r')	   #=> "herro"
+ 
+"hello".tr_s('el', '*')    #=> "h*o"
+"hello".tr('el', '*')	   #=> "h***o"
+ 
+"hello".tr_s('el', 'hx')   #=> "hhxo"
+"hello".tr('el', 'hx')	   #=> "hhxxo" 
+
+__________________________________________________________________________
+@@@@Casing
+___________
+
+    capitalize!: Upcases the initial character and downcases all others; returns self if any changes, nil otherwise.
+s = 'hello World!' # => "hello World!"
+s.capitalize!      # => "Hello world!"
+s                  # => "Hello world!"
+s.capitalize!      # => nil
+__________________________________________________________________________
+    downcase!: Downcases all characters; returns self if any changes, nil otherwise.
+s = 'Hello World!' # => "Hello World!"
+s.downcase!        # => "hello world!"
+s                  # => "hello world!"
+s.downcase!        # => nil
+__________________________________________________________________________
+    upcase!: Upcases all characters; returns self if any changes, nil otherwise.
+s = 'Hello World!' # => "Hello World!"
+s.upcase!          # => "HELLO WORLD!"
+s                  # => "HELLO WORLD!"
+s.upcase!          # => nil
+__________________________________________________________________________
+    swapcase!: Upcases each downcase character and downcases each upcase character; returns self if any changes, nil otherwise.
+s = 'Hello World!' # => "Hello World!"
+s.swapcase!        # => "hELLO wORLD!"
+s                  # => "hELLO wORLD!"
+s.swapcase!	   # => "Hello World!"
+''.swapcase!       # => nil
+__________________________________________________________________________
+@@@@Encoding
+____________
+
+    encode!: Returns self with all characters transcoded from one given encoding into another.
+
+__________________________________________________________________________
+    unicode_normalize!: Unicode-normalizes self; returns self.
+    
+__________________________________________________________________________
+    scrub!: Replaces each invalid byte with a given character; returns self.
+
+__________________________________________________________________________
+    force_encoding: Changes the encoding to a given encoding; returns self.
+
+__________________________________________________________________________
+@@@@Deletion
+____________
+
+    clear: Removes all content, so that self is empty; returns self.
+s = 'foo' # => "foo"
+s.clear   # => ""
+__________________________________________________________________________
+    slice!, []=: Removes a substring determined by a given index, start/length, range, regexp, or substring.
+string = "This is a string"
+string.slice!(2)        #=> "i"
+string.slice!(3..6)     #=> " is "
+string.slice!(/s.*t/)   #=> "sa st"
+string.slice!("r")      #=> "r"
+string                  #=> "Thing"
+
+__________________________________________________________________________
+    squeeze!: Removes contiguous duplicate characters; returns self.
+
+Builds a set of characters from the other_str parameter(s) using the procedure described for String#count. Returns a new string where runs of the same character that occur in this set are replaced by a single character. If no arguments are given, all runs of identical characters are replaced by a single character.
+Example
+
+"yellow moon".squeeze                  #=> "yelow mon"
+"  now   is  the".squeeze(" ")         #=> " now is the"
+"  now   isss  ttthe".squeeze(" ")     # => " now isss ttthe"
+"putters shoot balls".squeeze("m-z")   #=> "puters shot balls"
+"putteeeers shoot bbaalls".squeeze("m-z")	# => "puteeeers shot bbaalls" 
+__________________________________________________________________________
+    delete!: Removes characters as determined by the intersection of substring arguments.
+
+str.delete([other_str]+) → new_str
+
+"hello".delete "l","lo"        #=> "heo"
+"hello".delete "lo"            #=> "he"
+"hello".delete "aeiou", "^e"   #=> "hell"
+"hello".delete "ej-m"          #=> "ho"
+_______________________________________________________________________
+    lstrip!: Removes leading whitespace; returns self if any changes, nil otherwise.
+"  hello  ".lstrip!  #=> "hello  "
+"hello  ".lstrip!    #=> nil
+"hello".lstrip!      #=> nil
+__________________________________________________________________________
+    rstrip!: Removes trailing whitespace; returns self if any changes, nil otherwise.
+
+__________________________________________________________________________
+    strip!: Removes leading and trailing whitespace; returns self if any changes, nil otherwise.
+"  hello  ".rstrip!  #=> "  hello"
+"  hello".rstrip!    #=> nil
+"hello".rstrip!      #=> nil
+__________________________________________________________________________
+    chomp!: Removes trailing record separator, if found; returns self if any changes, nil otherwise.
+
+Returns a new String with the given record separator removed from the end of str (if present). If $/ has not been changed from the default Ruby record separator, then chomp also removes carriage return characters (that is it will remove \n, \r, and \r\n). If $/ is an empty string, it will remove all trailing newlines from the string.
+Example
+
+"hello".chomp                #=> "hello"
+"hello\n".chomp              #=> "hello"
+"hello\r\n".chomp            #=> "hello"
+"hello\n\r".chomp            #=> "hello\n"
+"hello\r".chomp              #=> "hello"
+"hello \n there".chomp       #=> "hello \n there"
+"hello".chomp("llo")         #=> "he"
+"hello\r\n\r\n".chomp('')    #=> "hello"
+"hello\r\n\r\r\n".chomp('')  #=> "hello\r\n\r"
+__________________________________________________________________________
+    chop!: Removes trailing newline characters if found; otherwise removes the last character; returns self if any changes, nil otherwise.
+    
+"string\r\n".chop   #=> "string"
+"string\n\r".chop   #=> "string\n"
+"string\n".chop     #=> "string"
+"string".chop       #=> "strin"
+"x".chop.chop       #=> ""
+    
+
+__________________________________________________________________________
+
   
 ##########   ###########
   
