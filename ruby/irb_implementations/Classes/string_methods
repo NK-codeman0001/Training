@@ -85,10 +85,20 @@ String.new('foo', encoding: Encoding::US_ASCII).encoding # => #<Encoding:US-ASCI
 String.new('foo', encoding: 'US-ASCII').encoding         # => #<Encoding:US-ASCII>
 String.new('foo', encoding: 'ASCII').encoding            # => #<Encoding:US-ASCII>
 
+With keyword capacity, returns a copy of str; the given capacity may set the size of the internal buffer, which may affect performance:
 String.new(capacity: 1)
 String.new('foo', capacity: 4096)
 
+
+The string, encoding, and capacity arguments may all be used together:
 String.new('hello', encoding: 'UTF-8', capacity: 25)
+
+Note that these are equivalent:
+s0 = String.new('foo', encoding: 'ASCII')
+s1 = 'foo'.force_encoding('ASCII')
+s0.encoding == s1.encoding # => true
+
+
 
 ::try_convert: Returns a new string created from a given object.
 If object is a String object, returns object.
@@ -102,8 +112,39 @@ String.try_convert([9,9])    #=> nil
 String.try_convert(9)    #=> nil
 String.try_convert(true)   #=> nil
 
-##########   ###########
-  
+##########  Methods for a Frozen/Unfrozen String ###########
+  freeze: Prevents further modifications to obj. A FrozenError will be raised if modification is attempted. There is no way to unfreeze a frozen object. To check if a string is freeze or not use:
+  string.frozen?.
+
+This method returns self.
+a="Neeraj"
+a.frozen?	# => false
+a.freeze
+a.frozen?	# => true 
+a << "z"
+
+produces:
+prog.rb:3:in `<<': can't modify frozen Array (FrozenError)
+ from prog.rb:3
+
+
+Objects of the following classes are always frozen: Integer, Float, Symbol.
+
+
++string → new_string or self
+Returns self if self is not frozen.
+Otherwise. returns self.dup, which is not frozen.
++a<<"z"		# => "Neerajz" 
+a		# => "Neeraj" 
+
+-string → frozen_string
+-a<<"z"
+(irb):53:in `<main>': can't modify frozen String: "Neeraj" (FrozenError) 
+
+Returns a frozen, possibly pre-existing copy of the string.
+The returned String will be deduplicated as long as it does not have any instance variables set on it.
+
+
 ##########   ###########
   
 ##########   ###########
