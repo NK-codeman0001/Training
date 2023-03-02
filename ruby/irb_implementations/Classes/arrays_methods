@@ -365,6 +365,42 @@ end
 
     count: Returns the count of elements that meet a given criterion.
 
+    count()
+    Array#count() : count() is a Array class method which returns the number of elements in the array. It can also find the total number of a particular element in the array.
+
+Syntax:  Array.count()
+Parameter:  obj - specific element to found
+Return:  removes all the nil values from the array. 
+
+Code #1 : 
+a = [18, 22, 33, nil, 5, 6]
+b = [1, 4, 1, 1, 88, 9]
+c = [18, 22, nil, nil, 50, 6]
+  
+puts "counting : #{a.count}\n\n"
+puts "counting : #{b.count(1)}\n\n"
+puts "counting : #{c.count(nil)}\n\n"
+
+Output :
+counting : 6
+counting : 3
+counting : 2
+
+Code #2 : 
+a = ["abc", "nil", "dog"]
+b = ["cow", nil, "dog"]
+c = ["cat", nil, nil]
+
+puts "counting : #{a.count}\n\n"
+puts "counting : #{b.count(1)}\n\n"
+puts "counting : #{c.count(nil)}\n\n"
+
+Output :
+counting: 3
+counting : 0
+counting : 2
+
+
     find_index, index: Returns the index of the first element that meets a given criterion.
 
     rindex: Returns the index of the last element that meets a given criterion.
@@ -541,6 +577,29 @@ syntax: arr1==arr2
 
 =>similar to ==
 syntax: arr1.eql?(arr2)
+
+########## array find () ###########
+The find() of enumerable is an inbuilt method in Ruby returns the first element which satisfies the given condition in the block. If there is no block, then it returns the enumerator itself.
+
+    Syntax: block.find { |obj| block }
+    Parameters: The function takes the block according to which the first which satisfies is to be returned.
+    Return Value: It returns the first element which satisfies the block or the enumerator instead.
+
+Example 1:
+
+enu = (1..50)
+enu.find { |el|  el % 2 == 0 && el % 9 == 0}
+
+Output:
+18
+
+
+Example 2:
+enu = (1..50)
+enu.find
+
+Output:
+Enumerator: 1..50:find
 
 
 ########## array << obj ###########
