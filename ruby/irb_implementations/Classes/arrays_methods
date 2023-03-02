@@ -2315,6 +2315,45 @@ Notes:
     Array#sum method may not respect method redefinition of “+” methods such as Integer#+.
 
  
-##########  ###########
+########## Array.reduce  ###########
+The ‘reduce’ method can be used to take an array and reduce it to a single value. Lets start with a simple demonstration of this method.
 
+Lets say we want write a method to find the sum of all numbers in an array of numbers. You may be inclined to write your code in this manner:
+
+def sum(array)
+  sum = 0
+  array.each do |number|
+    sum += number
+  end
+  return sum 
+end p sum([5, 10, 20])
+# => 35
+
+Using the reduce method however, we can reduce the code inside the sum method into a single line:
+
+def sum(array)
+  array.reduce(0) { |sum, num| sum + num }
+endp sum([5, 10, 20])
+# => 35
+
+Looking at the above, the ‘0’ in ‘array.reduce(0) sets the initial value.
+
+After that, we have two parameters in the method (|sum, num|). The first parameter, which we call ‘sum’ here is the total that will eventually be returned. The second parameter, which we call ‘num’ is the current number as we iterate through the array. After that, with ‘sum + num’ we are essentially telling the method that we we want to add the current number to the sum each time we iterate through. In the example above, the sum would increase from 0, to 5, to 15, and finally to 35.
+
+We can refactor the code even more by using this shortcut:
+
+def sum(array)
+  array.reduce(:+)
+endp sum([5, 10, 20])
+# => 35
+
+Note that ‘reduce’ method is often called ‘inject’.
+
+In Ruby, the reduce method can be written using several shorthand methods. Here are a few examples:
+1=> array.reduce(:+) - calculates the sum of all elements in the array using the addition operator.
+2=> array.reduce(:*) - calculates the product of all elements in the array using the multiplication operator.
+3=> array.reduce(:-) or array.reduce(:subtract) - calculates the difference between all elements in the array using the subtraction operator.
+4=> array.reduce(:/) or array.reduce(:divide) - calculates the quotient of all elements in the array using the division operator.
+5=> array.reduce(:**) or array.reduce(:pow) - calculates the result of raising all elements in the array to the power of the previous element.
+6=> array.reduce(&:method_name) - calculates the result of calling a specific method on each element in the array.
 
