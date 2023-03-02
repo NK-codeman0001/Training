@@ -1,0 +1,282 @@
+ class Regexp
+
+Regular expressions (regexps) are patterns which describe the contents of a string. They’re used for testing whether a string contains a given pattern, or extracting the portions that match. They are created with the /pat/ and %r{pat} literals or the Regexp.new constructor.
+
+A regexp is usually delimited with forward slashes (/). For example:
+/hay/ =~ 'haystack'	# => 0 
+/ck/ =~ 'haystack'	#  => 6 
+/tacl/ =~ 'haystack'	#  => nil 
+/tackl/ =~ 'haystack'	#  => nil
+
+/y/.match('haystack')		# => #<MatchData "y"> 
+/ye/.match('haystack')		# => nil 
+/e/.match('haystack')		# => nil 
+/stack/.match('haystack')	# => #<MatchData "stack"> 
+
+=>Note that any Regexp matching will raise a RuntimeError if timeout is set and exceeded.
+
+Regexp Interpolation
+A regexp may contain interpolated strings; trivially:
+foo = 'bar'
+/#{foo}/ # => /bar/
+
+=~ Operator
+
+=~ is Ruby’s basic pattern-matching operator. When one operand is a regular expression and the other is a string then the regular expression is used as a pattern to match against the string. 
+(This operator is equivalently defined by Regexp and String so the order of String and Regexp do not matter. Other classes may have different implementations of =~.) 
+If a match is found, the operator returns index of first match in string, otherwise it returns nil.
+
+/hay/ =~ 'haystack'   #=> 0
+'haystack' =~ /hay/   #=> 0
+/a/   =~ 'haystack'   #=> 1
+/u/   =~ 'haystack'   #=> nil
+
+
+Using =~ operator with a String and Regexp the $~ global variable is set after a successful match. $~ holds a MatchData object. Regexp.last_match is equivalent to $~.
+
+/a/   =~ 'haystack'   	# => 1 
+$~   			# => #<MatchData "a"> 
+/e/   =~ 'haystack'   	# => nil 
+$~   			# => nil 
+/tack/   =~ 'haystack'  # => 4 
+$~   			# => #<MatchData "tack"> 
+
+
+Metacharacters and Escapes
+
+The following are metacharacters (, ), [, ], {, }, ., ?, +, *. They have a specific meaning when appearing in a pattern. To match them literally they must be backslash-escaped. To match a backslash literally, backslash-escape it: \\.
+
+/1 \+ 2 = 3\?/.match('Does 1 + 2 = 3?') #=> #<MatchData "1 + 2 = 3?">
+/a\\\\b/.match('a\\\\b')  
+
+
+Arbitrary Ruby expressions can be embedded into patterns with the #{...} construct.
+place = "東京都"
+/#{place}/.match("Go to 東京都")    #=> #<MatchData "東京都">
+
+
+
+Character Classes
+
+A character class is delimited with square brackets ([, ]) and lists characters that may appear at that point in the match. /[ab]/ means a or b, as opposed to /ab/ which means a followed by b.
+
+/W[aeiou]rd/.match("Word") #=> #<MatchData "Word">
+
+Within a character class the hyphen (-) is a metacharacter denoting an inclusive range of characters. [abcd] is equivalent to [a-d]. A range can be followed by another range, so [abcdwxyz] is equivalent to [a-dw-z]. The order in which ranges or individual characters appear inside a character class is irrelevant.
+
+/[0-9a-f]/.match('9f') #=> #<MatchData "9">
+/[9f]/.match('9f')     #=> #<MatchData "9">
+
+
+If the first character of a character class is a caret (^) the class is inverted: it matches any character except those named.
+
+/[^a-eg-z]/.match('f') #=> #<MatchData "f">
+
+
+A character class may contain another character class. By itself this isn’t useful because [a-z[0-9]] describes the same set as [a-z0-9]. However, character classes also support the && operator which performs set intersection on its arguments. The two can be combined as follows:
+
+/[a-w&&[^c-g]z]/ # ([a-w] AND ([^c-g] OR z))
+
+This is equivalent to:
+
+/[abh-w]/
+
+
+The following metacharacters also behave like character classes:
+
+    /./ - Any character except a newline.
+
+    /./m - Any character (the m modifier enables multiline mode)
+
+    /\w/ - A word character ([a-zA-Z0-9_])
+
+    /\W/ - A non-word character ([^a-zA-Z0-9_]). Please take a look at Bug #4044 if using /\W/ with the /i modifier.
+
+    /\d/ - A digit character ([0-9])
+
+    /\D/ - A non-digit character ([^0-9])
+
+    /\h/ - A hexdigit character ([0-9a-fA-F])
+
+    /\H/ - A non-hexdigit character ([^0-9a-fA-F])
+
+    /\s/ - A whitespace character: /[ \t\r\n\f\v]/
+
+    /\S/ - A non-whitespace character: /[^ \t\r\n\f\v]/
+
+    /\R/ - A linebreak: \n, \v, \f, \r \u0085 (NEXT LINE), \u2028 (LINE SEPARATOR), \u2029 (PARAGRAPH SEPARATOR) or \r\n.
+
+
+
+POSIX bracket expressions are also similar to character classes. They provide a portable alternative to the above, with the added benefit that they encompass non-ASCII characters. For instance, /\d/ matches only the ASCII decimal digits (0-9); whereas /[[:digit:]]/ matches any character in the Unicode Nd category.
+
+    /[[:alnum:]]/ - Alphabetic and numeric character
+
+    /[[:alpha:]]/ - Alphabetic character
+
+    /[[:blank:]]/ - Space or tab
+
+    /[[:cntrl:]]/ - Control character
+
+    /[[:digit:]]/ - Digit
+
+    /[[:graph:]]/ - Non-blank character (excludes spaces, control characters, and similar)
+
+    /[[:lower:]]/ - Lowercase alphabetical character
+
+    /[[:print:]]/ - Like [:graph:], but includes the space character
+
+    /[[:punct:]]/ - Punctuation character
+
+    /[[:space:]]/ - Whitespace character ([:blank:], newline, carriage return, etc.)
+
+    /[[:upper:]]/ - Uppercase alphabetical
+
+    /[[:xdigit:]]/ - Digit allowed in a hexadecimal number (i.e., 0-9a-fA-F)
+
+Ruby also supports the following non-POSIX character classes:
+
+    /[[:word:]]/ - A character in one of the following Unicode general categories Letter, Mark, Number, Connector_Punctuation
+
+    /[[:ascii:]]/ - A character in the ASCII character set
+
+    # U+06F2 is "EXTENDED ARABIC-INDIC DIGIT TWO"
+    /[[:digit:]]/.match("\u06F2")    #=> #<MatchData "\u{06F2}">
+    /[[:upper:]][[:lower:]]/.match("Hello") #=> #<MatchData "He">
+    /[[:xdigit:]][[:xdigit:]]/.match("A6")  #=> #<MatchData "A6">
+
+
+Repetition
+
+The constructs described so far match a single character. They can be followed by a repetition metacharacter to specify how many times they need to occur. Such metacharacters are called quantifiers.
+
+    * - Zero or more times
+
+    + - One or more times
+
+    ? - Zero or one times (optional)
+
+    {n} - Exactly n times
+
+    {n,} - n or more times
+
+    {,m} - m or less times
+
+    {n,m} - At least n and at most m times
+
+At least one uppercase character (‘H’), at least one lowercase character (‘e’), two ‘l’ characters, then one ‘o’:
+
+"Hello".match(/[[:upper:]]+[[:lower:]]+l{2}o/) #=> #<MatchData "Hello">
+
+Grouping
+
+Parentheses also group the terms they enclose, allowing them to be quantified as one atomic whole.
+
+The pattern below matches a vowel followed by 2 word characters:
+
+/[aeiou]\w{2}/.match("Caenorhabditis elegans") #=> #<MatchData "aen">
+
+Whereas the following pattern matches a vowel followed by a word character, twice, i.e. [aeiou]\w[aeiou]\w: ‘enor’.
+
+/([aeiou]\w){2}/.match("Caenorhabditis elegans")
+    #=> #<MatchData "enor" 1:"or">
+
+Anchors
+
+Anchors are metacharacter that match the zero-width positions between characters, anchoring the match to a specific position.
+
+    ^ - Matches beginning of line
+
+    $ - Matches end of line
+
+    \A - Matches beginning of string.
+
+    \Z - Matches end of string. If string ends with a newline, it matches just before newline
+
+    \z - Matches end of string
+
+    \G - Matches first matching position:
+
+    In methods like String#gsub and String#scan, it changes on each iteration. It initially matches the beginning of subject, and in each following iteration it matches where the last match finished.
+
+    "    a b c".gsub(/ /, '_')    #=> "____a_b_c"
+    "    a b c".gsub(/\G /, '_')  #=> "____a b c"
+
+    In methods like Regexp#match and String#match that take an (optional) offset, it matches where the search begins.
+
+    "hello, world".match(/,/, 3)    #=> #<MatchData ",">
+    "hello, world".match(/\G,/, 3)  #=> nil
+
+    \b - Matches word boundaries when outside brackets; backspace (0x08) when inside brackets
+
+    \B - Matches non-word boundaries
+
+If a pattern isn’t anchored it can begin at any point in the string:
+
+/real/.match("surrealist") #=> #<MatchData "real">
+
+Anchoring the pattern to the beginning of the string forces the match to start there. ‘real’ doesn’t occur at the beginning of the string, so now the match fails:
+
+/\Areal/.match("surrealist") #=> nil
+
+The match below fails because although ‘Demand’ contains ‘and’, the pattern does not occur at a word boundary.
+
+/\Band/.match("Demand")
+
+Whereas in the following example ‘and’ has been anchored to a non-word boundary so instead of matching the first ‘and’ it matches from the fourth letter of ‘demand’ instead:
+
+/\Band.+/.match("Supply and demand curve") #=> #<MatchData "and curve">
+
+The pattern below uses positive lookahead and positive lookbehind to match text appearing in tags without including the tags in the match:
+
+/(?<=<b>)\w+(?=<\/b>)/.match("Fortune favours the <b>bold</b>")
+    #=> #<MatchData "bold">
+
+
+
+Regexp Global Variables
+
+Pattern matching sets some global variables :
+
+    $~ is equivalent to Regexp.last_match;
+
+    $& contains the complete matched text;
+
+    $` contains string before match;
+
+    $' contains string after match;
+
+    $1, $2 and so on contain text matching first, second, etc capture group;
+
+    $+ contains last capture group.
+
+Example:
+
+m = /s(\w{2}).*(c)/.match('haystack') #=> #<MatchData "stac" 1:"ta" 2:"c">
+$~                                    #=> #<MatchData "stac" 1:"ta" 2:"c">
+Regexp.last_match                     #=> #<MatchData "stac" 1:"ta" 2:"c">
+
+$&      #=> "stac"
+        # same as m[0]
+$`      #=> "hay"
+        # same as m.pre_match
+$'      #=> "k"
+        # same as m.post_match
+$1      #=> "ta"
+        # same as m[1]
+$2      #=> "c"
+        # same as m[2]
+$3      #=> nil
+        # no third group in pattern
+$+      #=> "c"
+        # same as m[-1]
+
+These global variables are thread-local and method-local variables.
+
+
+
+Consider a string of 25 as, a d, 4 as, and a c.
+
+s = 'a' * 25 + 'd' + 'a' * 4 + 'c'
+#=> "aaaaaaaaaaaaaaaaaaaaaaaaadaaaac"
+
