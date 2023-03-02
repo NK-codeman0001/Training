@@ -145,7 +145,193 @@ Returns a frozen, possibly pre-existing copy of the string.
 The returned String will be deduplicated as long as it does not have any instance variables set on it.
 
 
-##########   ###########
+##########  Methods for Querying ###########
+Counts
+
+    length, size: Returns the count of characters (not bytes).
+    bytesize: Returns the count of bytes (not characters) in self.
+'foo'.length        # => 3
+'foo'.bytesize        # => 3
+
+    empty?: Returns true if self.length is zero; false otherwise.
+"hello".empty? # => false
+" ".empty? # => false
+"".empty? # => true
+
+    count: Returns the count of substrings matching given strings.
+Returns the total number of characters in self that are specified by the given selectors
+a = "hello world"
+a.count "lo"                   #=> 5
+a.count "lo", "o"              #=> 2
+a.count "hello", "^l"          #=> 4
+a.count "ej-m"                 #=> 4
+
+"hello^world".count "\\^aeiou" #=> 4
+"hello-world".count "a\\-eo"   #=> 4
+
+c = "hello world\\r\\n"
+c.count "\\"                   #=> 2
+c.count "\\A"                  #=> 0
+c.count "X-\\w"                #=> 3
+
+
+
+=>A leading caret ('^') functions as a “not” operator for the characters to its right: 
+'abracadabra'.delete('^bc') # => "bcb"
+'0123456789'.delete('^852') # => "258"
+=>A hyphen ('-') between two other characters defines a range of characters instead of a plain string of characters:
+
+'abracadabra'.delete('a-d') # => "rr"
+'0123456789'.delete('4-7')  # => "012389"
+'!@#$%&*()_+'.delete(' -/') # => "@^_"
+
+# May contain more than one range.
+'abracadabra'.delete('a-cq-t') # => "d"   ===('abcqrst')
+
+# Ranges may be mixed with plain characters.
+'0123456789'.delete('67-950-23') # => "4"  ===('678950123')
+
+# Ranges may be mixed with negations.
+'abracadabra'.delete('^a-c') # => "abacaaba"  ===('^abc')
+
+=>A backslash ('\') acts as an escape for a caret, a hyphen, or another backslash:
+
+'abracadabra^'.delete('\^bc')   # => "araadara"
+'abracadabra-'.delete('a\-d')   # => "brcbr"
+"hello\r\nworld".delete("\r")   # => "hello\nworld"
+"hello\r\nworld".delete("\\r")  # => "hello\r\nwold"
+"hello\r\nworld".delete("\\\r") # => "hello\nworld"
+
+Multiple Character Selectors
+
+These instance methods accept multiple character selectors:
+
+In effect, the given selectors are formed into a single selector consisting of only those characters common to all of the given selectors.
+
+All forms of selectors may be used, including negations, ranges, and escapes.
+
+Each of these pairs of method calls is equivalent:
+
+s.delete('abcde', 'dcbfg')	# => "araaara"
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+Substrings
+
+    =~: Returns the index of the first substring that matches a given Regexp or other object; returns nil if no match is found.
+
+'foo' =~ /f/ # => 0
+'foo' =~ /o/ # => 1
+'foo' =~ /x/ # => nil
+
+
+    index: Returns the index of the first occurrence of a given substring; returns nil if none found.
+    'foo'.index('f')         # => 0
+'foo'.index('o')         # => 1
+'foo'.index('oo')        # => 1
+'foo'.index('ooo')       # => nil
+'тест'.index('с')        # => 2
+'こんにちは'.index('ち')   # => 3
+
+With Regexp argument regexp, returns the index of the first match in self:
+'foo'.index(/o./) # => 1
+'foo'.index(/.o/) # => 0
+
+With positive integer offset, begins the search at position offset:
+
+'foo'.index('o', 1)        # => 1
+'foo'.index('o', 2)        # => 2
+'foo'.index('o', 3)        # => nil
+'тест'.index('с', 1)       # => 2
+'こんにちは'.index('ち', 2)  # => 3
+
+With negative integer offset, selects the search position by counting backward from the end of self:
+
+'foo'.index('o', -1)  # => 2
+'foo'.index('o', -2)  # => 1
+'foo'.index('o', -3)  # => 1
+'foo'.index('o', -4)  # => nil
+'foo'.index(/o./, -2) # => 1
+'foo'.index(/.o/, -2) # => 1
+
+    rindex: Returns the index of the last occurrence of a given substring; returns nil if none found.
+'foo'.rindex(/o+/) # => 2
+$~ #=> #<MatchData "o">
+
+    include?: Returns true if the string contains a given substring; false otherwise.
+s = 'foo'
+s.include?('f')    # => true
+s.include?('fo')   # => true
+s.include?('food') # => false
+
+
+    match: Returns a MatchData object if the string matches a given Regexp; nil otherwise.
+
+'foo'.match('f') # => #<MatchData "f">
+'foo'.match('o') # => #<MatchData "o">
+'foo'.match('x') # => nil
+
+If Integer argument offset is given, the search begins at index offset:
+
+'foo'.match('f', 1) # => nil
+'foo'.match('o', 1) # => #<MatchData "o">
+
+With a block given, calls the block with the computed matchdata and returns the block’s return value:
+
+'foo'.match(/o/) {|matchdata| matchdata } # => #<MatchData "o">
+'foo'.match(/x/) {|matchdata| matchdata } # => nil
+'foo'.match(/f/, 1) {|matchdata| matchdata } # => nil
+
+
+    match?: Returns true if the string matches a given Regexp; false otherwise.
+'foo'.match?(/o/) # => true
+'foo'.match?('o') # => true
+'foo'.match?(/x/) # => false
+
+If Integer argument offset is given, the search begins at index offset:
+
+'foo'.match?('f', 1) # => false
+'foo'.match?('o', 1) # => true
+
+
+    start_with?: Returns true if the string begins with any of the given substrings.
+hello'.start_with?('hell')               # => true
+'hello'.start_with?(/H/i)                 # => true
+'hello'.start_with?('heaven', 'hell')     # => true
+'hello'.start_with?('heaven', 'paradise') # => false
+'тест'.start_with?('т')                   # => true
+'こんにちは'.start_with?('こ')              # => true
+
+
+    end_with?: Returns true if the string ends with any of the given substrings.
+'hello'.end_with?('ello')               #=> true
+'hello'.end_with?('heaven', 'ello')     #=> true
+'hello'.end_with?('heaven', 'paradise') #=> false
+'тест'.end_with?('т')                   # => true
+'こんにちは'.end_with?('は')              # => true
+
+
+
+Encodings
+
+    encoding: Returns the Encoding object that represents the encoding of the string.
+
+    unicode_normalized?: Returns true if the string is in Unicode normalized form; false otherwise.
+
+    valid_encoding?: Returns true if the string contains only characters that are valid for its encoding.
+
+    ascii_only?: Returns true if the string has only ASCII characters; false otherwise.
+'abc'.ascii_only?         # => true
+"abc\u{6666}".ascii_only? # => false
+
+
+Other
+
+    sum: Returns a basic checksum for the string: the sum of each byte.
+
+
+    hash: Returns the integer hash code.
   
 ##########   ###########
   
