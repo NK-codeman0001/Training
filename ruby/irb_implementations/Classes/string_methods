@@ -332,8 +332,90 @@ Other
 
 
     hash: Returns the integer hash code.
+ 
+ 
   
-##########   ###########
+##########  Methods for Comparing ###########
+
+
+    ==, ===: Returns true if a given other string has the same content as self.
+    
+string == object → true or false
+Also aliased as: ===
+string === object → true or false
+
+Returns true if object has the same length and content; as self; false otherwise:
+
+s = 'foo'
+s == 'foo' # => true
+s == 'food' # => false
+s == 'FOO' # => false
+
+Returns false if the two strings’ encodings are not compatible
+
+
+    eql?: Returns true if the content is the same as the given other string.
+s = 'foo'
+s.eql?('foo') # => true
+s.eql?('food') # => false
+s.eql?('FOO') # => false
+
+
+    <=>: Returns -1, 0, or 1 as a given other string is smaller than, equal to, or larger than self.
+Compares self and other_string, returning:
+
+    -1 if other_string is larger.
+
+    0 if the two are equal.
+
+    1 if other_string is smaller.
+
+    nil if the two are incomparable.
+
+Examples:
+
+'foo' <=> 'foo' # => 0
+'foo' <=> 'food' # => -1
+'food' <=> 'foo' # => 1
+'FOO' <=> 'foo' # => -1
+'foo' <=> 'FOO' # => 1
+'foo' <=> 1 # => nil
+
+
+    casecmp: Ignoring case, returns -1, 0, or 1 as a given other string is smaller than, equal to, or larger than self.
+Compares self.downcase and other_string.downcase; returns:
+
+    -1 if other_string.downcase is larger.
+
+    0 if the two are equal.
+
+    1 if other_string.downcase is smaller.
+
+    nil if the two are incomparable.
+
+Examples:
+
+'foo'.casecmp('foo') # => 0
+'foo'.casecmp('food') # => -1
+'food'.casecmp('foo') # => 1
+'FOO'.casecmp('foo') # => 0
+'foo'.casecmp('FOO') # => 0
+'foo'.casecmp(1) # => nil
+
+
+    casecmp?: Returns true if the string is equal to a given string after Unicode case folding; false otherwise.
+Returns true if self and other_string are equal after Unicode case folding, otherwise false:
+
+'foo'.casecmp?('foo') # => true
+'foo'.casecmp?('food') # => false
+'food'.casecmp?('foo') # => false
+'FOO'.casecmp?('foo') # => true
+'foo'.casecmp?('FOO') # => true
+
+Returns nil if the two values are incomparable:
+
+'foo'.casecmp?(1) # => nil
+
   
 ##########   ###########
   
