@@ -1082,18 +1082,196 @@ If other_string would not be reached, does not call the block:
 With no block given, returns a new Enumerator.
 ____________________________________________________________________
   
-##########   ###########
+########## Methods for Converting to Non-String  ###########
+@@@@Characters, Bytes, and Clusters
+____________________________________
+
+    bytes: Returns an array of the bytes in self.
+'hello'.bytes # => [104, 101, 108, 108, 111]
+____________________________________________________________________
+    chars: Returns an array of the characters in self.
+'hello'.chars     # => ["h", "e", "l", "l", "o"]
+____________________________________________________________________
+    codepoints:(same as bytes) Returns an array of the integer ordinals in self.
+'hello'.codepoints     # => [104, 101, 108, 108, 111]
+____________________________________________________________________
+    getbyte: Returns an integer byte as determined by a given index.
+Returns the byte at zero-based index as an integer, or nil if index is out of range:
+
+s = 'abcde'   # => "abcde"
+s.getbyte(0)  # => 97
+s.getbyte(-1) # => 101
+s.getbyte(5)  # => nil
+____________________________________________________________________
+(doubt)    grapheme_clusters: Returns an array of the grapheme clusters in self.
+
+____________________________________________________________________
+
+@@@@Splitting
+______________
+
+    lines: Returns an array of the lines in self, as determined by a given record separator.
+ 
+ lines(Line_sep = $/, chomp: false) → array_of_strings
+    
+Returns an array of lines in str split using the supplied record separator ($/ by default). This is a shorthand for str.each_line(separator, getline_args).to_a.
+
+If chomp is true, separator will be removed from the end of each line.
+
+"hello\nworld\n".lines              #=> ["hello\n", "world\n"]
+"hello  world".lines(' ')           #=> ["hello ", " ", "world"]
+"hello\nworld\n".lines(chomp: true) #=> ["hello", "world"]
+
+If a block is given, which is a deprecated form, works the same as each_line.
+____________________________________________________________________
+    partition: Returns a 3-element array determined by the first substring that matches a given substring or regexp,
+
+Returns a 3-element array of substrings of self.
+If the pattern is matched, returns pre-match, first-match, post-match:
+
+'hello'.partition('l')      # => ["he", "l", "lo"]
+'hello'.partition('ll')     # => ["he", "ll", "o"]
+'hello'.partition('h')      # => ["", "h", "ello"]
+'hello'.partition('o')      # => ["hell", "o", ""]
+'hello'.partition(/l+/)     #=> ["he", "ll", "o"]
+'hello'.partition('')       # => ["", "", "hello"]
+
+If the pattern is not matched, returns a copy of self and two empty strings:
+'hello'.partition('x') # => ["hello", "", ""]
+____________________________________________________________________
+    rpartition: (reverse of partition) Returns a 3-element array determined by the last substring that matches a given substring or regexp,
+(simliar to partition but it search from end or we can say it find the last matched pattern)
+
+If the pattern is matched, returns pre-match, last-match, post-match:
+
+'hello'.rpartition('l')      # => ["hel", "l", "o"]
+'hello'.rpartition('ll')     # => ["he", "ll", "o"]
+'hello'.rpartition('h')      # => ["", "h", "ello"]
+'hello'.rpartition('o')      # => ["hell", "o", ""]
+'hello'.rpartition(/l+/)     # => ["hel", "l", "o"]
+'hello'.rpartition('')       # => ["hello", "", ""]
+
+If the pattern is not matched, returns two empty strings and a copy of self:
+'hello'.rpartition('x') # => ["", "", "hello"]
+____________________________________________________________________
+    split: Returns an array of substrings determined by a given delimiter – regexp or string – or, if a block given, passes those substrings to the block.
+
+Returns an array of substrings of self that are the result of splitting self at each occurrence of the given field separator field_sep.
+
+When field_sep is $;:
+    If $; is nil (its default value), the split occurs just as if field_sep were given as a space character (see below).
+    If $; is a string, the split ocurs just as if field_sep were given as that string 
+
+'abc def ghi'.split	# => ["abc", "def", "ghi"] 
+'abc def ghi'.split('')	# => ["a", "b", "c", " ", "d", "e", "f", " ", "g", "h", "i"] 
+
+When field_sep is ' ' and limit is nil, the split occurs at each sequence of whitespace:
+'abc def ghi'.split(' ')         => ["abc", "def", "ghi"]
+"abc \n\tdef\t\n  ghi".split(' ') # => ["abc", "def", "ghi"]
+'abc  def   ghi'.split(' ')      => ["abc", "def", "ghi"]
+''.split(' ')                    => []
+
+When field_sep is a string different from ' ' and limit is nil, the split occurs at each occurrence of field_sep; trailing empty substrings are not returned:
+
+'aaaaaa'.split('a')	#=> []
+'abracadabra'.split('ab')  => ["", "racad", "ra"]
+'abracadabrab'.split('ab')	#=> ["", "racad", "r"] 
+'abracadabrababab'.split('ab')	# => ["", "racad", "r"] 
+'aaabcdaaa'.split('a')     => ["", "", "", "bcd"]
+''.split('a')              => []
+'3.14159'.split('1')       => ["3.", "4", "59"]
+'!@#$%^$&*($)_+'.split('$') # => ["!@#", "%^", "&*(", ")_+"]
+
+When field_sep is a Regexp and limit is nil, the split occurs at each occurrence of a match; trailing empty substrings are not returned:
+
+'abracadabra'.split(/ab/) # => ["", "racad", "ra"]
+'aaabcdaaa'.split(/a/)   => ["", "", "", "bcd"]
+'aaabcdaaa'.split(//)    => ["a", "a", "a", "b", "c", "d", "a", "a", "a"]
+'1 + 1 == 2'.split(/\W+/) # => ["1", "1", "2"]
+
+As seen above, if limit is nil, trailing empty substrings are not returned; the same is true if limit is zero:
+basically (nil == 0 in this case)
+
+'aaabcdaaa'.split('a')   => ["", "", "", "bcd"]
+'aaabcdaaa'.split('a', 0) # => ["", "", "", "bcd"]
+
+If limit is positive integer n, no more than n - 1- splits occur, so that at most n substrings are returned, and trailing empty substrings are included:
+(basically n deifne max no. of time spitting charactor to remove or number of substring to make)
+'aaabcdaaa'.split('a', 1) # => ["aaabcdaaa"]
+'aaabcdaaa'.split('a', 2) # => ["", "aabcdaaa"]
+'aaabcdaaa'.split('a', 5) # => ["", "", "", "bcd", "aa"]
+'aaabcdaaa'.split('a', 7) # => ["", "", "", "bcd", "", "", ""]
+'aaabcdaaa'.split('a', 8) # => ["", "", "", "bcd", "", "", ""]
+
+
+'aaabcdaaa'.split(/a/, 1)	# => ["aaabcdaaa"] 
+'aaabcdaaa'.split(/a/, 2)	# => ["", "aabcdaaa"] 
+'aaabcdaaa'.split(/a/, 5)	# => ["", "", "", "bcd", "aa"] 
+'aaabcdaaa'.split(/a/, 7)	# => ["", "", "", "bcd", "", "", ""] 
+ 
+'aaabcdaaa'.split(/a+/, 7)	# => ["", "bcd", ""] 
+'aaabcdaaa'.split(/a+/, 1)	# => ["aaabcdaaa"] 
+'aaabcdaaa'.split(/a+/, 2)	# => ["", "bcdaaa"] 
+'aaabcdaaa'.split(/a+/, 3)	# => ["", "bcd", ""] 
+'aaabcdaaa'.split(/a+/, 5)	# => ["", "bcd", ""] 
+'aaabcdaaa'.split(/a+/, 7)	# => ["", "bcd", ""] 
+ 
+ 'aaabcdaaa'.split(/\w/, 1)	# => ["aaabcdaaa"] 
+'aaabcdaaa'.split(/\w/, 2)	# => ["", "aabcdaaa"] 
+'aaabcdaaa'.split(/\w/, 5)	# => ["", "", "", "", "cdaaa"] 
+'aaabcdaaa'.split(/\w/, 7)	# => ["", "", "", "", "", "", "aaa"] 
+
+
+If limit is negative, it behaves the same as if limit was nil, meaning that there is no limit, and trailing empty substrings are included:
+'aaabcdaaa'.split('a', -1) # => ["", "", "", "bcd", "", "", ""]
+
+
+If a block is given, it is called with each substring:
+'abc def ghi'.split(' ') {|substring| p substring }
+Output:
+"abc"
+"def"
+"ghi"
+
+____________________________________________________________________
+@@@@Matching
+
+    scan: Returns an array of substrings matching a given regexp or string, or, if a block given, passes each matching substring to the block.
+
+____________________________________________________________________
+    unpack: Returns an array of substrings extracted from self according to a given format.
+
+____________________________________________________________________
+    unpack1: Returns the first substring extracted from self according to a given format.
+
+____________________________________________________________________
+@@@@Numerics
+_____________
+
+    hex: Returns the integer value of the leading characters, interpreted as hexadecimal digits.
+
+____________________________________________________________________
+    oct: Returns the integer value of the leading characters, interpreted as octal digits.
+
+____________________________________________________________________
+    ord: Returns the integer ordinal of the first character in self.
+
+____________________________________________________________________
+    to_i: Returns the integer value of leading characters, interpreted as an integer.
+
+____________________________________________________________________
+    to_f: Returns the floating-point value of leading characters, interpreted as a floating-point number.
+
+____________________________________________________________________
+@@@@Strings and Symbols
+________________________
+
+    inspect: Returns copy of self, enclosed in double-quotes, with special characters escaped.
+
+____________________________________________________________________
+    to_sym, intern: Returns the symbol corresponding to self.
+
+____________________________________________________________________
   
-##########   ###########
-  
-##########   ###########
-  
-##########   ###########
-  
-##########   ###########
-  
-##########   ###########
-  
-##########   ###########
-  
-##########   ###########
+########## END ###########
+
