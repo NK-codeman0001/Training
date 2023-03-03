@@ -957,7 +957,130 @@ same as in Array Class.
 ____________________________________________________________________
 
   
-##########   ###########
+########## Methods for Iterating  ###########
+
+    each_byte: Calls the given block with each successive byte in self.
+'hello'.each_byte {|byte| print byte, ' ' } 	#=> 104 101 108 108 111
+
+##Note it is printing the ASCII value of each character.
+
+
+str.bytes → an_array
+
+Returns an array of bytes in str. This is a shorthand for str.each_byte.to_a.
+____________________________________________________________________
+
+    each_char: Calls the given block with each successive character in self.
+
+'hello'.each_char {|char| print char, ' ' } 	#=> h e l l o
+____________________________________________________________________
+
+    each_codepoint: Calls the given block with each successive integer codepoint in self.
+
+Calls the given block with each successive codepoint from self; each codepoint is the integer value for a character; returns self:
+
+'hello'.each_codepoint {|codepoint| print codepoint, ' ' } 	#=>104 101 108 108 111
+____________________________________________________________________
+
+(doubt)    each_grapheme_cluster: Calls the given block with each successive grapheme cluster in self.
+
+Passes each grapheme cluster in str to the given block, or returns an enumerator if no block is given. Unlike String#each_char, this enumerates by grapheme clusters defined by Unicode Standard Annex #29 unicode.org/reports/tr29/
+
+s = "\u0061\u0308-pqr-\u0062\u0308-xyz-\u0063\u0308" # => "ä-pqr-b̈-xyz-c̈"
+s.each_grapheme_cluster {|gc| print gc, ' ' } 	#=>ä - p q r - b̈ - x y z - c̈
+____________________________________________________________________
+
+    each_line: Calls the given block with each successive line in self, as determined by a given record separator.
+
+
+each_line(line_sep = $/, chomp: false) {|substring| ... } → self
+each_line(line_sep = $/, chomp: false) → enumerator
+
+With a block given, forms the substrings (“lines”) that are the result of splitting self at each occurrence of the given line separator line_sep; passes each line to the block; returns self:
+
+s = <<~EOT
+This is the first line.
+This is line two.
+
+This is line four.
+This is line five.
+EOT
+
+s.each_line {|line| p line }
+
+Output:
+
+"This is the first line.\n"
+"This is line two.\n"
+"\n"
+"This is line four.\n"
+"This is line five.\n"
+
+With a different line_sep:
+
+s.each_line(' is ') {|line| p line }
+
+Output:
+
+"This is "
+"the first line.\nThis is "
+"line two.\n\nThis is "
+"line four.\nThis is "
+"line five.\n"
+
+With chomp as true, removes the trailing line_sep from each line:
+
+s.each_line(chomp: true) {|line| p line }
+
+Output:
+
+"This is the first line."
+"This is line two."
+""
+"This is line four."
+"This is line five."
+
+With an empty string as line_sep, forms and passes “paragraphs” by splitting at each occurrence of two or more newlines:
+
+s.each_line('') {|line| p line }
+
+Output:
+
+"This is the first line.\nThis is line two.\n\n"
+"This is line four.\nThis is line five.\n"
+
+
+With no block given, returns an enumerator.
+____________________________________________________________________
+
+    upto: Calls the given block with each string value returned by successive calls to succ.
+   
+upto(other_string, exclusive = false) {|string| ... } → self click to toggle source
+upto(other_string, exclusive = false) → new_enumerator
+
+With a block given, calls the block with each String value returned by successive calls to String#succ; the first value is self, the next is self.succ, and so on; the sequence terminates when value other_string is reached; returns self:
+
+'a8'.upto('b6') {|s| print s, ' ' } # => "a8"
+
+Output:
+
+a8 a9 b0 b1 b2 b3 b4 b5 b6
+
+If argument exclusive is given as a truthy object, the last value is omitted:
+
+'a8'.upto('b6', true) {|s| print s, ' ' } # => "a8"
+
+Output:
+
+a8 a9 b0 b1 b2 b3 b4 b5
+
+If other_string would not be reached, does not call the block:
+
+'25'.upto('5') {|s| fail s }
+'aa'.upto('a') {|s| fail s }
+
+With no block given, returns a new Enumerator.
+____________________________________________________________________
   
 ##########   ###########
   
