@@ -714,7 +714,248 @@ __________________________________________________________________________
 __________________________________________________________________________
 
   
-##########   ###########
+##########  Methods for Converting to New String ###########
+
+Extension
+__________
+
+    *: Returns the concatenation of multiple copies of self,
+"Ho! " * 3 # => "Ho! Ho! Ho! "
+"Ho! " * 0 # => ""
+____________________________________________________________________
+    +: Returns the concatenation of self and a given other string.
+
+"Hello from " + self.to_s # => "Hello from main"
+"Hello from " + 5.to_s		# => "Hello from 5" 
+"Hello from " + "Beryl Systems"	# => "Hello from Beryl Systems"
+____________________________________________________________________
+    concat: Returns the concatenation of self with given other strings.
+s = 'foo'
+s.concat('bar', 'baz') # => "foobarbaz"
+s                      # => "foobarbaz"
+
+For each given object object that is an Integer, the value is considered a codepoint and converted to a character before concatenation:
+
+s = 'foo'
+s.concat(32, 'bar', 32, 'baz') # => "foo bar baz"
+____________________________________________________________________
+    prepend: Returns the concatenation of a given other string with self.
+s = 'foo'
+s.prepend('bar', 'baz') # => "barbazfoo"
+s                       # => "barbazfoo"
+____________________________________________________________________
+    center: Returns a copy of self centered between pad substring.
+
+center(size, pad_string = ' ') → new_string
+
+Returns a centered copy of self.
+
+If integer argument size is greater than the size (in characters) of self, returns a new string of length size that is a copy of self, centered and padded on both ends with pad_string:
+
+'hello'.center(10)       	# => "  hello   "
+'  hello'.center(10)     	# => "   hello  "
+'hello'.center(10,'_') 		# => "__hello___" 
+'hello'.center(11,'_') 		# => "___hello___" 
+'hello'.center(10, 'ab') 	# => "abhelloaba"
+
+If size is not greater than the size of self, returns a copy of self:
+
+'hello'.center(5)  # => "hello"
+'hello'.center(1)  # => "hello"
+'hello'.center(3,'_') 	# => "hello" 
+____________________________________________________________________
+
+    ljust: (Returns a left-justified copy of self.) Returns a copy of self of a given length, right-padded with a given other string.
+
+'hello'.ljust(10)       # => "hello     "
+'  hello'.ljust(10)     # => "  hello   "
+'hello'.ljust(10, 'ab') # => "helloababa"
+'тест'.ljust(10)        # => "тест      "
+'こんにちは'.ljust(10)    # => "こんにちは     "
+
+If size is not greater than the size of self, returns a copy of self:
+
+'hello'.ljust(5)  # => "hello"
+'hello'.ljust(1)  # => "hello"
+____________________________________________________________________
+    rjust: (Returns a right-justified copy of self) Returns a copy of self of a given length, left-padded with a given other string.
+'hello'.rjust(10)       # => "     hello"
+'hello  '.rjust(10)     # => "   hello  "
+
+If size is not greater than the size of self, returns a copy of self:
+
+'hello'.rjust(5, 'ab')  # => "hello"
+'hello'.rjust(1, 'ab')  # => "hello"
+____________________________________________________________________
+
+Encoding
+_________
+
+    b: Returns a copy of self with ASCII-8BIT encoding.
+
+____________________________________________________________________
+    scrub: Returns a copy of self with each invalid byte replaced with a given character.
+
+____________________________________________________________________
+    unicode_normalize: Returns a copy of self with each character Unicode-normalized.
+
+____________________________________________________________________
+    encode: Returns a copy of self with all characters transcoded from one given encoding into another.
+
+____________________________________________________________________
+
+Substitution
+_______________
+
+    dump: Returns a copy of self with all non-printing characters replaced by xHH notation and all special characters escaped.
+
+dump → string
+"hello \n ''".dump    # => "\"hello \\n ''\""
+"\f\x00\xff\\\"".dump # => "\"\\f\\x00\\xFF\\\\\\\"\""
+
+____________________________________________________________________
+    undump: Returns a copy of self with all \xNN notation replace by \uNNNN notation and all escaped characters unescaped.
+
+undump → string
+
+Returns an unescaped version of self:
+
+s_orig = "\f\x00\xff\\\""    # => "\f\u0000\xFF\\\""
+s_dumped = s_orig.dump       # => "\"\\f\\x00\\xFF\\\\\\\"\""
+s_undumped = s_dumped.undump # => "\f\u0000\xFF\\\""
+s_undumped == s_orig         # => true
+
+____________________________________________________________________
+    sub: Returns a copy of self with the first substring matching a given pattern replaced with a given replacement string;.
+
+at line: 449
+____________________________________________________________________
+    gsub: Returns a copy of self with each substring that matches a given pattern replaced with a given replacement string.
+
+at line: 471
+____________________________________________________________________
+    succ, next: Returns the string that is the successor to self.
+
+at line : 488
+____________________________________________________________________
+    reverse: Returns a copy of self with its characters in reverse order.
+
+at line : 539
+____________________________________________________________________
+    tr: Returns a copy of self with specified characters replaced with specified replacement characters.
+
+at line: 565
+____________________________________________________________________
+    tr_s: Returns a copy of self with specified characters replaced with specified replacement characters, removing duplicates from the substrings that were modified.
+
+at line: 586
+____________________________________________________________________
+    %: Returns the string resulting from formatting a given object into self
+
+(doubt)
+____________________________________________________________________
+Casing (at line: 598)
+_______
+
+    capitalize: Returns a copy of self with the first character upcased and all other characters downcased.
+
+____________________________________________________________________
+    downcase: Returns a copy of self with all characters downcased.
+
+____________________________________________________________________
+    upcase: Returns a copy of self with all characters upcased.
+
+____________________________________________________________________
+    swapcase: Returns a copy of self with all upcase characters downcased and all downcase characters upcased.
+
+____________________________________________________________________
+Deletion
+_________
+
+    delete: Returns a copy of self with characters removed
+
+at line: 668
+____________________________________________________________________
+    delete_prefix: Returns a copy of self with a given prefix removed.
+    
+Returns a copy of self with leading substring prefix removed:
+'hello'.delete_prefix('hel')      # => "lo"
+'hello'.delete_prefix('llo')      # => "hello"
+
+____________________________________________________________________
+    delete_suffix: Returns a copy of self with a given suffix removed.
+
+Returns a copy of self with trailing substring suffix removed:
+'hello'.delete_suffix('llo')      # => "he"
+'hello'.delete_suffix('hel')      # => "hello"
+____________________________________________________________________
+    lstrip: Returns a copy of self with leading whitespace removed.
+
+at line: 677
+____________________________________________________________________
+    rstrip: Returns a copy of self with trailing whitespace removed.
+
+at line: 682
+____________________________________________________________________
+    strip: Returns a copy of self with leading and trailing whitespace removed.
+
+at line: 685
+____________________________________________________________________
+    chomp: Returns a copy of self with a trailing record separator removed, if found.
+
+at line: 690
+____________________________________________________________________
+    chop: Returns a copy of self with trailing newline characters or the last character removed.
+
+at line: 705
+____________________________________________________________________
+    squeeze: Returns a copy of self with contiguous duplicate characters removed.
+
+at line: 657
+____________________________________________________________________
+    [], slice: Returns a substring determined by a given index, start/length, or range, or string.
+
+at line: 648
+____________________________________________________________________
+    byteslice: Returns a substring determined by a given index, start/length, or range.
+
+With integer arguments index and length given, returns the substring beginning at the given index of the given length (if possible), or nil if length is negative or index falls outside of self:
+
+s = '0123456789' # => "0123456789"
+s.byteslice(2)   # => "2"
+s.byteslice(200) # => nil
+s.byteslice(4, 3)  # => "456"
+s.byteslice(4, 30) # => "456789"
+s.byteslice(4, -1) # => nil
+s.byteslice(40, 2) # => nil
+
+In either case above, counts backwards from the end of self if index is negative:
+
+s = '0123456789'   # => "0123456789"
+s.byteslice(-4)    # => "6"
+s.byteslice(-4, 3) # => "678"
+
+With Range argument range given, returns byteslice(range.begin, range.size):
+
+s = '0123456789'    # => "0123456789"
+s.byteslice(4..6)   # => "456"
+s.byteslice(-6..-4) # => "456"
+s.byteslice(5..2)   # => "" # range.size is zero.
+s.byteslice(40..42) # => nil
+____________________________________________________________________
+    chr: Returns the first character.
+s = 'foo' # => "foo"
+s.chr     # => "f"
+____________________________________________________________________
+
+Duplication
+____________
+
+    to_s, $to_str: If self is a subclass of String, returns self copied into a String; otherwise, returns self.
+
+same as in Array Class.
+____________________________________________________________________
+
   
 ##########   ###########
   
