@@ -8,6 +8,25 @@ A regexp is usually delimited with forward slashes (/). For example:
 /tacl/ =~ 'haystack'	#  => nil 
 /tackl/ =~ 'haystack'	#  => nil
 
+Options may also be used with Regexp.new:
+
+Regexp.new("abc", Regexp::IGNORECASE)                     #=> /abc/i
+Regexp.new("abc", Regexp::MULTILINE)                      #=> /abc/m
+Regexp.new("abc # Comment", Regexp::EXTENDED)             #=> /abc # Comment/x
+Regexp.new("abc", Regexp::IGNORECASE | Regexp::MULTILINE) #=> /abc/mi
+
+Regexp.new("abc", "i")           #=> /abc/i
+Regexp.new("abc", "m")           #=> /abc/m
+Regexp.new("abc # Comment", "x") #=> /abc # Comment/x
+Regexp.new("abc", "im")          #=> /abc/mi
+
+//Convert a string to regular expression ruby
+>> str = '[\w\s]+'
+ => "[\\w\\s]+" 
+>> Regexp.new str
+ => /[\w\s]+/ 
+
+
 /y/.match('haystack')		# => #<MatchData "y"> 
 /ye/.match('haystack')		# => nil 
 /e/.match('haystack')		# => nil 

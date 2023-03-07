@@ -1,61 +1,39 @@
 String Literals
 Ruby strings are simply sequences of 8-bit bytes and they are objects of class String. Double-quoted strings allow substitution and backslash notation but single-quoted strings don't allow substitution and allow backslash notation only for \\ and \'
-Example
-#!/usr/bin/ruby -w
 
+Example
 puts 'escape using "\\"';
 puts 'That\'s right';
+
 This will produce the following result −
 escape using "\"
 That's right
+
 You can substitute the value of any Ruby expression into a string using the sequence #{ expr }. Here, expr could be any ruby expression.
-#!/usr/bin/ruby -w
 
 puts "Multiplication Value : #{24*60*60}";
+
 This will produce the following result −
 Multiplication Value : 86400
+
 Backslash Notations
 Following is the list of Backslash notations supported by Ruby −
-Notation
-Character represented
-\n
-Newline (0x0a)
-\r
-Carriage return (0x0d)
-\f
-Formfeed (0x0c)
-\b
-Backspace (0x08)
-\a
-Bell (0x07)
-\e
-Escape (0x1b)
-\s
-Space (0x20)
-\nnn
-Octal notation (n being 0-7)
-\xnn
-Hexadecimal notation (n being 0-9, a-f, or A-F)
-\cx, \C-x
-Control-x
-\M-x
-Meta-x (c | 0x80)
-\M-\C-x
-Meta-Control-x
-\x
-Character x
 
-Ruby - Strings
-A String object in Ruby holds and manipulates an arbitrary sequence of one or more bytes, typically representing characters that represent human language.
-The simplest string literals are enclosed in single quotes (the apostrophe character). The text within the quote marks is the value of the string −
-'This is a simple Ruby string literal'
-If you need to place an apostrophe within a single-quoted string literal, precede it with a backslash, so that the Ruby interpreter does not think that it terminates the string −
-'Won\'t you read O\'Reilly\'s book?'
-The backslash also works to escape another backslash, so that the second backslash is not itself interpreted as an escape character.
-Following are the string-related features of Ruby.
+(*) \n ::  Newline (0x0a)
+(*) \r ::  Carriage return (0x0d)
+(*) \f ::  Formfeed (0x0c)
+(*) \b ::  Backspace (0x08)
+(*) \a ::  Bell (0x07)
+(*) \e ::  Escape (0x1b)
+(*) \s ::  Space (0x20)
+(*) \e ::  Escape (0x1b)
+(*) \f ::  Formfeed (0x0c)
+(*) \v ::  Vertical tab (0x0b)
+(*) \t ::  Tab (0x09)
+____________________________________________________________________________________________________
 Expression Substitution
-Expression substitution is a means of embedding the value of any Ruby expression into a string using #{ and } −
-#!/usr/bin/ruby
+
+Expression substitution is a means of embedding the value of any Ruby expression into a string using #{ and }
 
 x, y, z = 12, 36, 72
 puts "The value of x is #{ x }."
@@ -65,470 +43,258 @@ This will produce the following result −
 The value of x is 12.
 The sum of x and y is 48.
 The average was 40.
+
+______________________________________________________________________________________________________
 General Delimited Strings
+
 With general delimited strings, you can create strings inside a pair of matching though arbitrary delimiter characters, e.g., !, (, {, <, etc., preceded by a percent character (%). Q, q, and x have special meanings. General delimited strings can be −
 %{Ruby is fun.}  equivalent to "Ruby is fun."
 %Q{ Ruby is fun. } equivalent to " Ruby is fun. "
 %q[Ruby is fun.]  equivalent to a single-quoted string
 %x!ls! equivalent to back tick command output `ls`
-Escape Characters
-Following table is a list of escape or non-printable characters that can be represented with the backslash notation. 
-NOTE − In a double-quoted string, an escape character is interpreted; in a single-quoted string, an escape character is preserved.
-Backslash notation
-Hexadecimal character
-Description
-\a
-0x07
-Bell or alert
-\b
-0x08
-Backspace
-\cx
- 
-Control-x
-\C-x
- 
-Control-x
-\e
-0x1b
-Escape
-\f
-0x0c
-Formfeed
-\M-\C-x
- 
-Meta-Control-x
-\n
-0x0a
-Newline
-\nnn
- 
-Octal notation, where n is in the range 0.7
-\r
-0x0d
-Carriage return
-\s
-0x20
-Space
-\t
-0x09
-Tab
-\v
-0x0b
-Vertical tab
-\x
- 
-Character x
-\xnn
- 
-Hexadecimal notation, where n is in the range 0.9, a.f, or A.F
 
-Character Encoding
-The default character set for Ruby is ASCII, whose characters may be represented by single bytes. If you use UTF-8, or another modern character set, characters may be represented in one to four bytes.
-You can change your character set using $KCODE at the beginning of your program, like this −
-$KCODE = 'u'
-Following are the possible values for $KCODE. 
-
-Sr.No.
-Code & Description
-1
-a
-ASCII (same as none). This is the default.
-2
-e
-EUC.
-3
-n
-None (same as ASCII).
-4
-u
-UTF-8.
-
+_______________________________________________________________________________________________________
 String Built-in Methods
-We need to have an instance of String object to call a String method. Following is the way to create an instance of String object −
-new [String.new(str = "")]
-This will return a new string object containing a copy of str. Now, using str object, we can all use any available instance methods. For example −
-#!/usr/bin/ruby
 
-myStr = String.new("THIS IS TEST")
-foo = myStr.downcase
+(1)=> new [String.new(str = "")]
 
-puts "#{foo}"
-This will produce the following result −
-this is test
-Following are the public String methods ( Assuming str is a String object ) − 
-
-Sr.No.
-Methods & Description
-1
-str % arg
+(2)=> str % arg
 Formats a string using a format specification. arg must be an array if it contains more than one substitution. For information on the format specification, see sprintf under "Kernel Module."
-2
-str * integer
+
+(3)=> str * integer
 Returns a new string containing integer times str. In other words, str is repeated integer imes.
-3
-str + other_str
+
+(4)=> str + other_str
 Concatenates other_str to str.
-4
-str << obj
+
+(5)=> str << obj
 Concatenates an object to str. If the object is a Fixnum in the range 0.255, it is converted to a character. Compare it with concat.
-5
-str <=> other_str
+
+(6)=> str <=> other_str
 Compares str with other_str, returning -1 (less than), 0 (equal), or 1 (greater than). The comparison is case-sensitive.
-6
-str == obj
+
+(7)=> str == obj
 Tests str and obj for equality. If obj is not a String, returns false; returns true if str <=> obj returns 0.
-7
-str =~ obj
+
+**(8)=> str =~ obj**  (!important)
 Matches str against a regular expression pattern obj. Returns the position where the match starts; otherwise, false.
-8
-str.capitalize
+
+(9)=> str.capitalize
 Capitalizes a string.
-9
-str.capitalize!
+
+(10)=> str.capitalize!
 Same as capitalize, but changes are made in place.
-10
-str.casecmp
+
+(11)=> str.casecmp
 Makes a case-insensitive comparison of strings.
-11
-str.center
+
+(12)=> str.center
 Centers a string.
-12
-str.chomp
+
+(13)=> str.chomp
 Removes the record separator ($/), usually \n, from the end of a string. If no record separator exists, does nothing.
-13
-str.chomp!
+
+(14)=> str.chomp!
 Same as chomp, but changes are made in place.
-14
-str.chop
+
+(15)=> str.chop
 Removes the last character in str.
-15
-str.chop!
+
+(16)=> str.chop!
 Same as chop, but changes are made in place.
-16
-str.concat(other_str)
+
+(17)=> str.concat(other_str)
 Concatenates other_str to str.
-17
-str.count(str, ...)
+
+(18)=> str.count(str, ...)
 Counts one or more sets of characters. If there is more than one set of characters, counts the intersection of those sets
-18
-str.crypt(other_str)
-Applies a one-way cryptographic hash to str. The argument is the salt string, which should be two characters long, each character in the range a.z, A.Z, 0.9, . or /.
-19
-str.delete(other_str, ...)
+
+(19)=> str.crypt(other_str)
+Applies a one-way cryptographic hash to str. The argument is the salt string, **which should be two characters long, each character in the range a.z, A.Z, 0.9, . or /     .**
+
+(20)=> str.delete(other_str, ...)
 Returns a copy of str with all characters in the intersection of its arguments deleted.
-20
-str.delete!(other_str, ...)
+
+(21)=> str.delete!(other_str, ...)
 Same as delete, but changes are made in place.
-21
-str.downcase
+
+(22)=> str.downcase
 Returns a copy of str with all uppercase letters replaced with lowercase.
-22
-str.downcase!
+
+(23)=> str.downcase!
 Same as downcase, but changes are made in place.
-23
-str.dump
+
+(24)=> str.dump
 Returns a version of str with all nonprinting characters replaced by \nnn notation and all special characters escaped.
-24
-str.each(separator = $/) { |substr| block }
+
+(25)=> str.each(separator = $/) { |substr| block }
 Splits str using argument as the record separator ($/ by default), passing each substring to the supplied block.
-25
-str.each_byte { |fixnum| block }
+
+(26)=> str.each_byte { |fixnum| block }
 Passes each byte from str to the block, returning each byte as a decimal representation of the byte.
-26
-str.each_line(separator=$/) { |substr| block }
+
+(28)=> str.each_line(separator=$/) { |substr| block }
 Splits str using argument as the record separator ($/ by default), passing each substring to the supplied block.
-27
-str.empty?
+
+(29)=> str.empty?
 Returns true if str is empty (has a zero length).
-28
-str.eql?(other)
+
+(30)=> str.eql?(other)
 Two strings are equal if they have the same length and content.
-29
-str.gsub(pattern, replacement) [or]
-str.gsub(pattern) { |match| block }
+
+(31)=> str.gsub(pattern, replacement) [or]
+
+(32)=> str.gsub(pattern) { |match| block }
 Returns a copy of str with all occurrences of pattern replaced with either replacement or the value of the block. The pattern will typically be a Regexp; if it is a String then no regular expression metacharacters will be interpreted (that is, /\d/ will match a digit, but '\d' will match a backslash followed by a 'd')
-30
-str[fixnum] [or] str[fixnum,fixnum] [or] str[range] [or] str[regexp] [or] str[regexp, fixnum] [or] str[other_str]
-References str, using the following arguments: one Fixnum, returns a character code at fixnum; two Fixnums, returns a substring starting at an offset (first fixnum) to length (second fixnum); range, returns a substring in the range; regexp returns portion of matched string; regexp with fixnum, returns matched data at fixnum; other_str returns substring matching other_str. A negative Fixnum starts at end of string with -1.
-31
-str[fixnum] = fixnum [or] str[fixnum] = new_str [or] str[fixnum, fixnum] = new_str [or] str[range] = aString [or] str[regexp] = new_str [or] str[regexp, fixnum] = new_str [or] str[other_str] = new_str ]
-Replace (assign) all or part of a string. Synonym of slice!.
-32
-str.gsub!(pattern, replacement) [or] str.gsub!(pattern) { |match|block }
+
+(34)=> str.gsub!(pattern, replacement) [or] str.gsub!(pattern) { |match|block }
 Performs the substitutions of String#gsub in place, returning str, or nil if no substitutions were performed.
-33
-str.hash
+
+(35)=> str.hash
 Returns a hash based on the string's length and content.
-34
-str.hex
+
+(36)=> str.hex
 Treats leading characters from str as a string of hexadecimal digits (with an optional sign and an optional 0x) and returns the corresponding number. Zero is returned on error.
-35
-str.include? other_str [or] str.include? fixnum
+
+(37)=> str.include? other_str [or] str.include? fixnum
 Returns true if str contains the given string or character.
-36
-str.index(substring [, offset]) [or]
-str.index(fixnum [, offset]) [or]
-str.index(regexp [, offset])
+
+(38)=> str.index(substring ,offset) [or]
+str.index(regexp , offset)
 Returns the index of the first occurrence of the given substring, character (fixnum), or pattern (regexp) in str. Returns nil if not found. If the second parameter is present, it specifies the position in the string to begin the search.
-37
-str.insert(index, other_str)
+
+(39)=> str.insert(index, other_str)
 Inserts other_str before the character at the given index, modifying str. Negative indices count from the end of the string, and insert after the given character. The intent is to insert a string so that it starts at the given index.
-38
-str.inspect
+
+(40)=> str.inspect
 Returns a printable version of str, with special characters escaped.
-39
-str.intern [or] str.to_sym
+
+(41)=> str.intern [or] str.to_sym
 Returns the Symbol corresponding to str, creating the symbol if it did not previously exist.
-40
-str.length
+
+(42)=> str.length
 Returns the length of str. Compare size.
-41
-str.ljust(integer, padstr = ' ')
+
+(43)=> str.ljust(integer, padstr = ' ')
 If integer is greater than the length of str, returns a new String of length integer with str left-justified and padded with padstr; otherwise, returns str.
-42
-str.lstrip
+
+(44)=> str.lstrip
 Returns a copy of str with leading whitespace removed.
-43
-str.lstrip!
+
+(45)=> str.lstrip!
 Removes leading whitespace from str, returning nil if no change was made.
-44
-str.match(pattern)
+
+**(46)=> str.match(pattern)** (important)
 Converts pattern to a Regexp (if it isn't already one), then invokes its match method on str.
-45
-str.oct
+
+(47)=> str.oct
 Treats leading characters of str as a string of octal digits (with an optional sign) and returns the corresponding number. Returns 0 if the conversion fails.
-46
-str.replace(other_str)
+
+(48)=> str.replace(other_str)
 Replaces the contents and taintedness of str with the corresponding values in other_str.
-47
-str.reverse
+
+(49)=> str.reverse
 Returns a new string with the characters from str in reverse order.
-48
-str.reverse!
+
+(50)=> str.reverse!
 Reverses str in place.
-49
-str.rindex(substring [, fixnum]) [or]
-str.rindex(fixnum [, fixnum]) [or]
-str.rindex(regexp [, fixnum])
+
+(51)=> str.rindex(substring , fixnum) [or]
+(52)=> str.rindex(regexp , fixnum)
 Returns the index of the last occurrence of the given substring, character (fixnum), or pattern (regexp) in str. Returns nil if not found. If the second parameter is present, it specifies the position in the string to end the search.characters beyond this point won't be considered.
-50.
-str.rjust(integer, padstr = ' ')
+.
+(53)=> str.rjust(integer, padstr = ' ')
 If integer is greater than the length of str, returns a new String of length integer with str right-justified and padded with padstr; otherwise, returns str.
-51
-str.rstrip
+
+(54)=> str.rstrip  //remove strip
 Returns a copy of str with trailing whitespace removed.
-52
-str.rstrip!
+
+(55)=> str.rstrip!
 Removes trailing whitespace from str, returning nil if no change was made.
-53
-str.scan(pattern) [or]
-str.scan(pattern) { |match, ...| block }
-Both forms iterate through str, matching the pattern (which may be a Regexp or a String). For each match, a result is generated and either added to the result array or passed to the block. If the pattern contains no groups, each individual result consists of the matched string, $&. If the pattern contains groups, each individual result is itself an array containing one entry per group.
-54
-str.slice(fixnum) [or] str.slice(fixnum, fixnum) [or]
-str.slice(range) [or] str.slice(regexp) [or]
-str.slice(regexp, fixnum) [or] str.slice(other_str)
-See str[fixnum], etc.
-str.slice!(fixnum) [or] str.slice!(fixnum, fixnum) [or]
-str.slice!(range) [or] str.slice!(regexp) [or]
+
+**(56)=> str.scan(pattern) [or]** (!important)
+(57)=> str.scan(pattern) { |match, ...| block }
+Both forms iterate through str, matching the pattern (which may be a Regexp or a String). For each match, a result is generated and either added to the result array or passed to the block. If the pattern contains no groups, each individual result consists of the matched string, $&.
+
+(58)=> str.slice(range) [or] 
+(59)=> str.slice(regexp) [or]
+(60)=> str.slice(other_str)
+(61)=> str.slice!(range) [or] str.slice!(regexp) [or]
 str.slice!(other_str)
 Deletes the specified portion from str, and returns the portion deleted. The forms that take a Fixnum will raise an IndexError if the value is out of range; the Range form will raise a RangeError, and the Regexp and String forms will silently ignore the assignment.
-55
-str.split(pattern = $, [limit])
+
+(62)=> str.split(pattern = $, [limit])
 Divides str into substrings based on a delimiter, returning an array of these substrings.
 If pattern is a String, then its contents are used as the delimiter when splitting str. If pattern is a single space, str is split on whitespace, with leading whitespace and runs of contiguous whitespace characters ignored.
 If pattern is a Regexp, str is divided where the pattern matches. Whenever the pattern matches a zero-length string, str is split into individual characters.
 If pattern is omitted, the value of $; is used. If $; is nil (which is the default), str is split on whitespace as if ` ` were specified.
 If the limit parameter is omitted, trailing null fields are suppressed. If limit is a positive number, at most that number of fields will be returned (if limit is 1, the entire string is returned as the only entry in an array). If negative, there is no limit to the number of fields returned, and trailing null fields are not suppressed.
-56
-str.squeeze([other_str]*)
+
+(63)=> str.squeeze([other_str]*)
 Builds a set of characters from the other_str parameter(s) using the procedure described for String#count. Returns a new string where runs of the same character that occur in this set are replaced by a single character. If no arguments are given, all runs of identical characters are replaced by a single character.
-57
-str.squeeze!([other_str]*)
+
+(64)=> str.squeeze!([other_str]*)
 Squeezes str in place, returning either str, or nil if no changes were made.
-58
-str.strip
+
+(65)=> str.strip
 Returns a copy of str with leading and trailing whitespace removed.
-59
-str.strip!
+
+(66)=> str.strip!
 Removes leading and trailing whitespace from str. Returns nil if str was not altered.
-60
-str.sub(pattern, replacement) [or]
-str.sub(pattern) { |match| block }
+
+**(67)=> str.sub(pattern, replacement) [or]** (!important)
+(68)=> str.sub(pattern) { |match| block }
 Returns a copy of str with the first occurrence of pattern replaced with either replacement or the value of the block. The pattern will typically be a Regexp; if it is a String then no regular expression metacharacters will be interpreted.
-61
-str.sub!(pattern, replacement) [or]
+
+(68)=> str.sub!(pattern, replacement) [or]
 str.sub!(pattern) { |match| block }
 Performs the substitutions of String#sub in place, returning str, or nil if no substitutions were performed.
-62
-str.succ [or] str.next
+
+**(69)=> str.succ [or] str.next** (!important)
 Returns the successor to str.
-63
-str.succ! [or] str.next!
+
+(70)=> str.succ! [or] str.next!
 Equivalent to String#succ, but modifies the receiver in place.
-64
-str.sum(n = 16)
+
+(71)=> str.sum(n = 16)  //checksum
 Returns a basic n-bit checksum of the characters in str, where n is the optional Fixnum parameter, defaulting to 16. The result is simply the sum of the binary value of each character in str modulo 2n - 1. This is not a particularly good checksum.
-65
-str.swapcase
+
+(72)=> str.swapcase
 Returns a copy of str with uppercase alphabetic characters converted to lowercase and lowercase characters converted to uppercase.
-66
-str.swapcase!
+
+(73)=> str.swapcase!
 Equivalent to String#swapcase, but modifies the receiver in place, returning str, or nil if no changes were made.
-67
-str.to_f
+
+(74)=> str.to_f
 >Returns the result of interpreting leading characters in str as a floating-point number. Extraneous characters past the end of a valid number are ignored. If there is not a valid number at the start of str, 0.0 is returned. This method never raises an exception.
-68
-str.to_i(base = 10)
+
+(75)=> str.to_i(base = 10)
 Returns the result of interpreting leading characters in str as an integer base (base 2, 8, 10, or 16). Extraneous characters past the end of a valid number are ignored. If there is not a valid number at the start of str, 0 is returned. This method never raises an exception.
-69
-str.to_s [or] str.to_str
+
+(76)=> str.to_s [or] str.to_str
 Returns the receiver.
-70
-str.tr(from_str, to_str)
+
+**(77)=> str.tr(from_str, to_str)** (!important)
 Returns a copy of str with the characters in from_str replaced by the corresponding characters in to_str. If to_str is shorter than from_str, it is padded with its last character. Both strings may use the c1.c2 notation to denote ranges of characters, and from_str may start with a ^, which denotes all characters except those listed.
-71
-str.tr!(from_str, to_str)
+
+(78)=> str.tr!(from_str, to_str)
 Translates str in place, using the same rules as String#tr. Returns str, or nil if no changes were made.
-72
-str.tr_s(from_str, to_str)
+
+**(79)=> str.tr_s(from_str, to_str)** (!important)
 Processes a copy of str as described under String#tr, then removes duplicate characters in regions that were affected by the translation.
-73
-str.tr_s!(from_str, to_str)
-Performs String#tr_s processing on str in place, returning str, or nil if no changes were made.
-74
-str.unpack(format)
->Decodes str (which may contain binary data) according to the format string, returning an array of each value extracted. The format string consists of a sequence of single-character directives, summarized in Table 18. Each directive may be followed by a number, indicating the number of times to repeat with this directive. An asterisk (*) will use up all remaining elements. The directives sSiIlL may each be followed by an underscore (_) to use the underlying platform's native size for the specified type; otherwise, it uses a platform-independent consistent size. Spaces are ignored in the format string.
-75
-str.upcase
+
+(80)=> str.tr_s!(from_str, to_str)
+
+(81)=> str.upcase
 Returns a copy of str with all lowercase letters replaced with their uppercase counterparts. The operation is locale insensitive. Only characters a to z are affected.
-76
-str.upcase!
+
+(82)=> str.upcase!
 Changes the contents of str to uppercase, returning nil if no changes are made.
-77
-str.upto(other_str) { |s| block }
+
+**(83)=> str.upto(other_str) { |s| block }** (!important)
 Iterates through successive values, starting at str and ending at other_str inclusive, passing each value in turn to the block. The String#succ method is used to generate each value.
 
-String unpack Directives
-Following table lists the unpack directives for method String#unpack. 
-
-Directive
-Returns
-Description
-A
-String
-With trailing nulls and spaces removed.
-a
-String
-String.
-B
-String
-Extracts bits from each character (most significant bit first).
-b
-String
-Extracts bits from each character (least significant bit first).
-C
-Fixnum
-Extracts a character as an unsigned integer.
-c
-Fixnum
-Extracts a character as an integer.
-D, d
-Float
-Treats sizeof(double) characters as a native double.
-E
-Float
-Treats sizeof(double) characters as a double in littleendian byte order.
-e
-Float
-Treats sizeof(float) characters as a float in littleendian byte order.
-F, f
-Float
-Treats sizeof(float) characters as a native float.
-G
-Float
-Treats sizeof(double) characters as a double in network byte order.
-g
-String
-Treats sizeof(float) characters as a float in network byte order.
-H
-String
-Extracts hex nibbles from each character (most significant bit first)
-h
-String
-Extracts hex nibbles from each character (least significant bit first).
-I
-Integer
-Treats sizeof(int) (modified by _) successive characters as an unsigned native integer.
-i
-Integer
-Treats sizeof(int) (modified by _) successive characters as a signed native integer.
-L
-Integer
-Treats four (modified by _) successive characters as an unsigned native long integer.
-l
-Integer
-Treats four (modified by _) successive characters as a signed native long integer.
-M
-String
-Quoted-printable.
-m
-String
-Base64-encoded.
-N
-Integer
-Treats four characters as an unsigned long in network byte order.
-n
-Fixnum
-Treats two characters as an unsigned short in network byte order.
-P
-String
-Treats sizeof(char *) characters as a pointer, and return \emph{len} characters from the referenced location.
-p
-String
-Treats sizeof(char *) characters as a pointer to a null-terminated string.
-Q
-Integer
-Treats eight characters as an unsigned quad word (64 bits).
-q
-Integer
-Treats eight characters as a signed quad word (64 bits).
-S
-Fixnum
-Treats two (different if _ used) successive characters as an unsigned short in native byte order.
-s
-Fixnum
-Treats two (different if _ used) successive characters as a signed short in native byte order.
-U
-Integer
-UTF-8 characters as unsigned integers.
-u
-String
-UU-encoded.
-V
-Fixnum
-Treats four characters as an unsigned long in little-endian byte order.
-v
-Fixnum
-Treats two characters as an unsigned short in little-endian byte order.
-w
-Integer
-BER-compressed integer.
-X
- 
-Skips backward one character.
-x
- 
-Skips forward one character.
-Z
-String
-With trailing nulls removed up to first null with *.
-@
- 
-Skips to the offset given by the length argument.
-
-Example
+(84)=> unpack 
 Try the following example to unpack various data.
 "abc \0\0abc \0\0".unpack('A6Z6')   #=> ["abc", "abc "]
 "abc \0\0".unpack('a3a3')           #=> ["abc", " \000\000"]

@@ -1,8 +1,10 @@
-Class Constants
-You can define a constant inside a class by assigning a direct numeric or string value to a variable, which is defined without using either @ or @@. By convention, we keep constant names in upper case.
-Once a constant is defined, you cannot change its value but you can access a constant directly inside a class much like a variable but if you want to access a constant outside of the class then you would have to use classname::constant as shown in the below example.
-#!/usr/bin/ruby -w
+<<<<<<<<<<<<<< Class Constants >>>>>>>>>>>>>>
+You can define a constant inside a class by assigning a direct numeric or string value to a variable, 
+**which is defined without using either @ or @@. **
+**By convention, we keep constant names in upper case.**
+**Once a constant is defined, you cannot change its value but you can access a constant directly inside a class much like a variable but if you want to access a constant outside of the class then you would have to use classname::constant as shown in the below example.**
 
+#!/usr/bin/ruby -w
 # define a class
 class Box
    BOX_COMPANY = "TATA Inc"
@@ -25,12 +27,17 @@ a = box.getArea()
 puts "Area of the box is : #{a}"
 puts Box::BOX_COMPANY
 puts "Box weight is: #{Box::BOXWEIGHT}"
+
 When the above code is executed, it produces the following result −
 Area of the box is : 200
 TATA Inc
 Box weight is: 10
-Class constants are inherited and can be overridden like instance methods.
-Create Object Using Allocate
+
+**==> Class constants are inherited and can be overridden like instance methods.
+__________________________________________________________________________________
+
+<<<<<<<<<<<<<< Create Object Using Allocate >>>>>>>>>>>>>>
+
 There may be a situation when you want to create an object without calling its constructor initialize i.e. using new method, in such case you can call allocate, which will create an uninitialized object for you as in the following example −
 #!/usr/bin/ruby -w
 
@@ -62,13 +69,17 @@ puts "Area of the box is : #{a}"
 # call instance method using box2
 a = box2.getArea()
 puts "Area of the box is : #{a}"
+
 When the above code is executed, it produces the following result −
 Area of the box is : 200
 test.rb:14: warning: instance variable @width not initialized
 test.rb:14: warning: instance variable @height not initialized
 test.rb:14:in `getArea': undefined method `*' 
    for nil:NilClass (NoMethodError) from test.rb:29
-Class Information
+_______________________________________________________________________
+
+<<<<<<<<<<<<<< Class Information >>>>>>>>>>>>>>
+
 If class definitions are executable code, this implies that they execute in the context of some object: self must reference something. Let's find out what it is.
 #!/usr/bin/ruby -w
 
@@ -77,6 +88,7 @@ class Box
    puts "Type of self = #{self.type}"
    puts "Name of self = #{self.name}"
 end
+
 When the above code is executed, it produces the following result −
 Type of self = Class
 Name of self = Box
