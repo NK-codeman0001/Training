@@ -1,12 +1,15 @@
 Ruby - Classes and Objects
+
 Ruby is a perfect Object Oriented Programming Language. The features of the object-oriented programming language include −
     • Data Encapsulation 
     • Data Abstraction 
     • Polymorphism 
     • Inheritance 
-These features have been discussed in the chapter Object Oriented Ruby.
+
 An object-oriented program involves classes and objects. A class is the blueprint from which individual objects are created. In object-oriented terms, we say that your bicycle is an instance of the class of objects known as bicycles.
+
 Take the example of any vehicle. It comprises wheels, horsepower, and fuel or gas tank capacity. These characteristics form the data members of the class Vehicle. You can differentiate one vehicle from the other with the help of these characteristics.
+
 A vehicle can also have certain functions, such as halting, driving, and speeding. Even these functions form the data members of the class Vehicle. You can, therefore, define a class as a combination of characteristics and functions.
 A class Vehicle can be defined as −
 Class Vehicle {
@@ -24,10 +27,14 @@ Class Vehicle {
    Function halting {
    }
 }
+
 By assigning different values to these data members, you can form several instances of the class Vehicle. For example, an airplane has three wheels, horsepower of 1,000, fuel as the type of tank, and a capacity of 100 liters. In the same way, a car has four wheels, horsepower of 200, gas as the type of tank, and a capacity of 25 liters.
+
 Defining a Class in Ruby
 To implement object-oriented programming by using Ruby, you need to first learn how to create objects and classes in Ruby.
+
 A class in Ruby always starts with the keyword class followed by the name of the class. The name should always be in initial capitals. The class Customer can be displayed as −
 class Customer
 end
+
 You terminate a class by using the keyword end. All the data members in the class are between the class definition and the end keyword.
