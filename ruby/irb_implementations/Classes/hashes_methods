@@ -49,27 +49,25 @@ counts.dig(:bar) # => 0
 
 ########## Methods for Creating a Hash ###########
 
-
     ::[]: Returns a new hash populated with given objects.
     
-
-Hash[] → new_empty_hash
+(*)=> 	Hash[] → new_empty_hash
 With no argument, returns a new empty Hash.
 
-Hash[hash] → new_hash
+(*)=> 	Hash[hash] → new_hash
 h = {foo: 0, bar: 1, baz: 2}
 Hash[h] # => {:foo=>0, :bar=>1, :baz=>2}
 
-Hash[ [*2_element_arrays] ] → new_hash
+(*)=> 	Hash[ [*2_element_arrays] ] → new_hash
 Hash[ [ [:foo, 0], [:bar, 1] ] ] # => {:foo=>0, :bar=>1}
 
-Hash[*objects] → new_hash
+(*)=> 	Hash[*objects] → new_hash
 Hash[:foo, 0, :bar, 1] # => {:foo=>0, :bar=>1}
-
+_____________________________________________________________________
       
     ::new: Returns a new empty hash.
 
-Hash.new(default_value = nil) → new_hash
+(*)=> 	Hash.new(default_value = nil) → new_hash
 h = Hash.new
 h.default # => nil
 h.default_proc # => nil
@@ -82,7 +80,7 @@ h[:nosuch] 	# => false
 
 If a block given but no argument, stores the block as the default proc and sets the default value to nil:
 
-Hash.new {|hash, key| ... } → new_hash
+(*)=> 	Hash.new {|hash, key| ... } → new_hash
 
 Example
 h = Hash.new {|hash, key| "Default value for #{key}" }
@@ -90,6 +88,7 @@ h.default # => nil
 h.default_proc	# => #<Proc:0x00007f31d92c9400 (irb):1>
 h.default_proc.class # => Proc
 h[:nosuch] # => "Default value for nosuch"
+_______________________________________________________________________
 
 
     ::try_convert: Returns a new hash created from a given object.
@@ -98,9 +97,105 @@ If obj is a Hash object, returns obj.
 Otherwise if obj responds to :to_hash, calls obj.to_hash and returns the result.
 Returns nil if obj does not respond to :to_hash
 Raises an exception unless obj.to_hash returns a Hash object.
+_______________________________________________________________________
 
 
-##########  ###########
+########## Methods for Setting Hash State ###########
+
+
+    compare_by_identity: Sets self to consider only identity in comparing keys.
+
+(*)=> 	hash.compare_by_identity → self
+
+s0 = 'x'
+s1 = 'x'
+h = {}
+h.compare_by_identity? # => false
+h[s0] = 0
+h[s1] = 1
+h # => {"x"=>1}
+
+***After calling #compare_by_identity, the keys are considered to be different, and therefore do not overwrite each other:***
+
+Example
+h = {}
+h.compare_by_identity # => {}
+h.compare_by_identity? # => true
+h[s0] = 0
+h[s1] = 1
+h # => {"x"=>0, "x"=>1}
+_______________________________________________________________________
+
+
+    default=: Sets the default to a given value.
+
+(*)=> 	hash.default = value → object
+
+Sets the default value to value; returns value:
+Example
+h = {}
+h.default # => nil
+h.default = false # => false
+h.default # => false
+_______________________________________________________________________
+
+    default_proc=: Sets the default proc to a given proc.
+
+(*)=> 	hash.default_proc = proc → proc
+
+Sets the default proc for self to proc: (see Default Values):
+Example
+h = {}
+h.default_proc # => nil
+h.default_proc = proc { |hash, key| "Default value for #{key}" }
+h.default_proc.class # => Proc
+
+h.default_proc = nil
+h.default_proc # => nil
+_______________________________________________________________________
+
+    rehash: Rebuilds the hash table by recomputing the hash index for each key. 
+Modifying a Hash key while it is in use damages the hash’s index.
+
+This Hash has keys that are Arrays:
+Example
+
+a0 = [ :foo, :bar ]
+a1 = [ :baz, :bat ]
+h = {a0 => 0, a1 => 1}
+h.include?(a0) # => true
+h[a0] # => 0
+a0.hash # => 110002110
+
+Modifying array element a0[0] changes its hash value:
+Example
+
+a0[0] = :bam
+a0.hash # => 1069447059
+
+And damages the Hash index:
+Example
+
+h.include?(a0) # => false
+h[a0] # => nil
+
+You can repair the hash index using method rehash:
+Example
+
+h.rehash # => {[:bam, :bar]=>0, [:baz, :bat]=>1}
+h.include?(a0) # => true
+h[a0] # => 0
+
+A String key is always safe. That’s because an unfrozen String passed as a key will be replaced by a duplicated and frozen String:
+Example
+
+s = 'foo'
+s.frozen? # => false
+h = {s => 0}
+first_key = h.keys.first
+first_key.frozen? # => true
+_______________________________________________________________________
+
 ##########  ###########
 ##########  ###########
 ##########  ###########
