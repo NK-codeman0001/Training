@@ -429,7 +429,7 @@ _____________________________________________________________________
 
     fetch: Returns the value for a given key.
   
-hash.fetch(key) → object
+(*)=> hash.fetch(key) → object
 Returns the value for the given key, if found.
 h = {foo: 0, bar: 1, baz: 2}
 h.fetch(:bar) # => 1
@@ -439,13 +439,13 @@ h.fetch(:nosuch)
 (irb):64:in `fetch': key not found: :nosuch (KeyError)
 
 
-hash.fetch(key, default_value) → object
+(*)=> hash.fetch(key, default_value) → object
 If key is not found and no block was given, returns default_value:
 h.fetch(:nosuch, 'this is default')	# => "this is default"
 {}.fetch(:nosuch, :default) # => :default
 
 
-hash.fetch(key) {|key| ... } → object
+(*)=> hash.fetch(key) {|key| ... } → object
 If key is not found and a block was given, yields key to the block and returns the block’s return value:
 {}.fetch(:nosuch) {|key| "No key #{key}"} # => "No key nosuch"
 
@@ -457,13 +457,13 @@ _____________________________________________________________________
 
     fetch_values: Returns array containing the values associated with given keys.
  
-hash.fetch_values(*keys) → new_array
+(*)=> hash.fetch_values(*keys) → new_array
 h = {foo: 0, bar: 1, baz: 2}
 h.fetch_values(:baz, :foo) # => [2, 0]
 
 Returns a new empty Array if no arguments given.
 
-hash.fetch_values(*keys) {|key| ... } → new_array
+(*)=> hash.fetch_values(*keys) {|key| ... } → new_array
 When a block is given, calls the block with each missing key, treating the block’s return value as the value for that key:
 
 h = {foo: 0, bar: 1, baz: 2}
@@ -518,6 +518,75 @@ The default values are returned for any keys that are not found:
 h.values_at(:hello, :foo) # => [nil, 0]   
 _____________________________________________________________________
 
-##########  ###########
+########## Methods for Assigning ###########
+
+    []=, store: Associates a given key with a given value.
+
+h = {foo: 0, bar: 1}
+h[:foo] = 2 # => 2
+h.store(:bar, 3) # => 3
+h # => {:foo=>2, :bar=>3}
+
+If key does not exist, adds the key and value; the new entry is last in the order (see Entry Order):
+Example
+
+h = {foo: 0, bar: 1}
+h[:baz] = 2 # => 2
+h.store(:bat, 3) # => 3
+h # => {:foo=>0, :bar=>1, :baz=>2, :bat=>3}	
+_____________________________________________________________________
+
+    merge: Returns the hash formed by merging each given hash into a copy of self.
+
+With arguments and no block:
+    Returns the new Hash object formed by merging each successive Hash in other_hashes into self.
+    Each new-key entry is added at the end.
+    Each duplicate-key entry’s value overwrites the previous value
+    
+(*)=> hash.merge(*other_hashes) → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h1 = {bat: 3, bar: 4}
+h2 = {bam: 5, bat:6}
+h.merge(h1, h2) # => {:foo=>0, :bar=>4, :baz=>2, :bat=>6, :bam=>5}
+
+
+(*)=> hash.merge(*other_hashes) { |key, old_value, new_value| ... } → new_hash
+With arguments and a block:
+    Returns a new Hash object that is the merge of self and each given hash.
+    The given hashes are merged left to right.
+    Each new-key entry is added at the end.
+    For each duplicate key:
+        Calls the block with the key and the old and new values.
+        The block’s return value becomes the new value for the entry. 
+
+h = {foo: 0, bar: 1, baz: 2}
+h1 = {bat: 3, bar: 4}
+h2 = {bam: 5, bat:6}
+h3 = h.merge(h1, h2) { |key, old_value, new_value| old_value + new_value }
+h3 # => {:foo=>0, :bar=>5, :baz=>2, :bat=>9, :bam=>5}
+
+With no arguments:
+    Returns a copy of self.
+    The block, if given, is ignored. 
+
+(*)=> hash.merge → copy_of_self
+h = {foo: 0, bar: 1, baz: 2}
+h.merge # => {:foo=>0, :bar=>1, :baz=>2}
+h1 = h.merge { |key, old_value, new_value| raise 'Cannot happen' }
+h1 # => {:foo=>0, :bar=>1, :baz=>2}
+	
+_____________________________________________________________________
+
+    merge!, update: Merges each given hash into self.
+
+inplace version  of merge.	
+_____________________________________________________________________
+
+    replace: Replaces the entire contents of self with the contents of a given hash. 
+
+h = {foo: 0, bar: 1, baz: 2}
+h.replace({bat: 3, bam: 4}) # => {:bat=>3, :bam=>4}
+_____________________________________________________________________
+
 ##########  ###########
 ##########  ###########
