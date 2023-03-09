@@ -730,4 +730,190 @@ h.slice(:baz, :foo) # => {:baz=>2, :foo=>0}
 Any given keys that are not found are ignored.
 _____________________________________________________________________
 
-##########  ###########
+########## Methods for Iterating ###########
+
+    each, each_pair: Calls a given block with each key-value pair.
+(Hash#each is an alias for Hash#each_pair.)	
+
+(*)=> hash.each_pair {|key, value| ... } → self
+h = {foo: 0, bar: 1, baz: 2}
+h.each_pair {|key, value| puts "#{key}: #{value}"} # => {:foo=>0, :bar=>1, :baz=>2}
+
+Output:
+foo: 0
+bar: 1
+baz: 2
+
+
+(*)=> hash.each_pair → new_enumerator
+Returns a new Enumerator if no block given:
+h = {foo: 0, bar: 1, baz: 2}
+e = h.each_pair # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:each_pair>
+_____________________________________________________________________
+
+    each_key: Calls a given block with each key.
+
+(*)=> hash.each_key {|key| ... } → self
+h = {foo: 0, bar: 1, baz: 2}
+h.each_key {|key| puts key }  # => {:foo=>0, :bar=>1, :baz=>2}
+
+Output:
+foo
+bar
+baz
+
+(*)=> hash.each_key → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.each_key # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:each_key>	
+_____________________________________________________________________
+
+    each_value: Calls a given block with each value. 
+
+(*)=> hash.each_value {|value| ... } → self
+h = {foo: 0, bar: 1, baz: 2}
+h.each_value {|value| puts value } # => {:foo=>0, :bar=>1, :baz=>2}
+
+Output:
+0
+1
+2
+
+(*)=> hash.each_value → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.each_value # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:each_value>	
+_____________________________________________________________________
+
+########## Methods for Converting ###########
+
+    inspect, to_s: Returns a new String containing the hash entries.
+(Hash#to_s is an alias for Hash#inspect.)
+
+h = {foo: 0, bar: 1, baz: 2}
+h.inspect # => "{:foo=>0, :bar=>1, :baz=>2}"	
+_____________________________________________________________________
+
+    to_a: Returns a new array of 2-element arrays; each nested array contains a key-value pair from self.
+
+h = {foo: 0, bar: 1, baz: 2}
+h.to_a # => [[:foo, 0], [:bar, 1], [:baz, 2]]
+	
+_____________________________________________________________________
+
+    to_h: Returns self if a Hash; if a subclass of Hash, returns a Hash containing the entries from self.
+	
+_____________________________________________________________________
+
+    to_hash: Returns self.
+
+(*)=> hash.to_h → self or new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h.to_h	# => {:foo=>0, :bar=>1, :baz=>2} 
+ 
+(*)=> hash.to_h {|key, value| ... } → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.to_h {|key, value| [value, key] }
+h1 # => {0=>:foo, 1=>:bar, 2=>:baz}	
+_____________________________________________________________________
+
+    to_proc: Returns a proc that maps a given key to its value. 
+h = {foo: 0, bar: 1, baz: 2}
+proc = h.to_proc
+proc.class # => Proc
+proc.call(:foo) # => 0
+proc.call(:bar) # => 1
+proc.call(:nosuch) # => nil
+	
+_____________________________________________________________________
+
+########## Methods for Transforming Keys and Values ###########
+
+    transform_keys: Returns a copy of self with modified keys.
+
+(*)=> hash.transform_keys {|key| ... } → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.transform_keys {|key| key.to_s }
+h1 # => {"foo"=>0, "bar"=>1, "baz"=>2}
+
+(*)=> hash.transform_keys(hash2) → new_hash
+h.transform_keys(foo: :bar, bar: :foo)
+#=> {bar: 0, foo: 1, baz: 2}
+
+h.transform_keys(foo: :hello, &:to_s)
+#=> {:hello=>0, "bar"=>1, "baz"=>2}
+
+
+(*)=> hash.transform_keys(hash2) {|other_key| ...} → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.transform_keys {|key| :bat }
+h1 # => {:bat=>2}
+
+(*)=> hash.transform_keys → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.transform_keys # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:transform_keys>
+	
+_____________________________________________________________________
+
+    transform_keys!: Modifies keys in self
+(in-place version of transform_keys)	
+_____________________________________________________________________
+
+    transform_values: Returns a copy of self with modified values.
+
+(*)=> hash.transform_values {|value| ... } → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.transform_values {|value| value * 100}
+h1 # => {:foo=>0, :bar=>100, :baz=>200}
+
+(*)=> hash.transform_values → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.transform_values # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:transform_values>
+	
+_____________________________________________________________________
+
+    transform_values!: Modifies values in self. 
+(in-place version of transform_values)	
+_____________________________________________________________________
+
+########## Other Methods ###########
+
+    flatten: Returns an array that is a 1-dimensional flattening of self.
+
+(*)=> hash.flatten → new_array
+By default, nested Arrays are not flattened:
+
+h = {foo: 0, bar: [:bat, 3], baz: 2}
+h.flatten # => [:foo, 0, :bar, [:bat, 3], :baz, 2]
+
+h = {foo: 0, bar: [:bat, [:baz, [:bat, ]]]}	# => {:foo=>0, :bar=>[:bat, [:baz, [:bat]]]} 
+h.flatten	# => [:foo, 0, :bar, [:bat, [:baz, [:bat]]]]
+
+(*)=> hash.flatten(level) → new_array
+h = {foo: 0, bar: [:bat, [:baz, [:bat, ]]]}
+h.flatten(1) # => [:foo, 0, :bar, [:bat, [:baz, [:bat]]]]
+h.flatten(2) # => [:foo, 0, :bar, :bat, [:baz, [:bat]]]
+h.flatten(3) # => [:foo, 0, :bar, :bat, :baz, [:bat]]
+h.flatten(4) # => [:foo, 0, :bar, :bat, :baz, :bat]
+
+When level is negative, flattens all nested Arrays:
+h = {foo: 0, bar: [:bat, [:baz, [:bat, ]]]}
+h.flatten(-1) # => [:foo, 0, :bar, :bat, :baz, :bat]
+h.flatten(-2) # => [:foo, 0, :bar, :bat, :baz, :bat]
+
+When level is zero, returns the equivalent of to_a :
+h = {foo: 0, bar: [:bat, 3], baz: 2}
+h.flatten(0) # => [[:foo, 0], [:bar, [:bat, 3]], [:baz, 2]]
+h.flatten(0) == h.to_a # => true
+
+_____________________________________________________________________
+
+    invert: Returns a hash with the each key-value pair inverted. 
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.invert
+h1 # => {0=>:foo, 1=>:bar, 2=>:baz}
+
+Overwrites any repeated new keys: (see Entry Order):	
+h = {foo: 0, bar: 0, baz: 0}
+h.invert # => {0=>:baz}
+_____________________________________________________________________
+
+########## END ###########
