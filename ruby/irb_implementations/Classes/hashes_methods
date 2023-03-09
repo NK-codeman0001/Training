@@ -394,7 +394,130 @@ h2 >= h1 # => false
 h1 >= h1 # => true	
 _____________________________________________________________________
 
-##########  ###########
+########## Methods for Fetching ###########
+
+
+    []: Returns the value associated with a given key.
+h = {foo: 0, bar: 1, baz: 2}
+h[:foo] # => 0
+
+h = {foo: 0, bar: 1, baz: 2}
+h[:nosuch] # => nil
+   
+_____________________________________________________________________
+      
+    dig: Returns the object in nested objects that is specified by a given key and additional arguments.
+
+Nested Hashes:
+h = {foo: {bar: {baz: 2}}}
+h.dig(:foo) # => {:bar=>{:baz=>2}}
+h.dig(:foo, :bar) # => {:baz=>2}
+h.dig(:foo, :bar, :baz) # => 2
+h.dig(:foo, :bar, :BAZ) # => nil
+
+Nested Hashes and Arrays:
+h = {foo: {bar: [:a, :b, :c]}}
+h.dig(:foo, :bar, 2) # => :c
+
+This method will use the default values for keys that are not present:
+h = {foo: {bar: [:a, :b, :c]}}
+h.dig(:hello) # => nil
+h.default_proc = -> (hash, _key) { hash }
+h.dig(:hello, :world) # => h
+h.dig(:hello, :world, :foo, :bar, 2) # => :c    
+_____________________________________________________________________
+
+    fetch: Returns the value for a given key.
+  
+hash.fetch(key) → object
+Returns the value for the given key, if found.
+h = {foo: 0, bar: 1, baz: 2}
+h.fetch(:bar) # => 1
+
+
+h.fetch(:nosuch)
+(irb):64:in `fetch': key not found: :nosuch (KeyError)
+
+
+hash.fetch(key, default_value) → object
+If key is not found and no block was given, returns default_value:
+h.fetch(:nosuch, 'this is default')	# => "this is default"
+{}.fetch(:nosuch, :default) # => :default
+
+
+hash.fetch(key) {|key| ... } → object
+If key is not found and a block was given, yields key to the block and returns the block’s return value:
+{}.fetch(:nosuch) {|key| "No key #{key}"} # => "No key nosuch"
+
+
+Raises KeyError if neither default_value nor a block was given.
+
+Note that this method does not use the values of either default or default_proc.  
+_____________________________________________________________________
+
+    fetch_values: Returns array containing the values associated with given keys.
+ 
+hash.fetch_values(*keys) → new_array
+h = {foo: 0, bar: 1, baz: 2}
+h.fetch_values(:baz, :foo) # => [2, 0]
+
+Returns a new empty Array if no arguments given.
+
+hash.fetch_values(*keys) {|key| ... } → new_array
+When a block is given, calls the block with each missing key, treating the block’s return value as the value for that key:
+
+h = {foo: 0, bar: 1, baz: 2}
+values = h.fetch_values(:bar, :foo, :bad, :bam) {|key| key.to_s}
+values # => [1, 0, "bad", "bam"]
+
+When no block is given, raises an exception if any given key is not found.
+_____________________________________________________________________
+
+    key: Returns the key for the first-found entry with a given value.
+
+h = {foo: 0, bar: 2, baz: 2}
+h.key(0) # => :foo
+h.key(2) # => :bar
+
+Returns nil if so such value is found.   
+h.key(33)	# => nil 
+h.key(:foo)	# => nil 
+_____________________________________________________________________
+
+    keys: Returns an array containing all keys in self.
+
+h = {foo: 0, bar: 1, baz: 2}
+h.keys # => [:foo, :bar, :baz]   
+_____________________________________________________________________
+
+    values: Returns an array containing all values in self/
+
+h = {foo: 0, bar: 1, baz: 2}
+h.values # => [0, 1, 2]    
+_____________________________________________________________________
+      
+    assoc: Returns a 2-element array containing a given key and its value.
+ h = {foo: 0, bar: 1, baz: 2}
+h.assoc(:bar) # => [:bar, 1]
+
+Returns nil if key key is not found.
+h.assoc(:nosuch)	# => nil
+_____________________________________________________________________
+
+    rassoc: Returns a 2-element array consisting of the key and value of the first-found entry having a given value.
+
+h = {foo: 0, bar: 1, baz: 1}
+h.rassoc(1) # => [:bar, 1]    
+_____________________________________________________________________
+
+    values_at: Returns an array containing values for given keys. 
+h = {foo: 0, bar: 1, baz: 2}
+h.values_at(:baz, :foo) # => [2, 0]
+
+The default values are returned for any keys that are not found:
+h.values_at(:hello, :foo) # => [nil, 0]   
+_____________________________________________________________________
+
 ##########  ###########
 ##########  ###########
 ##########  ###########
