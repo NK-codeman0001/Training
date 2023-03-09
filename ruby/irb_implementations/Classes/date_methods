@@ -1,0 +1,282 @@
+Date
+_____________________________________________________________________________________
+########## Creating a Date ###########
+
+    Date.today:
+    Date.today # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.new takes integer year, month, and day-of-month:
+    Date.new(1999, 12, 31) # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.ordinal takes integer year and day-of-year:
+    Date.ordinal(1999, 365) # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.jd takes integer Julian day:
+    Date.jd(2451544) # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.commercial takes integer commercial data (year, week, day-of-week):
+    Date.commercial(1999, 52, 5) # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.parse takes a string, which it parses heuristically:
+
+    Date.parse('1999-12-31')    # => #<Date: 1999-12-31>
+    Date.parse('31-12-1999')    # => #<Date: 1999-12-31>
+    Date.parse('1999-365')      # => #<Date: 1999-12-31>
+    Date.parse('1999-W52-5')    # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+    Date.strptime takes a date string and a format string, then parses the date string according to the format string:
+
+    Date.strptime('1999-12-31', '%Y-%m-%d')  # => #<Date: 1999-12-31>
+    Date.strptime('31-12-1999', '%d-%m-%Y')  # => #<Date: 1999-12-31>
+    Date.strptime('1999-365', '%Y-%j')       # => #<Date: 1999-12-31>
+    Date.strptime('1999-W52-5', '%G-W%V-%u') # => #<Date: 1999-12-31>
+    Date.strptime('1999 52 5', '%Y %U %w')   # => #<Date: 1999-12-31>
+    Date.strptime('1999 52 5', '%Y %W %u')   # => #<Date: 1999-12-31>
+    Date.strptime('fri31dec99', '%a%d%b%y')  # => #<Date: 1999-12-31>
+_____________________________________________________________________________________
+
+########## Public Class Methods ###########
+
+++++++++++++++  _httpdate(string, limit: 128) → hash   ++++++++++++
+
+Returns a hash of values parsed from string, which should be a valid HTTP date format:
+
+ d= Date.today		# => #<Date: 2023-03-09 ((2460013j,0s,0n),+0s,2299161j)> 
+d			# => #<Date: 2023-03-09 ((2460013j,0s,0n),+0s,2299161j)> 
+d.httpdate		# => "Thu, 09 Mar 2023 00:00:00 GMT" 
+s=d.httpdate		# => "Thu, 09 Mar 2023 00:00:00 GMT" 
+s			# => "Thu, 09 Mar 2023 00:00:00 GMT" 
+h=Date._httpdate(s)	# => {:wday=>4, :mday=>9, :mon=>3, :year=>2023, :hour=>0, :min=>0, :sec=>0, :zone=>"GMT", :offset=>0} 
+h			# => {:wday=>4, :mday=>9, :mon=>3, :year=>2023, :hour=>0, :min=>0, :sec=>0, :zone=>"GMT", :offset=>0} 
+
+_____________________________________________________________________________________
+
+++++++++++++++  _parse(string, comp = true, limit: 128) → hash   ++++++++++++
+
+Returns a hash of values parsed from string:
+Date._parse('2001-02-03') # => {:year=>2001, :mon=>2, :mday=>3}
+
+If comp is true and the given year is in the range (0..99), the current century is supplied; otherwise, the year is taken as given:
+
+Date._parse('01-02-03', true)  # => {:year=>2001, :mon=>2, :mday=>3}
+Date._parse('01-02-03', false) # => {:year=>1, :mon=>2, :mday=>3}
+_____________________________________________________________________
+      
+++++++++++++++ _strptime(string, format = '%F') → hash  ++++++++++++
+Returns a hash of values parsed from string according to the given format:
+
+Date._strptime('2001-02-03', '%Y-%m-%d') # => {:year=>2001, :mon=>2, :mday=>3}
+
+_____________________________________________________________________
+      
+++++++++++++++ gregorian_leap?(year) → true or false ++++++++++++
+Date.gregorian_leap?(2000)	 # => true
+Date.gregorian_leap?(2001)	 # => false
+
+Date.gregorian_leap?(1900)	# => false 
+Date.gregorian_leap?(1901) 	# => false 
+_____________________________________________________________________
+      
+++++++++++++++ julian_leap?(year) → true or false  ++++++++++++
+Date.julian_leap?(2000)	# => true 
+Date.julian_leap?(2001)	# => false 
+
+Date.julian_leap?(1900) # => true
+Date.julian_leap?(1901) # => false
+_____________________________________________________________________
+      
+++++++++++++++ httpdate(string = 'Mon, 01 Jan -4712 00:00:00 GMT', start = Date::ITALY, limit: 128) → date  ++++++++++++
+
+d = Date.new(2001, 2, 3)
+s = d.httpdate   # => "Sat, 03 Feb 2001 00:00:00 GMT"
+Date.httpdate(s) # => #<Date: 2001-02-03>
+
+
+_____________________________________________________________________
+      
+++++++++++++++ json_create(object)  ++++++++++++
+
+_____________________________________________________________________
+      
+++++++++++++++ new(year = -4712, month = 1, mday = 1, start = Date::ITALY) → date ++++++++++++
+Date.new(2022).to_s        # => "2022-01-01"
+Date.new(2022, 2).to_s     # => "2022-02-01"
+Date.new(2022, 2, 4).to_s  # => "2022-02-04"
+
+Date.new(2022, -11, 4).to_s # => "2022-02-04"
+
+_____________________________________________________________________
+      
+++++++++++++++ ordinal(year = -4712, yday = 1, start = Date::ITALY) → date ++++++++++++
+Date.ordinal(2001).to_s  # => "2001-01-01"
+Date.ordinal(-2001).to_s # => "-2001-01-01"
+
+Date.ordinal(2001, 14).to_s # => "2001-01-14"
+
+Date.ordinal(2001, -14).to_s # => "2001-12-18"
+_____________________________________________________________________
+      
+++++++++++++++ parse(string = '-4712-01-01', comp = true, start = Date::ITALY, limit: 128) → date ++++++++++++
+
+Date.parse('2001-02-03')   # => #<Date: 2001-02-03>
+Date.parse('20010203')     # => #<Date: 2001-02-03>
+Date.parse('3rd Feb 2001') # => #<Date: 2001-02-03>
+
+Date.parse('01-02-03', true)  # => #<Date: 2001-02-03>
+Date.parse('01-02-03', false) # => #<Date: 0001-02-03>
+_____________________________________________________________________
+      
+++++++++++++++ strptime(string = '-4712-01-01', format = '%F', start = Date::ITALY) → date  ++++++++++++
+
+Date.strptime('2001-02-03', '%Y-%m-%d')  # => #<Date: 2001-02-03>
+Date.strptime('03-02-2001', '%d-%m-%Y')  # => #<Date: 2001-02-03>
+Date.strptime('2001-034', '%Y-%j')       # => #<Date: 2001-02-03>
+Date.strptime('2001-W05-6', '%G-W%V-%u') # => #<Date: 2001-02-03>
+Date.strptime('2001 04 6', '%Y %U %w')   # => #<Date: 2001-02-03>
+Date.strptime('2001 05 6', '%Y %W %u')   # => #<Date: 2001-02-03>
+Date.strptime('sat3feb01', '%a%d%b%y')   # => #<Date: 2001-02-03>
+
+_____________________________________________________________________
+      
+++++++++++++++ today(start = Date::ITALY) → date  ++++++++++++
+Date.today.to_s # => "2022-07-06"
+_____________________________________________________________________
+      
+++++++++++++++ valid_date?(year, month, mday, start = Date::ITALY) → true or false  ++++++++++++
+
+Date.valid_date?(2001, 2, 3)  # => true
+Date.valid_date?(2001, 2, 29) # => false
+Date.valid_date?(2001, 2, -1) # => true
+_____________________________________________________________________
+      
+++++++++++++++ valid_ordinal?(year, yday, start = Date::ITALY) → true or false  ++++++++++++
+Date.valid_ordinal?(2001, 34)  # => true
+Date.valid_ordinal?(2001, 366) # => false
+_____________________________________________________________________
+      
+########## Public Instance Methods ###########
+
+++++++++++++++ d << n → date ++++++++++++
+Returns a new Date object representing the date n months earlier; n should be a numeric:
+
+(Date.new(2001, 2, 3) << 1).to_s  # => "2001-01-03"
+(Date.new(2001, 2, 3) << -2).to_s # => "2001-04-03"
+
+
+When the same day does not exist for the new month, the last day of that month is used instead:
+
+(Date.new(2001, 3, 31) << 1).to_s  # => "2001-02-28"
+(Date.new(2001, 3, 31) << -6).to_s # => "2001-09-30"
+
+_____________________________________________________________________
+      
+++++++++++++++ leap? → true or false  ++++++++++++
+Returns true if the year is a leap year, false otherwise:
+
+Date.new(2000).leap? # => true
+Date.new(2001).leap? # => false
+
+_____________________________________________________________________
+      
+++++++++++++++ httpdate → string ++++++++++++
+
+Equivalent to strftime with argument '%a, %d %b %Y %T GMT'
+Date.new(2001, 2, 3).httpdate # => "Sat, 03 Feb 2001 00:00:00 GMT"
+_____________________________________________________________________
+      
+++++++++++++++  Miscellaneous  ++++++++++++
+
+gregorian? → true or false
+friday? → true or false
+julian? → true or false
+_____________________________________________________________________
+
+inspect → string 
+_____________________________________________________________________
+
+next_day(n = 1) → new_date
+Equivalent to Date#+ with argument n.
+_____________________________________________________________________
+
+next_month(n = 1) → new_date
+Equivalent to >> with argument n.
+_____________________________________________________________________
+
+next_year(n = 1) → new_date
+Equivalent to >> with argument n * 12.
+_____________________________________________________________________
+
+prev_day(n = 1) → new_date
+Equivalent to Date#- with argument n.
+_____________________________________________________________________
+
+prev_month(n = 1) → new_date
+Equivalent to << with argument n.
+_____________________________________________________________________
+
+prev_year(n = 1) → new_date
+Equivalent to << with argument n * 12.
+_____________________________________________________________________
+
+succ()
+Returns a new Date object representing the following day:
+
+d = Date.new(2001, 2, 3)
+d.to_s      # => "2001-02-03"
+d.next.to_s # => "2001-02-04"
+_____________________________________________________________________
+
+to_date → self
+Returns self.
+_____________________________________________________________________
+
+to_datetime → datetime
+Returns a DateTime whose value is the same as self:
+Date.new(2001, 2, 3).to_datetime # => #<DateTime: 2001-02-03T00:00:00+00:00>
+_____________________________________________________________________
+
+to_json(*args)
+Stores class name (Date) with Julian year y, month m, day d and Day of Calendar Reform sg as JSON string
+_____________________________________________________________________
+
+to_s → string
+Returns a string representation of the date in self in ISO 8601 extended date format ('%Y-%m-%d'):
+Date.new(2001, 2, 3).to_s # => "2001-02-03"
+_____________________________________________________________________
+
+to_time → time
+Returns a new Time object with the same value as self; if self is a Julian date, derives its Gregorian date for conversion to the Time object:
+Date.new(2001, 2, 3).to_time               # => 2001-02-03 00:00:00 -0600
+Date.new(2001, 2, 3, Date::JULIAN).to_time # => 2001-02-16 00:00:00 -0600
+_____________________________________________________________________
+
+step(limit, step = 1){|date| ... } → self
+Calls the block with specified dates; returns self.
+    The first date is self.
+    Each successive date is date + step, where step is the numeric step size in days.
+    The last date is the last one that is before or equal to limit, which should be a Date object.
+
+Example:
+limit = Date.new(2001, 12, 31)
+Date.new(2001).step(limit){|date| p date.to_s if date.mday == 31 }
+
+Output:
+"2001-01-31"
+"2001-03-31"
+"2001-05-31"
+"2001-07-31"
+"2001-08-31"
+"2001-10-31"
+"2001-12-31"
+_____________________________________________________________________
+
+upto(max){|date| ... } → self
+Equivalent to step with arguments max and 1
+_____________________________________________________________________
+

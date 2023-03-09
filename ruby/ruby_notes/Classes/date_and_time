@@ -1,22 +1,25 @@
 Ruby - Date & Time
 The Time class represents dates and times in Ruby. It is a thin layer over the system date and time functionality provided by the operating system. This class may be unable on your system to represent dates before 1970 or after 2038.
 This chapter makes you familiar with all the most wanted concepts of date and time.
-Getting Current Date and Time
-Following is the simple example to get current date and time −
-#!/usr/bin/ruby -w
+_____________________________________________________________________
 
+Getting Current Date and Time
+
+Following is the simple example to get current date and time −
 time1 = Time.new
 puts "Current Time : " + time1.inspect
 
 # Time.now is a synonym:
 time2 = Time.now
 puts "Current Time : " + time2.inspect
+
 This will produce the following result −
 Current Time : Mon Jun 02 12:02:39 -0700 2008
 Current Time : Mon Jun 02 12:02:39 -0700 2008
+_____________________________________________________________________
+
 Getting Components of a Date & Time
 We can use Time object to get various components of date and time. Following is the example showing the same −
-#!/usr/bin/ruby -w
 
 time = Time.new
 
@@ -32,6 +35,7 @@ puts time.min     # => 59
 puts time.sec     # => 59
 puts time.usec    # => 999999: microseconds
 puts time.zone    # => "UTC": timezone name
+
 This will produce the following result −
 Current Time : Mon Jun 02 12:03:08 -0700 2008
 2008
@@ -44,35 +48,48 @@ Current Time : Mon Jun 02 12:03:08 -0700 2008
 8
 247476
 UTC
+_____________________________________________________________________
+
 Time.utc, Time.gm and Time.local Functions
+
 These two functions can be used to format date in a standard format as follows −
 # July 8, 2008
 Time.local(2008, 7, 8)  
+
 # July 8, 2008, 09:10am, local time
 Time.local(2008, 7, 8, 9, 10)   
+
 # July 8, 2008, 09:10 UTC
 Time.utc(2008, 7, 8, 9, 10)  
+
 # July 8, 2008, 09:10:11 GMT (same as UTC)
 Time.gm(2008, 7, 8, 9, 10, 11)  
-Following is the example to get all the components in an array in the following format −
-[sec,min,hour,day,month,year,wday,yday,isdst,zone]
-Try the following −
-#!/usr/bin/ruby -w
+_____________________________________________________________________
 
+Following is the example to get all the components in an array in the following format −
+
+[sec,min,hour,day,month,year,wday,yday,isdst,zone]
+
+Try the following −
 time = Time.new
 values = time.to_a
 p values
+
 This will generate the following result −
 [26, 10, 12, 2, 6, 2008, 1, 154, false, "MST"]
+_____________________________________________________________________
+
 This array could be passed to Time.utc or Time.local functions to get different format of dates as follows −
-#!/usr/bin/ruby -w
 
 time = Time.new
 values = time.to_a
 puts Time.utc(*values)
+
 This will generate the following result −
 Mon Jun 02 12:15:36 UTC 2008
+
 Following is the way to get time represented internally as seconds since the (platform-dependent) epoch −
+
 # Returns number of seconds since epoch
 time = Time.now.to_i  
 
@@ -81,6 +98,8 @@ Time.at(time)
 
 # Returns second since epoch which includes microseconds
 time = Time.now.to_f
+
+_____________________________________________________________________
 Timezones and Daylight Savings Time
 You can use a Time object to get all the information related to Timezones and daylight savings as follows −
 time = Time.new
@@ -93,92 +112,50 @@ time.isdst      # => false: If UTC does not have DST.
 time.utc?       # => true: if t is in UTC time zone
 time.localtime  # Convert to local timezone.
 time.gmtime     # Convert back to UTC.
+
 time.getlocal   # Return a new Time object in local zone
 time.getutc     # Return a new Time object in UTC
+
 Formatting Times and Dates
 There are various ways to format date and time. Here is one example showing a few −
-#!/usr/bin/ruby -w
 
 time = Time.new
 puts time.to_s
 puts time.ctime
 puts time.localtime
 puts time.strftime("%Y-%m-%d %H:%M:%S")
+
 This will produce the following result −
 Mon Jun 02 12:35:19 -0700 2008
 Mon Jun  2 12:35:19 2008
 Mon Jun 02 12:35:19 -0700 2008
 2008-06-02 12:35:19
+
 Time Formatting Directives
 These directives in the following table are used with the method Time.strftime.
-Sr.No.
-Directive & Description
-1
-%a
-The abbreviated weekday name (Sun).
-2
-%A
-The full weekday name (Sunday).
-3
-%b
-The abbreviated month name (Jan).
-4
-%B
-The full month name (January).
-5
-%c
-The preferred local date and time representation.
-6
-%d
-Day of the month (01 to 31).
-7
-%H
-Hour of the day, 24-hour clock (00 to 23).
-8
-%I
-Hour of the day, 12-hour clock (01 to 12).
-9
-%j
-Day of the year (001 to 366).
-10
-%m
-Month of the year (01 to 12).
-11
-%M
-Minute of the hour (00 to 59).
-12
-%p
-Meridian indicator (AM or PM).
-13
-%S
-Second of the minute (00 to 60).
-14
-%U
-Week number of the current year, starting with the first Sunday as the first day of the first week (00 to 53).
-15
-%W
-Week number of the current year, starting with the first Monday as the first day of the first week (00 to 53).
-16
-%w
-Day of the week (Sunday is 0, 0 to 6).
-17
-%x
-Preferred representation for the date alone, no time.
-18
-%X
-Preferred representation for the time alone, no date.
-19
-%y
-Year without a century (00 to 99).
-20
-%Y
-Year with century.
-21
-%Z
-Time zone name.
-22
-%%
-Literal % character.
+%a	The abbreviated weekday name (Sun).
+%A	The full weekday name (Sunday).
+%b	The abbreviated month name (Jan).
+%B	The full month name (January).
+%c	The preferred local date and time representation.
+%d	Day of the month (01 to 31).
+%H	Hour of the day, 24-hour clock (00 to 23).
+%I	Hour of the day, 12-hour clock (01 to 12).
+%j	Day of the year (001 to 366).
+%m	Month of the year (01 to 12).
+%M	Minute of the hour (00 to 59).
+%p	Meridian indicator (AM or PM).
+%S	Second of the minute (00 to 60).
+%U	Week number of the current year, starting with the first Sunday as the first day of the first week (00 to 53).
+%W	Week number of the current year, starting with the first Monday as the first day of the first week (00 to 53).
+%w	Day of the week (Sunday is 0, 0 to 6).
+%x	Preferred representation for the date alone, no time.
+%X	Preferred representation for the time alone, no date.
+%y	Year without a century (00 to 99).
+%Y	Year with century.
+%Z	Time zone name.
+%%	Literal % character.
+_____________________________________________________________________
 Time Arithmetic
 You can perform simple arithmetic with time as follows −
 now = Time.now          # Current time
@@ -192,8 +169,10 @@ puts future
 
 diff = future - past     # => 10  Time - Time => number of seconds
 puts diff
+
 This will produce the following result −
 Thu Aug 01 20:57:05 -0700 2013
 Thu Aug 01 20:56:55 -0700 2013
 Thu Aug 01 20:57:15 -0700 2013
 20.0
+_____________________________________________________________________
