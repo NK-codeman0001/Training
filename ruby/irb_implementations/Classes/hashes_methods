@@ -588,5 +588,146 @@ h = {foo: 0, bar: 1, baz: 2}
 h.replace({bat: 3, bam: 4}) # => {:bat=>3, :bam=>4}
 _____________________________________________________________________
 
-##########  ###########
+########## Methods for Deleting ###########
+
+~~~~~~~~These methods remove entries from self:~~~~~~~~~~~
+
+    clear: Removes all entries from self.
+    
+h	# => {:bat=>3, :bam=>4} 
+h.clear	# => {} 
+h	# => {} 
+_____________________________________________________________________
+
+    compact!: Removes all nil-valued entries from self.
+
+h = {foo: 0, bar: nil, baz: 2, bat: nil}
+h.compact! # => {:foo=>0, :baz=>2}
+
+h = {foo: 0, bar: nil, baz: 2, bat: nil, nil: 5}	# => {:foo=>0, :bar=>nil, :baz=>2, :bat=>nil, :nil=>5} 
+h.compact!		# => {:foo=>0, :baz=>2, :nil=>5} 
+h			# => {:foo=>0, :baz=>2, :nil=>5} 
+
+_____________________________________________________________________
+
+    delete: Removes the entry for a given key.
+
+(*)=> hash.delete(key) → value or nil
+
+If no block is given and key is found, deletes the entry and returns the associated value:
+h = {foo: 0, bar: 1, baz: 2}
+h.delete(:bar) # => 1
+h # => {:foo=>0, :baz=>2}
+
+If no block given and key is not found, returns nil.
+
+
+(*)=> hash.delete(key) {|key| ... } → object
+
+If a block is given and key is found, ignores the block, deletes the entry, and returns the associated value:
+h = {foo: 0, bar: 1, baz: 2}
+h.delete(:baz) { |key| raise 'Will never happen'} # => 2
+h # => {:foo=>0, :bar=>1}
+
+If a block is given and key is not found, calls the block and returns the block’s return value:
+h = {foo: 0, bar: 1, baz: 2}
+h.delete(:nosuch) { |key| "Key #{key} not found" } # => "Key nosuch not found"
+h # => {:foo=>0, :bar=>1, :baz=>2}
+_____________________________________________________________________
+
+    delete_if: Removes entries selected by a given block.
+
+(*)=> hash.delete_if {|key, value| ... } → self
+h = {foo: 0, bar: 1, baz: 2}
+h.delete_if {|key, value| value > 0 } # => {:foo=>0}
+h	# => {:foo=>0} 
+
+(*)=> hash.delete_if → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.delete_if # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:delete_if>
+_____________________________________________________________________
+
+    filter!, select!: Keep only those entries selected by a given block.
+(Hash#filter! is an alias for Hash#select!.)
+
+(*)=> hash.select! {|key, value| ... } → self or nil
+h = {foo: 0, bar: 1, baz: 2}
+h.select! {|key, value| value < 2 }  => {:foo=>0, :bar=>1}
+
+(*)=> hash.select! → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.select!  # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:select!>
+_____________________________________________________________________
+
+    keep_if: Keep only those entries selected by a given block.
+
+(*)=> hash.keep_if {|key, value| ... } → self
+h = {foo: 0, bar: 1, baz: 2}
+h.keep_if { |key, value| key.start_with?('b') } # => {:bar=>1, :baz=>2}
+
+(*)=> hash.keep_if → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.keep_if # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:keep_if>
+_____________________________________________________________________
+
+    reject!: Removes entries selected by a given block.
+
+(*)=> hash.reject! {|key, value| ... } → self or nil
+h = {foo: 0, bar: 1, baz: 2}
+h.reject! {|key, value| value < 2 } # => {:baz=>2}
+
+(*)=> hash.reject! → new_enumerator
+h = {foo: 0, bar: 1, baz: 2}
+e = h.reject! # => #<Enumerator: {:foo=>0, :bar=>1, :baz=>2}:reject!>
+_____________________________________________________________________
+
+    shift: Removes and returns the first entry. 
+
+h = {foo: 0, bar: 1, baz: 2}
+h.shift # => [:foo, 0]
+h # => {:bar=>1, :baz=>2}
+
+Returns nil if the hash is empty.
+_____________________________________________________________________
+
+
+~~~~~~~~These methods return a copy of self with some entries removed:~~~~~~~~~~
+
+    compact: Returns a copy of self with all nil-valued entries removed.
+
+h = {foo: 0, bar: nil, baz: 2, bat: nil}
+h1 = h.compact
+h1 # => {:foo=>0, :baz=>2}
+_____________________________________________________________________
+
+    except: Returns a copy of self with entries removed for specified keys.
+
+h = { a: 100, b: 200, c: 300 }
+h.except(:a)          #=> {:b=>200, :c=>300}
+
+Any given keys that are not found are ignored.
+_____________________________________________________________________
+
+    filter, select: Returns a copy of self with only those entries selected by a given block.
+h = {foo: 0, bar: 1, baz: 2}
+h.select {|key, value| value < 2 } # => {:foo=>0, :bar=>1}
+_____________________________________________________________________
+
+    reject: Returns a copy of self with entries removed as specified by a given block.
+
+h = {foo: 0, bar: 1, baz: 2}
+h1 = h.reject {|key, value| key.start_with?('b') }
+h1 # => {:foo=>0}
+_____________________________________________________________________
+
+    slice: Returns a hash containing the entries for given keys. 
+
+Returns a new Hash object containing the entries for the given keys:
+
+h = {foo: 0, bar: 1, baz: 2}
+h.slice(:baz, :foo) # => {:baz=>2, :foo=>0}
+
+Any given keys that are not found are ignored.
+_____________________________________________________________________
+
 ##########  ###########
