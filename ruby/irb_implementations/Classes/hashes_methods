@@ -7,6 +7,28 @@ states = {
 	"DL" => "Delhi"
 	1 => "Haryana"
 	}
+	
+Alternatively, but only for a Hash key that’s a Symbol, you can use a newer JSON-style syntax, where each bareword becomes a Symbol:
+**BEST**
+h = {foo: 0, bar: 1, baz: 2}
+h # => {:foo=>0, :bar=>1, :baz=>2}
+
+But it’s an error to try the JSON-style syntax for a key that’s not a bareword or a String:
+
+# Raises SyntaxError (syntax error, unexpected ':', expecting =>):
+h = {0: 'zero'}
+
+h = {foo: 0, bar: 1, baz: 2}
+h[:bat] = 3 # => 3
+h # => {:foo=>0, :bar=>1, :baz=>2, :bat=>3}
+h[:foo] = 4 # => 4
+h # => {:foo=>4, :bar=>1, :baz=>2, :bat=>3}
+
+The simplest way to delete a Hash entry (instance method delete):
+
+h = {foo: 0, bar: 1, baz: 2}
+h.delete(:bar) # => 1
+h # => {:foo=>0, :baz=>2}
 
 ########## puts ###########
 puts states
@@ -14,3 +36,74 @@ puts states[1]
 puts states["DL"]
 puts states[:PN]
 
+########## Default Values ###########
+counts = {foo: 42}
+counts.default # => nil (default)
+counts[:foo] = 42
+counts[:bar] # => nil
+counts.default = 0
+counts[:bar] # => 0
+counts.values_at(:foo, :bar, :baz) # => [42, 0, 0]
+counts.dig(:bar) # => 0
+
+
+########## Methods for Creating a Hash ###########
+
+
+    ::[]: Returns a new hash populated with given objects.
+    
+
+Hash[] → new_empty_hash
+With no argument, returns a new empty Hash.
+
+Hash[hash] → new_hash
+h = {foo: 0, bar: 1, baz: 2}
+Hash[h] # => {:foo=>0, :bar=>1, :baz=>2}
+
+Hash[ [*2_element_arrays] ] → new_hash
+Hash[ [ [:foo, 0], [:bar, 1] ] ] # => {:foo=>0, :bar=>1}
+
+Hash[*objects] → new_hash
+Hash[:foo, 0, :bar, 1] # => {:foo=>0, :bar=>1}
+
+      
+    ::new: Returns a new empty hash.
+
+Hash.new(default_value = nil) → new_hash
+h = Hash.new
+h.default # => nil
+h.default_proc # => nil
+
+h = Hash.new(false)
+h.default # => false
+h.default_proc # => nil
+h.default_proc.class	# => NilClass
+h[:nosuch] 	# => false 
+
+If a block given but no argument, stores the block as the default proc and sets the default value to nil:
+
+Hash.new {|hash, key| ... } → new_hash
+
+Example
+h = Hash.new {|hash, key| "Default value for #{key}" }
+h.default # => nil
+h.default_proc	# => #<Proc:0x00007f31d92c9400 (irb):1>
+h.default_proc.class # => Proc
+h[:nosuch] # => "Default value for nosuch"
+
+
+    ::try_convert: Returns a new hash created from a given object.
+
+If obj is a Hash object, returns obj.
+Otherwise if obj responds to :to_hash, calls obj.to_hash and returns the result.
+Returns nil if obj does not respond to :to_hash
+Raises an exception unless obj.to_hash returns a Hash object.
+
+
+##########  ###########
+##########  ###########
+##########  ###########
+##########  ###########
+##########  ###########
+##########  ###########
+##########  ###########
