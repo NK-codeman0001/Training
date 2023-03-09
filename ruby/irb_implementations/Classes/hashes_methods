@@ -196,7 +196,151 @@ first_key = h.keys.first
 first_key.frozen? # => true
 _______________________________________________________________________
 
-##########  ###########
+########## Methods for Querying ###########
+
+
+    any?: Returns whether any element satisfies a given criterion.
+
+(*)=> hash.any? → true or false
+
+With no argument and no block, returns true if self is non-empty; false if empty.
+
+(*)=> hash.any?(object) → true or false
+
+With argument object and no block, returns true if for any key key h.assoc(key) == object:
+
+h = {foo: 0, bar: 1, baz: 2}
+h.any?([:bar, 1]) # => true
+h.any?([:bar, 0]) # => false
+h.any?([:baz, 1]) # => false
+
+(*)=> hash.any? {|key, value| ... } → true or false
+
+With no argument and a block, calls the block with each key-value pair; returns true if the block returns any truthy value, false otherwise:
+
+Example
+h = {foo: 0, bar: 1, baz: 2}
+h.any? {|key, value| value < 3 } # => true
+h.any? {|key, value| value > 3 } # => false	
+_____________________________________________________________________
+      
+    compare_by_identity?: Returns whether the hash considers only identity when comparing keys.
+
+Returns true if compare_by_identity has been called, false otherwise.
+
+Example
+s0 = 'x'
+s1 = 'x'
+h = {}
+h.compare_by_identity? # => false
+h[s0] = 0
+h[s1] = 1
+h # => {"x"=>1}
+
+After calling #compare_by_identity, the keys are considered to be different, and therefore do not overwrite each other:
+
+Example
+h = {}
+h.compare_by_identity # => {}
+h.compare_by_identity? # => true
+h[s0] = 0
+h[s1] = 1
+h # => {"x"=>0, "x"=>1}	
+_____________________________________________________________________
+      
+
+    default: Returns the default value, or the default value for a given key.
+
+(*)=> hash.default → object
+h = {}
+h.default # => nil
+
+(*)=> hash.default(key) → object
+
+h = Hash.new { |hash, key| hash[key] = "No key #{key}"}
+h[:foo] = "Hello"
+h.default(:foo) # => "No key foo"	
+_____________________________________________________________________
+      
+
+    default_proc: Returns the default proc.
+
+(*)=> hash.default_proc → proc or nil
+h = {}
+h.default_proc # => nil
+h.default_proc = proc {|hash, key| "Default value for #{key}" }
+h.default_proc.class # => Proc
+_____________________________________________________________________
+      
+    empty?: Returns whether there are no entries.
+	
+{}.empty? # => true
+{foo: 0, bar: 1, baz: 2}.empty? # => false
+_____________________________________________________________________
+      
+    eql?: Returns whether a given object is equal to self.
+
+    Returns true if all of the following are true:
+    object is a Hash object.
+    hash and object have the same keys (regardless of order).
+    For each key key, h[key] eql? object[key]. 
+
+Otherwise, returns false.
+
+h1 = {foo: 0, bar: 1, baz: 2}
+h2 = {foo: 0, bar: 1, baz: 2}
+h1.eql? h2 # => true
+h3 = {baz: 2, bar: 1, foo: 0}
+h1.eql? h3 # => true
+
+_____________________________________________________________________
+      
+
+    hash: Returns the integer hash code.
+
+Two Hash objects have the same hash-code if their content is the same (regardless or order):
+
+Example
+h1 = {foo: 0, bar: 1, baz: 2}
+h2 = {baz: 2, bar: 1, foo: 0}
+h2.hash == h1.hash # => true
+h2.eql? h1 # => true
+	
+_____________________________________________________________________
+      
+    has_value?: Returns whether a given object is a value in self.
+
+h			# => {:foo=>0, :bar=>1, :baz=>2} 
+h.has_value?(2)		# => true 
+h.has_value?(22)	# => false 
+_____________________________________________________________________
+      
+    include?, has_key?, member?, key?: Returns whether a given object is a key in self.
+h	 		#=> {:foo=>0, :bar=>1, :baz=>2} 
+h.include?(2)		# => false 
+h.include?(22)		# => false  
+h.include?(:foo)	# => true  
+
+h.has_key?(2)		# => false 
+h.has_key?(22)		# => false  
+h.has_key?(:foo)	# => true 
+
+h.member?(:foo)	# => true
+
+h.key?(:foo)	# => true    
+_____________________________________________________________________
+      
+    length, size: Returns the count of entries.
+
+{foo: 0, bar: 1, baz: 2}.length # => 3	
+_____________________________________________________________________
+      
+    value?: Returns whether a given object is a value in self. 
+
+h.value?(2)	# => true 
+h.value?(:foo)	# => false 
+_____________________________________________________________________
+      
 ##########  ###########
 ##########  ###########
 ##########  ###########
