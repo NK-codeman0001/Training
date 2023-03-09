@@ -341,7 +341,59 @@ h.value?(2)	# => true
 h.value?(:foo)	# => false 
 _____________________________________________________________________
       
-##########  ###########
+########## Methods for Comparing ###########
+
+
+    <: Returns whether self is a proper subset of a given object.
+h1 = {foo: 0, bar: 1}
+h2 = {foo: 0, bar: 1, baz: 2}
+h1 < h2 # => true
+h2 < h1 # => false
+**h1 < h1 # => false	**
+_____________________________________________________________________
+      
+    <=: Returns whether self is a subset of a given object.
+h1 = {foo: 0, bar: 1}
+h2 = {foo: 0, bar: 1, baz: 2}
+h1 <= h2 # => true
+h2 <= h1 # => false
+**h1 <= h1 # => true**
+_____________________________________________________________________
+      
+    ==: Returns whether a given object is equal to self.
+Returns true if all of the following are true:
+    object is a Hash object.
+    hash and object have the same keys (regardless of order).
+    For each key key, hash[key] == object[key]. 
+
+Otherwise, returns false.	
+
+h1 = {foo: 0, bar: 1, baz: 2}
+h2 = {foo: 0, bar: 1, baz: 2}
+h1 == h2 # => true
+h3 = {baz: 2, bar: 1, foo: 0}
+h1 == h3 # => true
+
+_____________________________________________________________________
+
+    >: Returns whether self is a proper superset of a given object
+
+h1 = {foo: 0, bar: 1, baz: 2}
+h2 = {foo: 0, bar: 1}
+h1 > h2 # => true
+h2 > h1 # => false
+h1 > h1 # => false	
+_____________________________________________________________________
+
+    >=: Returns whether self is a superset of a given object. 
+
+h1 = {foo: 0, bar: 1, baz: 2}
+h2 = {foo: 0, bar: 1}
+h1 >= h2 # => true
+h2 >= h1 # => false
+h1 >= h1 # => true	
+_____________________________________________________________________
+
 ##########  ###########
 ##########  ###########
 ##########  ###########
