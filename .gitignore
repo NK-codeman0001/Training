@@ -1,8 +1,0 @@
-
-.~lock*
-/database/*.pdf
-/database/*.odt
-/ruby/*.pdf
-/ruby/*.odt
-/*/test*
-/*/.vscode
