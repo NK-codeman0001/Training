@@ -1,44 +1,53 @@
 Ruby - File I/O
 
-Opening and Closing Files
+~~~~~~~~~~~~Opening and Closing Files~~~~~~~~~~~~
+
 The File.new Method
+
 You can create a File object using File.new method for reading, writing, or both, according to the mode string. Finally, you can use File.close method to close that file.
-Syntax
+
+~~~~~~~~~~~~~~Syntax~~~~~~~~~~~~~~~
 aFile = File.new("filename", "mode")
    # ... process the file
 aFile.close
+____________________________________
+
 The File.open Method
-You can use File.open method to create a new file object and assign that file object to a file. However, there is one difference in between File.open and File.new methods. The difference is that the File.open method can be associated with a block, whereas you cannot do the same using the File.new method.
+
+==>You can use File.open method to create a new file object and assign that file object to a file. 
+However, there is one difference in between File.open and File.new methods. 
+==>The difference is that the File.open method can be associated with a block, whereas you cannot do the same using the File.new method.
+
 File.open("filename", "mode") do |aFile|
    # ... process the file
 end
+_________________________________________
+
 Here is a list of The Different Modes of opening a File − 
-Sr.No.
-Modes & Description
-1
-r
-Read-only mode. The file pointer is placed at the beginning of the file. This is the default mode.
-2
-r+
-Read-write mode. The file pointer will be at the beginning of the file.
-3
-w
-Write-only mode. Overwrites the file if the file exists. If the file does not exist, creates a new file for writing.
-4
-w+
-Read-write mode. Overwrites the existing file if the file exists. If the file does not exist, creates a new file for reading and writing.
-5
-a
-Write-only mode. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
-6
-a+
-Read and write mode. The file pointer is at the end of the file if the file exists. The file opens in the append mode. If the file does not exist, it creates a new file for reading and writing.
+==>r		Read-only mode. The file pointer is placed at the beginning of the file. This is the default mode.
+
+==>r+		Read-write mode. The file pointer will be at the beginning of the file.
+
+==>w		Write-only mode. Overwrites the file if the file exists. If the file does not exist, creates a new file for writing.
+
+==>w+		Read-write mode. Overwrites the existing file if the file exists. If the file does not exist, creates a new file for reading and writing.
+
+==>a		Write-only mode. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
+
+==>a+		Read and write mode. The file pointer is at the end of the file if the file exists. The file opens in the append mode. If the file does not exist, it creates a new file for reading and writing.
+
+_______________________________________________________________________________
 
 Reading and Writing Files
-The sysread Method
+
+==>The sysread Method
+
 You can use the method sysread to read the contents of a file. You can open the file in any of the modes when using the method sysread. For example −
+
 Following is the input text file −
 This is a simple text file for testing purpose.
+
+
 Now let's try to read this file −
 #!/usr/bin/ruby
 
@@ -49,8 +58,12 @@ if aFile
 else
    puts "Unable to open file!"
 end
+
 This statement will output the first 20 characters of the file. The file pointer will now be placed at the 21st character in the file.
-The syswrite Method
+___________________________________________________________________________________
+
+==>The syswrite Method
+
 You can use the method syswrite to write the contents into a file. You need to open the file in write mode when using the method syswrite. For example −
 #!/usr/bin/ruby
 
@@ -60,9 +73,14 @@ if aFile
 else
    puts "Unable to open file!"
 end
+
 This statement will write "ABCDEF" into the file.
-The each_byte Method
+_____________________________________________________________________________________
+
+==>The each_byte Method
+
 This method belongs to the class File. The method each_byte is always associated with a block. Consider the following code sample −
+
 #!/usr/bin/ruby
 
 aFile = File.new("input.txt", "r+")
@@ -72,94 +90,108 @@ if aFile
 else
    puts "Unable to open file!"
 end
+
 Characters are passed one by one to the variable ch and then displayed on the screen as follows −
 s. .a. .s.i.m.p.l.e. .t.e.x.t. .f.i.l.e. .f.o.r. .t.e.s.t.i.n.g. .p.u.r.p.o.s.e...
 .
 .
-The IO.readlines Method
+________________________________________________________________________________________
+
+==>The IO.readlines Method
+
 The class File is a subclass of the class IO. The class IO also has some methods, which can be used to manipulate files.
+
 One of the IO class methods is IO.readlines. This method returns the contents of the file line by line. The following code displays the use of the method IO.readlines −
+
 #!/usr/bin/ruby
 
 arr = IO.readlines("input.txt")
 puts arr[0]
 puts arr[1]
-In this code, the variable arr is an array. Each line of the file input.txt will be an element in the array arr. Therefore, arr[0] will contain the first line, whereas arr[1] will contain the second line of the file.
-The IO.foreach Method
-This method also returns output line by line. The difference between the method foreach and the method readlines is that the method foreach is associated with a block. However, unlike the method readlines, the method foreach does not return an array. For example −
+
+In this code, the variable arr is an array. Each line of the file input.txt will be an element in the array arr. 
+Therefore, arr[0] will contain the first line, whereas arr[1] will contain the second line of the file.
+________________________________________________________________________________________
+
+==>The IO.foreach Method
+
+This method also returns output line by line. 
+The difference between the method foreach and the method readlines is that the method foreach is associated with a block. However, unlike the method readlines, the method foreach does not return an array. For example −
+
 #!/usr/bin/ruby
 
 IO.foreach("input.txt"){|block| puts block}
+
 This code will pass the contents of the file test line by line to the variable block, and then the output will be displayed on the screen.
+________________________________________________________________________________________
+
 Renaming and Deleting Files
+
 # Rename a file from test1.txt to test2.txt
-File.rename( "test1.txt", "test2.txt" )
+==>File.rename( "test1.txt", "test2.txt" )
+
 # Delete file test2.txt
-File.delete("test2.txt")
+==>File.delete("test2.txt")
+________________________________________________________________________________________
+
 File Modes and Ownership
+
 Use the chmod method with a mask to change the mode or permissions/access list of a file −
 Following is the example to change mode of an existing file test.txt to a mask value −
+
 #!/usr/bin/ruby
 
 file = File.new( "test.txt", "w" )
-file.chmod( 0755 )
+==>file.chmod( 0755 )
+_______________________________________
+
 Following is the table, which can help you to choose different mask for chmod method − 
-Sr.No.
-Mask & Description
-1
-0700
-rwx mask for owner
-2
-0400
-r for owner
-3
-0200
-w for owner
-4
-0100
-x for owner
-5
-0070
-rwx mask for group
-6
-0040
-r for group
-7
-0020
-w for group
-8
-0010
-x for group
-9
-0007
-rwx mask for other
-10
-0004
-r for other
-11
-0002
-w for other
-12
-0001
-x for other
-13
-4000
-Set user ID on execution
-14
-2000
-Set group ID on execution
-15
-1000
-Save swapped text, even after use
+1=x,2=w,4=r,7=rwx
+
+Set ID - User(owner) - Group - Other
+
+==>0700		rwx mask for owner
+
+==>0400		r for owner
+
+==>0200		w for owner
+
+==>0100		x for owner
+
+==>0070		rwx mask for group
+
+==>0040		r for group
+
+==>0020		w for group
+
+==>0010		x for group
+
+==>0007		rwx mask for other
+
+==>0004		r for other
+
+==>0002		w for other
+
+==>0001		x for other
+
+==>4000		Set user ID on execution
+
+==>2000		Set group ID on execution
+
+==>1000		Save swapped text, even after use
+_________________________________________________________________________________________
+
 File Inquiries
-The following command tests whether a file exists before opening it −
+
+==>The following command tests whether a file exists before opening it −
 File.open("file.rb") if File::exists?( "file.rb" )
-The following command inquire whether the file is really a file −
+
+==>The following command inquire whether the file is really a file −
 # This returns either true or false
 File.file?( "text.txt" ) 
-The following command finds out if the given file name is a directory −
-#!/usr/bin/ruby
 
+==>The following command finds out if the given file name is a directory −
+#!/usr/bin/ruby
 # a directory
 File::directory?( "/usr/local/bin" ) # => true
 
@@ -168,53 +200,71 @@ File::directory?( "file.rb" ) # => false
 The following command finds whether the file is readable, writable or executable −
 #!/usr/bin/ruby
 
-File.readable?( "test.txt" )   # => true
-File.writable?( "test.txt" )   # => true
-File.executable?( "test.txt" ) # => false
-The following command finds whether the file has zero size or not −
-#!/usr/bin/ruby
+==>File.readable?( "test.txt" )   # => true
+==>File.writable?( "test.txt" )   # => true
+==>File.executable?( "test.txt" ) # => false
 
+==>The following command finds whether the file has zero size or not −
+#!/usr/bin/ruby
 File.zero?( "test.txt" )      # => true
-The following command returns size of the file −
-#!/usr/bin/ruby
 
+==>The following command returns size of the file −
+#!/usr/bin/ruby
 File.size?( "text.txt" )     # => 1002
-The following command can be used to find out a type of file −
-#!/usr/bin/ruby
 
+==>The following command can be used to find out a type of file −
+#!/usr/bin/ruby
 File::ftype( "test.txt" )     # => file
-The ftype method identifies the type of the file by returning one of the following − file, directory, characterSpecial, blockSpecial, fifo, link, socket, or unknown.
-The following command can be used to find when a file was created, modified, or last accessed −
-#!/usr/bin/ruby
 
+The ftype method identifies the type of the file by returning one of the following − 
+file, directory, characterSpecial, blockSpecial, fifo, link, socket, or unknown.
+
+==>The following command can be used to find when a file was created, modified, or last accessed −
+#!/usr/bin/ruby
 File::ctime( "test.txt" ) # => Fri May 09 10:06:37 -0700 2008
 File::mtime( "text.txt" ) # => Fri May 09 10:44:44 -0700 2008
 File::atime( "text.txt" ) # => Fri May 09 10:45:01 -0700 2008
+_________________________________________________________________________________________
+
 Directories in Ruby
+
 All files are contained within various directories, and Ruby has no problem handling these too. Whereas the File class handles files, directories are handled with the Dir class.
+_______________________________
 Navigating Through Directories
-To change directory within a Ruby program, use Dir.chdir as follows. This example changes the current directory to /usr/bin.
+
+==>To change directory within a Ruby program, use Dir.chdir as follows. This example changes the current directory to /usr/bin.
 Dir.chdir("/usr/bin")
-You can find out what the current directory is with Dir.pwd −
+
+==>You can find out what the current directory is with Dir.pwd −
 puts Dir.pwd # This will return something like /usr/bin
-You can get a list of the files and directories within a specific directory using Dir.entries −
+
+==>You can get a list of the files and directories within a specific directory using Dir.entries −
 puts Dir.entries("/usr/bin").join(' ')
+
 Dir.entries returns an array with all the entries within the specified directory. Dir.foreach provides the same feature −
 Dir.foreach("/usr/bin") do |entry|
    puts entry
 end
-An even more concise way of getting directory listings is by using Dir's class array method −
+
+==>An even more concise way of getting directory listings is by using Dir's class array method −
 Dir["/usr/bin/*"]
+________________________________________________________________________________________
+
 Creating a Directory
+
 The Dir.mkdir can be used to create directories −
 Dir.mkdir("mynewdir")
+
 You can also set permissions on a new directory (not one that already exists) with mkdir −
 NOTE − The mask 755 sets permissions owner, group, world [anyone] to rwxr-xr-x where r = read, w = write, and x = execute.
+
 Dir.mkdir( "mynewdir", 755 )
 Deleting a Directory
 Dir.delete("testdir")
-Creating Files & Temporary Directories
+
+==>Creating Files & Temporary Directories
 Dir.tmpdir provides the path to the temporary directory on the current system, although the method is not available by default. To make Dir.tmpdir available it's necessary to use require 'tmpdir'.
+
 You can use Dir.tmpdir with File.join to create a platform-independent temporary file −
 require 'tmpdir'
    tempfilename = File.join(Dir.tmpdir, "tingtong")
@@ -222,68 +272,70 @@ require 'tmpdir'
    tempfile.puts "This is a temporary file"
    tempfile.close
    File.delete(tempfilename)
+
 This code creates a temporary file, writes data to it, and deletes it. Ruby's standard library also includes a library called Tempfile that can create temporary files for you −
+
 require 'tempfile'
    f = Tempfile.new('tingtong')
    f.puts "Hello"
    puts f.path
    f.close
+_________________________________________________________________________________________
+
 Built-in Functions
+
 Here are the ruby built-in functions to process files and directories −
 File Class and Methods.
 A File represents an stdio object that connects to a regular file and returns an instance of this class for regular files.
 Class Methods
-Sr.No.
-Methods & Description
-1
-File::atime( path)
+
+==>File::atime( path)		
 Returns the last access time for path.
-2
-File::basename( path[, suffix])
+
+==>File::basename( path[, suffix])		
 Returns the filename at the end of path. If suffix is specified, it's deleted from the end of the filename.
 e.g. File.basename("/home/users/bin/ruby.exe") #=> "ruby.exe"
-3
-File::blockdev?( path)
+
+==>File::blockdev?( path)		
 Returns true if path is a block device.
-4
-File::chardev?( path)
+
+==>File::chardev?( path)		
 Returns true if path is a character device.
-5
-File::chmod( mode, path...)
+
+==>File::chmod( mode, path...)		
 Changes the permission mode of the specified files.
-6
-File::chown( owner, group, path...)
+
+==>File::chown( owner, group, path...)	
 Changes the owner and group of the specified files.
-7
-File::ctime( path)
+
+==>File::ctime( path)		
 Returns the last node change time for path.
-8
-File::delete( path...)
-File::unlink( path...)
+
+==>File::delete( path...)	File::unlink( path...)
 Deletes the specified files.
-9
-File::directory?( path)
+
+==>File::directory?( path)
 Returns true if path is a directory.
-10
-File::dirname( path)
+
+==>File::dirname( path)
 Returns the directory portion of path, without the final filename.
-11
-File::executable?( path)
+
+==>File::executable?( path)
 Returns true if path is executable.
-12
-File::executable_real?( path)
+
+==>File::executable_real?( path)
 Returns true if path is executable with real user permissions.
-13
-File::exist?( path)
+
+==>File::exist?( path)
 Returns true if path exists.
-14
-File::expand_path( path[, dir])
+
+==>File::expand_path( path[, dir])
 Returns the absolute path of path, expanding ~ to the process owner's home directory, and ~user to the user's home directory. Relative paths are resolved from the directory specified by dir, or the current working directory if dir is omitted.
-15
-File::file?( path)
+
+==>File::file?( path)
 Returns true if path is a regular file.
-16
-File::ftype( path)
+
+==>File::ftype( path)
 Returns one of the following strings representing a file type −
 file − Regular file
 directory − Directory
@@ -293,213 +345,215 @@ fifo − Named pipe (FIFO)
 link − Symbolic link
 socket − Socket
 unknown − Unknown file type
-17
-File::grpowned?( path)
+
+==>File::grpowned?( path)
 Returns true if path is owned by the user's group.
-18
-File::join( item...)
+
+==>File::join( item...)
 Returns a string consisting of the specified items joined together with File::Separator separating each item.
 e.g File::join("", "home", "usrs", "bin") # => "/home/usrs/bin"
-19
-File::link( old, new)
+
+==>File::link( old, new)
 Creates a hard link to file old.
-20
-File::lstat( path)
+
+==>File::lstat( path)
 Same as stat, except that it returns information on symbolic links themselves, not the files they point to.
-21
-File::mtime( path)
+
+==>File::mtime( path)
 Returns the last modification time for path.
-22
-File::new( path[, mode = "r"])
-File::open( path[, mode = "r"])
-File::open( path[, mode = "r"]) {|f| ...}
+
+==>File::new( path[, mode = "r"])
+==>File::open( path[, mode = "r"])
+==>File::open( path[, mode = "r"]) {|f| ...}
 Opens a file. If a block is specified, the block is executed with the new file passed as an argument. The file is closed automatically when the block exits. These methods differ from Kernel.open in that even if path begins with |, the following string isn't run as a command.
-23
-File::owned?( path)
+
+==>File::owned?( path)
 Returns true if path is owned by the effective user.
-24
-File::pipe?( path)
+
+==>File::pipe?( path)
 Returns true if path is a pipe.
-25
-File::readable?( path)
+
+==>File::readable?( path)
 Returns true if path is readable.
-26
-File::readable_real?( path)
+
+==>File::readable_real?( path)
 Returns true if path is readable with real user permissions.
-27
-File::readlink( path)
+
+==>File::readlink( path)
 Returns the file pointed to by path.
-28
-File::rename( old, new)
+
+==>File::rename( old, new)
 Changes the filename from old to new.
-29
-File::setgid?( path)
+
+==>File::setgid?( path)
 Returns true if path's set-group-id permission bit is set.
-30
-File::setuid?( path)
+
+==>File::setuid?( path)
 Returns true if path's set-user-id permission bit is set.
-31
-File::size( path)
+
+==>File::size( path)
 Returns the file size of path.
-32
-File::size?( path)
+
+==>File::size?( path)
 Returns the file size of path, or nil if it's 0.
-33
-File::socket?( path)
+
+==>File::socket?( path)
 Returns true if path is a socket.
-34
-File::split( path)
+
+==>File::split( path)
 Returns an array containing the contents of path split into File::dirname(path) and File::basename(path).
-35
-File::stat( path)
+
+==>File::stat( path)
 Returns a File::Stat object with information on path.
-36
-File::sticky?( path)
+
+==>File::sticky?( path)
 Returns true if path's sticky bit is set.
-37
-File::symlink( old, new)
+
+==>File::symlink( old, new)
 Creates a symbolic link to file old.
-38
-File::symlink?( path)
+
+==>File::symlink?( path)
 Returns true if path is a symbolic link.
-39
-File::truncate( path, len)
+
+==>File::truncate( path, len)
 Truncates the specified file to len bytes.
-40
-File::unlink( path...)
+
+==>File::unlink( path...)
 Delete a file given at the path.
-41
-File::umask([ mask])
+
+==>File::umask([ mask])
 Returns the current umask for this process if no argument is specified. If an argument is specified, the umask is set, and the old umask is returned.
-42
-File::utime( atime, mtime, path...)
+
+==>File::utime( atime, mtime, path...)
 Changes the access and modification times of the specified files.
-43
-File::writable?( path)
+
+==>File::writable?( path)
 Returns true if path is writable.
-44
-File::writable_real?( path)
+
+==>File::writable_real?( path)
 Returns true if path is writable with real user permissions.
-45
-File::zero?( path)
+
+==>File::zero?( path)
 Returns true if the file size of path is 0.
+_________________________________________________________________________________________
 Instance Methods
+
 Assuming f is an instance of File class −
-Sr.No.
-Methods & Description
-1
-f.atime
+
+==>f.atime
 Returns the last access time for f.
-2
-f.chmode( mode)
+
+==>f.chmode( mode)
 Changes the permission mode of f.
-3
-f.chown( owner, group)
+
+==>f.chown( owner, group)
 Changes the owner and group of f.
-4
-f.ctime
+
+==>f.ctime
 Returns the last inode change time for f.
-5
-f.flock( op)
+
+==>f.flock( op)
 Calls flock(2). op may be 0 or a logical or of the File class constants LOCK_EX, LOCK_NB, LOCK_SH, and LOCK_UN.
-6
-f.lstat
+
+==>f.lstat
 Same as stat, except that it returns information on symbolic links themselves, not the files they point to.
-7
-f.mtime
+
+==>f.mtime
 Returns the last modification time for f.
-8
-f.path
+
+==>f.path
 Returns the pathname used to create f.
-9
-f.reopen( path[, mode = "r"])
+
+==>f.reopen( path[, mode = "r"])
 Reopens the file.
-10
-f.truncate( len)
+
+==>f.truncate( len)
 Truncates f to len bytes.
+_________________________________________________________________________________________
 
 Dir Class and Methods.
+
 A Dir is a class to represent a directory stream that gives filenames in the directory in the operating system. Dir class also holds directory related operations, such as wild card filename matching, changing current working directory, etc. as class methods.
+
 Class Methods
-Sr.No.
-Method & Description
-1
-Dir[pat]
-Dir::glob( pat)
+
+==>Dir[pat]
+==>Dir::glob( pat)
 Returns an array of filenames matching the specified wild card pattern pat − 
     • * − Matches any string including the null string
     • ** − Matches any string recursively
     • ? − Matches any single character
     • [...] − Matches any one of enclosed characters
     • {a,b...} − Matches any one of strings
+
 Dir["foo.*"] # matches "foo.c", "foo.rb", etc.
 Dir["foo.?"] # matches "foo.c", "foo.h", etc.
-2
-Dir::chdir( path)
+
+==>Dir::chdir( path)
 Changes the current directory.
-3
-Dir::chroot( path)
+
+==>Dir::chroot( path)
 Changes the root directory (only allowed by super user). Not available on all platforms.
-4
-Dir::delete( path)
+
+==>Dir::delete( path)
 Deletes the directory specified by path. The directory must be empty.
-5
-Dir::entries( path)
+
+==>Dir::entries( path)
 Returns an array of filenames in directory path.
-6
-Dir::foreach( path) {| f| ...}
+
+==>Dir::foreach( path) {| f| ...}
 Executes the block once for each file in the directory specified by path.
-7
-Dir::getwd
-Dir::pwd
+
+==>Dir::getwd
+==>Dir::pwd
 Returns the current directory.
-8
-Dir::mkdir( path[, mode=0777])
+
+==>Dir::mkdir( path[, mode=0777])
 Creates the directory specified by path. Permission mode may be modified by the value of File::umask and is ignored on Win32 platforms.
-9
-Dir::new( path)
-Dir::open( path)
-Dir::open( path) {| dir| ...}
+
+==>Dir::new( path)
+==>Dir::open( path)
+==>Dir::open( path) {| dir| ...}
 Returns a new directory object for path. If open is given a block, a new directory object is passed to the block, which closes the directory object before terminating.
-10
-Dir::pwd
+
+==>Dir::pwd
 See Dir::getwd.
-11
-Dir::rmdir( path)
-Dir::unlink( path)
-Dir::delete( path)
+
+==>Dir::rmdir( path)
+==>Dir::unlink( path)
+==>Dir::delete( path)
 Deletes the directory specified by path. The directory must be empty.
+_______________________________________________________________________________________
+
 Instance Methods
 Assuming d is an instance of Dir class −
-Sr.No.
-Method & Description
-1
-d.close
-Closes the directory stream.
-2
-d.each {| f| ...}
-Executes the block once for each entry in d.
-3
-d.pos
-d.tell
-Returns the current position in d.
-4
-d.pos = offset
-Sets the position in the directory stream.
-5
-d.pos = pos
-d.seek(po s)
-Moves to a position in d. pos must be a value returned by d.pos or 0.
-6
-d.read
-Returns the next entry from d.
-7
-d.rewind
-Moves position in d to the first entry.
-8
-d.seek(po s)
-See d.pos = pos.
-9
-d.tell
-See d.pos.
 
+==>d.close
+Closes the directory stream.
+
+==>d.each {| f| ...}
+Executes the block once for each entry in d.
+
+==>d.pos
+==>d.tell
+Returns the current position in d.
+
+==>d.pos = offset
+Sets the position in the directory stream.
+
+==>d.pos = pos
+==>d.seek(po s)
+Moves to a position in d. pos must be a value returned by d.pos or 0.
+
+==>d.read
+Returns the next entry from d.
+
+==>d.rewind
+Moves position in d to the first entry.
+
+==>d.seek(po s)
+See d.pos = pos.
+
+==>d.tell
+See d.pos.
+_________________________________________________________________________________________

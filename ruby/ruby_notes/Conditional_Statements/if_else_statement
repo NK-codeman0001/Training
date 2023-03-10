@@ -1,5 +1,6 @@
 Ruby if...else Statement
-Syntax
+
+~~~~~~~~~~~~Syntax~~~~~~~~~~~~
 if conditional [then]
    code...
 [elsif conditional [then]
@@ -7,9 +8,13 @@ if conditional [then]
 [else
    code...]
 end
+______________________________________________________________
+
 if expressions are used for conditional execution. The values false and nil are false, and everything else are true. Notice Ruby uses elsif, not else if nor elif.
+
 Executes code if the conditional is true. If the conditional is not true, code specified in the else clause is executed.
 An if expression's conditional is separated from code by the reserved word then, a newline, or a semicolon.
+
 Example
 #!/usr/bin/ruby
 
@@ -22,3 +27,4 @@ else
    puts "I can't guess the number"
 end
 x is 1
+______________________________________________________________

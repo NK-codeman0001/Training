@@ -8,6 +8,8 @@ A regexp is usually delimited with forward slashes (/). For example:
 /tacl/ =~ 'haystack'	#  => nil 
 /tackl/ =~ 'haystack'	#  => nil
 
+______________________________________________________________________
+
 Options may also be used with Regexp.new:
 
 Regexp.new("abc", Regexp::IGNORECASE)                     #=> /abc/i
@@ -19,13 +21,7 @@ Regexp.new("abc", "i")           #=> /abc/i
 Regexp.new("abc", "m")           #=> /abc/m
 Regexp.new("abc # Comment", "x") #=> /abc # Comment/x
 Regexp.new("abc", "im")          #=> /abc/mi
-
-//Convert a string to regular expression ruby
->> str = '[\w\s]+'
- => "[\\w\\s]+" 
->> Regexp.new str
- => /[\w\s]+/ 
-
+______________________________________________________________________
 
 /y/.match('haystack')		# => #<MatchData "y"> 
 /ye/.match('haystack')		# => nil 
@@ -33,11 +29,13 @@ Regexp.new("abc", "im")          #=> /abc/mi
 /stack/.match('haystack')	# => #<MatchData "stack"> 
 
 =>Note that any Regexp matching will raise a RuntimeError if timeout is set and exceeded.
+______________________________________________________________________
 
 Regexp Interpolation
 A regexp may contain interpolated strings; trivially:
 foo = 'bar'
 /#{foo}/ # => /bar/
+______________________________________________________________________
 
 =~ Operator
 
@@ -59,7 +57,7 @@ $~   			# => #<MatchData "a">
 $~   			# => nil 
 /tack/   =~ 'haystack'  # => 4 
 $~   			# => #<MatchData "tack"> 
-
+______________________________________________________________________
 
 Metacharacters and Escapes
 
@@ -67,13 +65,24 @@ The following are metacharacters (, ), [, ], {, }, ., ?, +, *. They have a speci
 
 /1 \+ 2 = 3\?/.match('Does 1 + 2 = 3?') #=> #<MatchData "1 + 2 = 3?">
 /a\\\\b/.match('a\\\\b')  
-
+______________________________________________________________________
 
 Arbitrary Ruby expressions can be embedded into patterns with the #{...} construct.
 place = "東京都"
 /#{place}/.match("Go to 東京都")    #=> #<MatchData "東京都">
 
+______________________________________________________________________
+*************************IMPORTANT************************************
+______________________________________________________________________
 
+
+//Convert a string to regular expression ruby
+>> str = '[\w\s]+'
+ => "[\\w\\s]+" 
+>> Regexp.new str
+ => /[\w\s]+/ 
+
+______________________________________________________________________
 
 Character Classes
 
@@ -125,6 +134,78 @@ The following metacharacters also behave like character classes:
 
     /\R/ - A linebreak: \n, \v, \f, \r \u0085 (NEXT LINE), \u2028 (LINE SEPARATOR), \u2029 (PARAGRAPH SEPARATOR) or \r\n.
 
+______________________________________________________________________
+
+Repetition
+
+The constructs described so far match a single character. They can be followed by a repetition metacharacter to specify how many times they need to occur. Such metacharacters are called quantifiers.
+
+    * - Zero or more times
+
+    + - One or more times
+
+    ? - Zero or one times (optional)
+
+    {n} - Exactly n times
+
+    {n,} - n or more times
+
+    {,m} - m or less times
+
+    {n,m} - At least n and at most m times
+
+At least one uppercase character (‘H’), at least one lowercase character (‘e’), two ‘l’ characters, then one ‘o’:
+
+"Hello".match(/[[:upper:]]+[[:lower:]]+l{2}o/) #=> #<MatchData "Hello">
+______________________________________________________________________
+
+Regexp Global Variables
+
+Pattern matching sets some global variables :
+
+    $~ is equivalent to Regexp.last_match;
+
+    $& contains the complete matched text;
+
+    $` contains string before match;
+
+    $' contains string after match;
+
+    $1, $2 and so on contain text matching first, second, etc capture group;
+
+    $+ contains last capture group.
+
+Example:
+
+m = /s(\w{2}).*(c)/.match('haystack') #=> #<MatchData "stac" 1:"ta" 2:"c">
+$~                                    #=> #<MatchData "stac" 1:"ta" 2:"c">
+Regexp.last_match                     #=> #<MatchData "stac" 1:"ta" 2:"c">
+
+$&      #=> "stac"
+        # same as m[0]
+$`      #=> "hay"
+        # same as m.pre_match
+$'      #=> "k"
+        # same as m.post_match
+$1      #=> "ta"
+        # same as m[1]
+$2      #=> "c"
+        # same as m[2]
+$3      #=> nil
+        # no third group in pattern
+$+      #=> "c"
+        # same as m[-1]
+
+These global variables are thread-local and method-local variables.
+
+
+Consider a string of 25 as, a d, 4 as, and a c.
+
+s = 'a' * 25 + 'd' + 'a' * 4 + 'c'
+#=> "aaaaaaaaaaaaaaaaaaaaaaaaadaaaac"
+
+__________________________________________________________________________________________________________________________
+__________________________________________________________________________________________________________________________
 
 
 POSIX bracket expressions are also similar to character classes. They provide a portable alternative to the above, with the added benefit that they encompass non-ASCII characters. For instance, /\d/ matches only the ASCII decimal digits (0-9); whereas /[[:digit:]]/ matches any character in the Unicode Nd category.
@@ -153,6 +234,7 @@ POSIX bracket expressions are also similar to character classes. They provide a 
 
     /[[:xdigit:]]/ - Digit allowed in a hexadecimal number (i.e., 0-9a-fA-F)
 
+
 Ruby also supports the following non-POSIX character classes:
 
     /[[:word:]]/ - A character in one of the following Unicode general categories Letter, Mark, Number, Connector_Punctuation
@@ -163,29 +245,7 @@ Ruby also supports the following non-POSIX character classes:
     /[[:digit:]]/.match("\u06F2")    #=> #<MatchData "\u{06F2}">
     /[[:upper:]][[:lower:]]/.match("Hello") #=> #<MatchData "He">
     /[[:xdigit:]][[:xdigit:]]/.match("A6")  #=> #<MatchData "A6">
-
-
-Repetition
-
-The constructs described so far match a single character. They can be followed by a repetition metacharacter to specify how many times they need to occur. Such metacharacters are called quantifiers.
-
-    * - Zero or more times
-
-    + - One or more times
-
-    ? - Zero or one times (optional)
-
-    {n} - Exactly n times
-
-    {n,} - n or more times
-
-    {,m} - m or less times
-
-    {n,m} - At least n and at most m times
-
-At least one uppercase character (‘H’), at least one lowercase character (‘e’), two ‘l’ characters, then one ‘o’:
-
-"Hello".match(/[[:upper:]]+[[:lower:]]+l{2}o/) #=> #<MatchData "Hello">
+______________________________________________________________________
 
 Grouping
 
@@ -199,6 +259,7 @@ Whereas the following pattern matches a vowel followed by a word character, twic
 
 /([aeiou]\w){2}/.match("Caenorhabditis elegans")
     #=> #<MatchData "enor" 1:"or">
+______________________________________________________________________
 
 Anchors
 
@@ -250,52 +311,5 @@ The pattern below uses positive lookahead and positive lookbehind to match text 
 
 /(?<=<b>)\w+(?=<\/b>)/.match("Fortune favours the <b>bold</b>")
     #=> #<MatchData "bold">
-
-
-
-Regexp Global Variables
-
-Pattern matching sets some global variables :
-
-    $~ is equivalent to Regexp.last_match;
-
-    $& contains the complete matched text;
-
-    $` contains string before match;
-
-    $' contains string after match;
-
-    $1, $2 and so on contain text matching first, second, etc capture group;
-
-    $+ contains last capture group.
-
-Example:
-
-m = /s(\w{2}).*(c)/.match('haystack') #=> #<MatchData "stac" 1:"ta" 2:"c">
-$~                                    #=> #<MatchData "stac" 1:"ta" 2:"c">
-Regexp.last_match                     #=> #<MatchData "stac" 1:"ta" 2:"c">
-
-$&      #=> "stac"
-        # same as m[0]
-$`      #=> "hay"
-        # same as m.pre_match
-$'      #=> "k"
-        # same as m.post_match
-$1      #=> "ta"
-        # same as m[1]
-$2      #=> "c"
-        # same as m[2]
-$3      #=> nil
-        # no third group in pattern
-$+      #=> "c"
-        # same as m[-1]
-
-These global variables are thread-local and method-local variables.
-
-
-
-Consider a string of 25 as, a d, 4 as, and a c.
-
-s = 'a' * 25 + 'd' + 'a' * 4 + 'c'
-#=> "aaaaaaaaaaaaaaaaaaaaaaaaadaaaac"
+______________________________________________________________________
 
