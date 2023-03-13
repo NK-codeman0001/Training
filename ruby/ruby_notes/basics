@@ -94,4 +94,133 @@ This will produce the following result −
 Initializing Ruby Program
 This is main Ruby Program
 Terminating Ruby Program
+___________________________________________________________________________________
+
+IMPORTANT TOPICS
+___________________________________________________________________________________
+
+===>d/w include & require
+
+https://findnerd.com/list/view/Differences-between-Require-Load-Include-and-Extend-methods-in-ROR/23036/
+
+____________________________________________________________________________________________
+
+===>d/w class methods and  instance methods
+
+Instance methods need a class instance and can access the instance through self . Class methods don't need a class instance. They can't access the instance ( self ) but they have access to the class itself via cls . Static methods don't have access to cls or self 
+
+https://dev.to/adamlombard/ruby-class-methods-vs-instance-methods-4aje
+____________________________________________________________________________________________
+
+===>role of attr_accessor
+
+In Ruby, object methods are public by default, while data is private. To access and modify data, we use the attr_reader and attr_writer.
+
+attr_accessor is a shortcut method when you need both attr_reader and attr_writer. Since both reading and writing data are common, the idiomatic method attr_accessor is quite useful.
+
+https://www.educative.io/answers/what-is-attraccessor-in-ruby
+____________________________________________________________________________________________
+
+===>:: and constants
+
+A constant is a type of variable which always starts with a capital letter. They can only be defined outside of methods, unless you use metaprogramming.
+
+Constants are used for values that aren’t supposed to change, but Ruby doesn’t prevent you from changing them.
+
+A constant doesn’t require any special symbol or syntax to declare. You just need to make the first letter an uppercase letter.
+
+Notice that you can’t define constants inside a method.
+
+https://www.rubyguides.com/2017/07/ruby-constants/
+____________________________________________________________________________________________
+
+===>pack and unpack
+https://www.bigbinary.com/blog/ruby-pack-unpack
+____________________________________________________________________________________________
+
+===>puts, print and p
+https://www.rubyguides.com/2018/10/puts-vs-print/
+____________________________________________________________________________________________
+
+===>d/w loops and iterators
+https://www.codecademy.com/forum_questions/5294ba4480ff338cc9002444
+____________________________________________________________________________________________
+
+===>string literal and heredoc literals
+
+Here Document Literals
+If you are writing a large block of text you may use a “here document” or “heredoc”:
+
+expected_result = <<HEREDOC
+This would contain specially formatted text.
+
+That might span many lines
+HEREDOC
+
+____________________________________________________________________________________________
+===>procs and procs classes
+
+A Proc object is an encapsulation of a block of code, which can be stored in a local variable, passed to a method or another Proc, and can be called. Proc is an essential concept in Ruby and a core of its functional programming features.
+
+Example
+square = Proc.new {|x| x**2 }
+
+square.call(3)  #=> 9
+# shorthands:
+square.(3)      #=> 9
+____________________________________________________________________________________________
+===>what is Enumerators
+A class which allows both internal and external iteration.
+
+An Enumerator can be created by the following methods.
+    Object#to_enum
+    Object#enum_for
+    Enumerator.new 
+
+Most methods have two forms: a block form where the contents are evaluated for each item in the enumeration, and a non-block form which returns a new Enumerator wrapping the iteration.
+
+
+enumerator = %w(one two three).each
+puts enumerator.class # => Enumerator
+
+enumerator.each_with_object("foo") do |item, obj|
+  puts "#{obj}: #{item}"
+end
+
+# foo: one
+# foo: two
+# foo: three
+
+
+e = [1,2,3].each   # returns an enumerator object.
+puts e.next   # => 1
+puts e.next   # => 2
+puts e.next   # => 3
+puts e.next   # raises StopIteration
+
+_________________________________________________________________________________________
+
+===>epooch
+
+The Time in Ruby helps you represent a specific point in time. The Time has three components: hour, minute, and second. These are stored by the Time object as the Unix Time or Epoch time.
+
+    puts Time.now
+    puts Time.new(2018, 1, 1)
+    puts Time.at(1549429771)
+
+    t = Time.now
+    puts "Day: #{t.day}"
+    puts "Month: #{t.month}"
+    puts "Hour: #{t.hour}"
+            
+Output:
+
+    2019-02-16 03:26:36 +0000
+    2018-01-01 00:00:00 +0000
+    2019-02-06 05:09:31 +0000
+    Day: 16
+    Month: 2
+    Hour: 3
+
+____________________________________________________________________________________________
 
