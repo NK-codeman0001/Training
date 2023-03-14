@@ -1,0 +1,582 @@
+			Ruby/DBI - Database Access
+			__________________________
+			
+DBI stands for Database Independent Interface for Ruby, which means DBI provides an abstraction layer between the Ruby code and the underlying database, allowing you to switch database implementations really easily. It defines a set of methods, variables, and conventions that provide a consistent database interface, independent of the actual database being used.
+
+DBI can interface with the following −
+
+    ADO (ActiveX Data Objects)
+    DB2
+    Frontbase
+    mSQL
+    MySQL
+    ODBC
+    Oracle
+    OCI8 (Oracle)
+    PostgreSQL
+    Proxy/Server
+    SQLite
+    SQLRelay
+
+_____________________________________________________________________
+
+Architecture of a DBI Application:
+
+The general architecture for Ruby DBI uses two layers −
+
+    The database interface (DBI) layer. This layer is database independent and provides a set of common access methods that are used the same way regardless of the type of database server with which you're communicating.
+
+    The database driver (DBD) layer. This layer is database dependent; different drivers provide access to different database engines. There is one driver for MySQL, another for PostgreSQL, another for InterBase, another for Oracle, and so forth. Each driver interprets requests from the DBI layer and maps them onto requests appropriate for a given type of database server.
+
+_____________________________________________________________________
+
+________________________________________________________________
+To connect to a Postgres database using Ruby in Ubuntu, you can follow these steps:
+________________________________________________________________
+
+1)====>    Install the pg gem by running the following command in your terminal:
+
+====>gem install pg
+
+
+2)====>	    Make sure that you have the libpq-dev package installed, which provides the PostgreSQL development headers and libraries. You can install it by running the following command in your terminal:
+
+====>sudo apt-get install libpq-dev
+
+
+3)====>	    In your Ruby code, require the pg gem and create a new connection to your Postgres database:
+
+====>
+
+require 'pg'
+
+conn = PG.connect(
+  dbname: 'your_database_name',
+  user: 'your_username',
+  password: 'your_password',
+  host: 'localhost',
+  port: '5432'
+)
+
+Replace your_database_name, your_username, and your_password with the appropriate values for your database.
+
+
+4)====>	    You can now execute SQL queries on the conn object. For example:
+
+====>
+
+    result = conn.exec("SELECT * FROM your_table_name")
+    result.each do |row|
+      puts row['column_name']
+    end
+
+    Replace your_table_name and column_name with the appropriate values for your database.
+
+
+That's it! You should now be able to connect to your Postgres database and execute SQL queries using Ruby in Ubuntu.
+_____________________________________________________________________
+
+		Obtaining and Installing Ruby/DBI
+
+
+To obtain and install Ruby/DBI, a Ruby library for database connectivity, you can follow these steps:
+
+1)====>    Install Ruby if it is not already installed on your system. You can check if Ruby is installed by running the command ruby -v in your terminal. If it is not installed, you can install it using your package manager or by downloading it from the official Ruby website.
+
+
+2)====>    Install the dbi gem by running the following command in your terminal:
+
+====>gem install dbi
+
+
+3)
+====>    Once ruby-dbi is installed, you will need to install the driver for the specific database you want to connect to. For example, if you want to connect to a MySQL database, you will need to install the mysql driver by running the following command:
+
+===>gem install mysql
+
+
+====>    Similarly, if you want to connect to a PostgreSQL database, you will need to install the pg driver by running the following command:
+
+====>gem install pg
+
+
+You can find a list of available drivers on the Ruby/DBI website: https://github.com/erikh/ruby-dbi#available-adapters
+
+
+4)====>    In your Ruby code, require the dbi gem and create a new connection to your database:
+
+====>
+
+require 'dbi'
+
+# Replace the values in the connection string with your database credentials
+conn = DBI.connect("DBI:mysql:your_database_name:localhost", "your_username", "your_password")
+
+Replace your_database_name, your_username, and your_password with the appropriate values for your database.
+
+5)====>    You can now execute SQL queries on the conn object. For example:
+
+====>    
+
+    sth = conn.execute("SELECT * FROM your_table_name")
+    sth.fetch do |row|
+      puts row.join("\t")
+    end
+
+    Replace your_table_name with the appropriate value for your database.
+
+That's it! You should now be able to connect to your database and execute SQL queries using Ruby/DBI.
+
+____________________________________________________________________
+
+			Database Connection
+		
+To connect to a PostgreSQL database using Ruby/DBI, you can follow these steps:
+
+1)====>    Install the dbi and pg gems by running the following command in your terminal:
+
+====>gem install dbi pg
+
+
+2)====>In your Ruby code, require the dbi and pg gems and create a new connection to your PostgreSQL database:
+
+====>
+require 'dbi'
+require 'pg'
+
+# Replace the values in the connection string with your database credentials
+conn = DBI.connect("DBI:Pg:dbname=your_database_name;host=localhost;port=5432", "your_username", "your_password")
+
+
+Replace your_database_name, your_username, and your_password with the appropriate values for your PostgreSQL database.
+
+
+3)====>You can now execute SQL queries on the conn object. For example:
+
+
+    sth = conn.execute("SELECT * FROM your_table_name")
+    sth.fetch do |row|
+      puts row.join("\t")
+    end
+
+    Replace your_table_name with the appropriate value for your PostgreSQL database.
+
+That's it! You should now be able to connect to your PostgreSQL database and execute SQL queries using Ruby/DBI.
+		
+____________________________________________________________________
+
+		
+Assuming we are going to work with MySQL database, before connecting to a database make sure of the following −
+    You have created a database TESTDB.
+    You have created EMPLOYEE in TESTDB.
+    This table is having fields FIRST_NAME, LAST_NAME, AGE, SEX, and INCOME.
+    User ID "testuser" and password "test123" are set to access TESTDB.
+    Ruby Module DBI is installed properly on your machine.
+    You have gone through MySQL tutorial to understand MySQL Basics.
+
+Following is the example of connecting with MySQL database "TESTDB"
+#!/usr/bin/ruby -w
+
+require "dbi"
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   # get server version string and display it
+   row = dbh.select_one("SELECT VERSION()")
+   puts "Server version: " + row[0]
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end		
+		
+====================================================================
+		INSERT Operation
+
+Once a database connection is established, we are ready to create tables or records into the database tables using do method or prepare and execute method.
+
+//===>	Using do Statement
+
+dbh.do("DROP TABLE IF EXISTS EMPLOYEE")
+dbh.do("CREATE TABLE EMPLOYEE (
+   FIRST_NAME  CHAR(20) NOT NULL,
+   LAST_NAME  CHAR(20),
+   AGE INT,  
+   SEX CHAR(1),
+   INCOME FLOAT )" );
+   
+_____________________________________________________
+
+Similarly, you can execute the SQL INSERT statement to create a record into the EMPLOYEE table.
+
+#!/usr/bin/ruby -w
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   
+   
+   dbh.do( "INSERT INTO EMPLOYEE(FIRST_NAME, LAST_NAME, AGE, SEX, INCOME)
+      VALUES ('Mac', 'Mohan', 20, 'M', 2000)" )
+   puts "Record has been created"
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+
+__________________________________________________________	
+		
+Using prepare and execute
+
+You can use prepare and execute methods of DBI class to execute the SQL statement through Ruby code.
+
+Record creation takes the following steps −
+
+    Preparing SQL statement with INSERT statement. This will be done using the prepare method.
+    Executing SQL query to select all the results from the database. This will be done using the execute method.
+    Releasing Statement handle. This will be done using finish API
+    If everything goes fine, then commit this operation otherwise you can rollback the complete transaction.
+		
+		
+Following is the syntax to use these two methods −
+
+sth = dbh.prepare(statement)
+sth.execute
+   ... zero or more SQL operations ...
+sth.finish
+
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   sth = dbh.prepare( "INSERT INTO EMPLOYEE(FIRST_NAME, LAST_NAME, AGE, SEX, INCOME)
+      VALUES (?, ?, ?, ?, ?)" )
+   sth.execute('John', 'Poul', 25, 'M', 2300)
+   sth.execute('Zara', 'Ali', 17, 'F', 1000)
+   sth.finish
+   dbh.commit
+   puts "Record has been created"
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+
+
+###===> If there are multiple INSERTs at a time, then preparing a statement first and then executing it multiple times within a loop is more efficient than invoking do each time through the loop.
+	
+====================================================================
+
+			READ Operation
+			
+We can use either do method or prepare and execute methods to fetch values from a database table.
+
+Record fetching takes following steps −
+
+    Preparing SQL query based on required conditions. This will be done using the prepare method.
+    Executing SQL query to select all the results from the database. This will be done using the execute method.
+    Fetching all the results one by one and printing those results. This will be done using the fetch method.
+    Releasing Statement handle. This will be done using the finish method.
+    
+_________________________________________________________________
+ 
+Following is the procedure to query all the records from EMPLOYEE table having salary more than 1000.
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+   
+   sth = dbh.prepare("SELECT * FROM EMPLOYEE WHERE INCOME > ?")
+   sth.execute(1000)
+
+   sth.fetch do |row|
+   printf "First Name: %s, Last Name : %s\n", row[0], row[1]
+   printf "Age: %d, Sex : %s\n", row[2], row[3]
+   printf "Salary :%d \n\n", row[4]
+end
+   sth.finish
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+
+_______________________________________
+This will produce the following result −
+
+First Name: Mac, Last Name : Mohan
+Age: 20, Sex : M
+Salary :2000
+
+First Name: John, Last Name : Poul
+Age: 25, Sex : M
+Salary :2300
+________________________________________
+
+====================================================================
+			Update Operation
+			
+This will take three steps −
+
+    Preparing SQL query based on required conditions. This will be done using the prepare method.
+    Executing SQL query to select all the results from the database. This will be done using the execute method.
+    Releasing Statement handle. This will be done using the finish method.
+    If everything goes fine then commit this operation otherwise you can rollback the complete transaction.
+			
+____________________________________________________
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+
+
+   sth = dbh.prepare("UPDATE EMPLOYEE SET AGE = AGE + 1 WHERE SEX = ?")
+   sth.execute('M')
+   sth.finish
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+_____________________________
+
+==================================================================
+
+				DELETE Operation		
+
+This operation will take following steps.
+
+    Preparing SQL query based on required conditions. This will be done using the prepare method.
+    Executing SQL query to delete required records from the database. This will be done using the execute method.
+    Releasing Statement handle. This will be done using the finish method.
+    If everything goes fine then commit this operation otherwise you can rollback the complete transaction.
+__________________________________________
+
+
+require "dbi"
+
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123")
+
+
+   sth = dbh.prepare("DELETE FROM EMPLOYEE WHERE AGE > ?")
+   sth.execute(20)
+   sth.finish
+   dbh.commit
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end		
+		
+___________________________________________
+====================================================================
+
+COMMIT Operation
+
+Commit is the operation, which gives a green signal to database to finalize the changes, and after this operation, no change can be reverted back.
+
+Here is a simple example to call the commit method.
+
+dbh.commit
+____________________________________________________
+
+ROLLBACK Operation
+
+If you are not satisfied with one or more of the changes and you want to revert back those changes completely, then use the rollback method.
+
+Here is a simple example to call the rollback method.
+
+dbh.rollback
+____________________________________________________
+
+Disconnecting Database
+
+To disconnect Database connection, use disconnect API.
+
+dbh.disconnect
+
+If the connection to a database is closed by the user with the disconnect method, any outstanding transactions are rolled back by the DBI. However, instead of depending on any of DBI's implementation details, your application would be better off calling the commit or rollback explicitly
+
+______________________________________________________
+
+Handling Errors
+
+The attributes are explained below −
+
+    err − Returns an integer representation of the occurred error or nil if this is not supported by the DBD.The Oracle DBD for example returns the numerical part of an ORA-XXXX error message.
+
+    errstr − Returns a string representation of the occurred error.
+
+    state − Returns the SQLSTATE code of the occurred error.The SQLSTATE is a five-character-long string. Most DBDs do not support this and return nil instead.
+
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+   dbh.rollback
+ensure
+   # disconnect from server
+   dbh.disconnect if dbh
+end
+
+________________________________________________________
+
+To get debugging information about what your script is doing as it executes, you can enable tracing. To do this, you must first load the dbi/trace module and then call the trace method that controls the trace mode and output destination −
+
+require "dbi/trace"
+..............
+
+trace(mode, destination)
+_____________________________
+
+
+Code Blocks with Methods
+
+    DBI.connect − This method generates a database handle and it is recommended to call disconnect at the end of the block to disconnect the database.
+
+    dbh.prepare − This method generates a statement handle and it is recommended to finish at the end of the block. Within the block, you must invoke execute method to execute the statement.
+
+    dbh.execute − This method is similar except we don't need to invoke execute within the block. The statement handle is automatically executed.
+
+Example 1
+DBI.connect can take a code block, passes the database handle to it, and automatically disconnects the handle at the end of the block as follows.
+
+dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123") do |dbh|
+
+
+
+Example 2
+dbh.prepare can take a code block, passes the statement handle to it, and automatically calls finish at the end of the block as follows.
+
+dbh.prepare("SHOW DATABASES") do |sth|
+   sth.execute
+   puts "Databases: " + sth.fetch_all.join(", ")
+end
+
+
+
+Example 3
+dbh.execute can take a code block, passes the statement handle to it, and automatically calls finish at the end of the block as follows −
+
+dbh.execute("SHOW DATABASES") do |sth|
+   puts "Databases: " + sth.fetch_all.join(", ")
+end
+_____________________________________
+
+====================================================================
+
+Driver-specific Functions and Attributes
+
+===>dbh.func(:createdb, db_name)
+Creates a new database.
+
+===>dbh.func(:dropdb, db_name)
+Drops a database.
+	
+===>dbh.func(:reload)
+Performs a reload operation.
+
+===>dbh.func(:shutdown)
+Shuts down the server.
+
+===>dbh.func(:insert_id) => Fixnum
+Returns the most recent AUTO_INCREMENT value for a connection.
+ 	
+===>dbh.func(:client_info) => String
+Returns MySQL client information in terms of version.
+
+===>dbh.func(:client_version) => Fixnum
+Returns client information in terms of version. It's similar to :client_info but it return a fixnum instead of sting.
+ 	
+===>dbh.func(:host_info) => String
+Returns host information.
+
+===>dbh.func(:proto_info) => Fixnum
+Returns protocol being used for the communication.
+
+===>dbh.func(:server_info) => String
+Returns MySQL server information in terms of version.
+
+===>dbh.func(:stat) => String
+Returns current state of the database.
+
+===>dbh.func(:thread_id) => Fixnum
+Returns current thread ID.
+_____________________________
+
+Example
+
+
+require "dbi"
+begin
+   # connect to the MySQL server
+   dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", "testuser", "test123") 
+
+
+   puts dbh.func(:client_info)
+   puts dbh.func(:client_version)
+   puts dbh.func(:host_info)
+   puts dbh.func(:proto_info)
+   puts dbh.func(:server_info)
+   puts dbh.func(:thread_id)
+   puts dbh.func(:stat)
+rescue DBI::DatabaseError => e
+   puts "An error occurred"
+   puts "Error code:    #{e.err}"
+   puts "Error message: #{e.errstr}"
+ensure
+   dbh.disconnect if dbh
+end
+___________________________________
+
+This will produce the following result −
+
+5.0.45
+50045
+Localhost via UNIX socket
+10
+5.0.45
+150621
+Uptime: 384981  Threads: 1  Questions: 1101078  Slow queries: 4 \
+Opens: 324  Flush tables: 1  Open tables: 64  \
+Queries per second avg: 2.860
+
+____________________________________________________________________		
+			
+		
+		
