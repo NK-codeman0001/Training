@@ -14,8 +14,8 @@ def string_rev_rec (str, s=0)
   string_rev_rec(str, s+1)
 end
 
-p string_rev_rec("Neeraj")
-p string_rev_rec("")
-p string_rev_rec("A")
-p string_rev_rec("aA")
-p string_rev_rec("aaaaa@1#AAAAA")
+p string_rev_rec("Neeraj")  # "jareeN"
+p string_rev_rec("")  # ""
+p string_rev_rec("A") # "A"
+p string_rev_rec("aA")  # "Aa"
+p string_rev_rec("aaaaa@1#AAAAA") # "AAAAA#1@aaaaa"

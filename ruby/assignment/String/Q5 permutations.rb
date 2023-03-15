@@ -7,10 +7,11 @@ def permutations(s)
    s = s.chars
    ans =[]
    s.permutation(len) {|pm| ans << pm.join }
-   return ans
+   return ans.uniq
 end
 
 p permutations("aA")
+p permutations("aa")
 p permutations("")
 p permutations("BS")
 p permutations("Beryl")

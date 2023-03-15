@@ -15,9 +15,8 @@ def rev_vowels(s)
   return s
 end
 
-p rev_vowels("Neeraj")
-p rev_vowels("")
-p rev_vowels("Apple is Red")
-p rev_vowels("Apple")
-p rev_vowels("Beryl SYSTEMS")
-
+p rev_vowels("Neeraj")  # "Naerej"
+p rev_vowels("")  # ""
+p rev_vowels("Apple is Red")  # "eppli es RAd"
+p rev_vowels("Apple") # "epplA"
+p rev_vowels("Beryl SYSTEMS") # "BEryl SYSTeMS"
