@@ -2,7 +2,6 @@
 40. Write a function which takes year and returns how many Saturday 14ths there are in a given year.
 =end
 
-require 'date'
 
 def count_saturday_14th(y)
 	t= Date.new(y,1,14)
