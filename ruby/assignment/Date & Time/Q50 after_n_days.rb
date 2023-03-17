@@ -27,13 +27,20 @@ require 'date'
 #   return arr
 # end
 
-#<<<<Solution 2>>>>
+# #<<<<Solution 2>>>>
+# def after_n_days(arr,n)
+#   for i in 0...arr.length
+#     arr[i]=Date::DAYNAMES[(DateTime.parse(arr[i]).wday + n) %7]
+#   end
+#   return arr
+# end
+
+#<<<<Solution 3>>>>
 def after_n_days(arr,n)
   for i in 0...arr.length
-    arr[i]=Date::DAYNAMES[(DateTime.parse(arr[i]).wday + n) %7]
+    arr[i]=(DateTime.parse(arr[i]) + n).strftime('%A')
   end
   return arr
 end
-
 
 p after_n_days(["Thursday", "Monday"], 4) # ["Monday", "Friday"]
