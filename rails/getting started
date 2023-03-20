@@ -1,0 +1,329 @@
+###############	Getting Started	###############
+
+(1)===>    Install Rails at the command prompt if you haven't yet:
+
+     #=>$ gem install rails
+
+(2)===>    At the command prompt, create a new Rails application:
+
+     #=>$ rails new myapp
+
+    where "myapp" is the application name.
+
+(3)===>    Change directory to myapp and start the web server:
+
+     $ cd myapp
+     $ bin/rails server
+
+(4)===>    Run with --help or -h for options.
+
+    Go to http://localhost:3000 and you'll see the Rails bootscreen with your Rails and Ruby versions.
+
+___________________________________________________________________
+
+##########  Create New Rails Application from Scratch ##########
+(tutorial followed : https://www.youtube.com/playlist?list=PLSfx1NJkuWPWlVjFy5datW4Y-54ltIFw7)
+
+(1)===>	rails new hr-mitra
+(2)===>	cd hr-mitra
+(3)===>	bundle install
+(4)===>	rails server or rails s
+(5)===>	run website on local host : http://localhost:3000
+
+____________________________________________________________________
+###############	Creating Custom Controllers ###############
+
+//tutorial 7/41
+
+(1)===>	create a home_controller.rb (in app/controllers of project dir)
+
+(2)===>	in home_controller.rb
+class HomeController < ApplicationController #(home_controller to Camel Case)
+
+  def index	#===> Action Methods (they are used in routing)
+  end
+  
+  private
+  
+  def set_index	#===> Non Action methods (they are not used in routing and are declared as private for good practice)
+  end
+
+end
+
+(3)===>	in config/routes.rb
+
+Rails.application.routes.draw do
+
+	#routing
+  get 'home/index'  #===> from HomeController
+  or 
+  get '/home' => 'home#index'	#===>format: http_methd_name '/route_path' => 'controller_name#action_name' (method_name)
+  
+end
+
+#now you can browse the path localhost:3000/home/index
+
+
+(4)===>	in app/views folder
+#create home folder in app/views, which must same as controller name
+#cd home
+
+#in home folder
+create index.html.erb file 
+
+#file name is same as Action (method) define in HomeController Class
+
+<===(Questions)===>	
+
+()> What are controllers in Rails?
+The Rails controller is the logical center of your application. It coordinates the interaction between the user, the views, and the model.
+
+    It is responsible for routing external requests to internal actions. It handles people-friendly URLs extremely well.
+
+    It manages caching, which can give applications orders-of-magnitude performance boosts.
+
+    It manages helper modules, which extend the capabilities of the view templates without bulking up their code.
+
+    It manages sessions, giving users the impression of an ongoing interaction with our applications.
+_______________________________________
+
+()> How to create controller in Rails?
+```rails generate controller Book```
+
+# It creates a file called app/controllers/book_controller.rb
+
+#Notice that you are capitalizing Book and using the singular form. This is a Rails paradigm that you should follow each time you create a controller.
+_______________________________________
+
+()> How to define custom routes in Rails?
+
+In Rails, you can define custom routes to map URLs to specific controller actions using the routes.rb file in the config directory. Here are the steps to define custom routes:
+
+    1. Open config/routes.rb file in your Rails application.
+    2. Define the custom route using the get, post, put, patch, or delete method. For example, to create a custom route that maps the URL /hello to the greet action of the WelcomeController, you can use the following code:
+
+``` get '/hello', to: 'welcome#greet' ```
+
+#The first argument of the get method specifies the URL that you want to map, and the to option specifies the controller action that should handle the request.
+
+    3.You can also use dynamic segments in your custom routes by enclosing them in curly braces. For example, to create a custom route that maps the URL /posts/:id to the show action of the PostsController, you can use the following code:
+
+
+```get '/posts/:id', to: 'posts#show'```
+
+    4. You can use other HTTP verbs to create custom routes, for example, post, put, patch, and delete methods. For example, to create a custom route that maps the URL /posts to the create action of the PostsController, you can use the following code:
+
+```post '/posts', to: 'posts#create'```
+
+
+    5. You can also use the namespace and resources methods to create custom routes for nested resources and namespaced controllers.
+
+    6. After defining your custom routes, you can run rake routes command to see a list of all the routes in your Rails application, including the custom routes you just defined.
+______________________________________________________
+
+()> How to map a controller action to a view template?
+In Ruby on Rails, you can map a controller action to a view template by naming the view template after the action in a specific way.
+
+For example, if you have a PostsController with an action called index, you can map it to a view template called index.html.erb by default. Similarly, if you have an action called show, you can map it to a view template called show.html.erb
+
+______________________________________________________________
+()> What methods in a controller can be reffered as controller actions?
+
+In Ruby on Rails, a controller action is a public instance method of a controller that is responsible for handling a specific request from a client and rendering an appropriate response.
+
+The following methods in a controller can be referred to as controller actions:
+
+    Actions that handle HTTP GET requests:
+
+    index: Displays a collection of records.
+    show: Displays a specific record.
+    new: Displays a form for creating a new record.
+    edit: Displays a form for editing an existing record.
+
+    Actions that handle HTTP POST requests:
+
+    create: Creates a new record.
+    update: Updates an existing record.
+    destroy: Deletes an existing record.
+
+In addition to these common actions, you can also define custom actions in your controllers. These actions can perform any logic you want, but they must ultimately render a response to the client.
+
+Here's an example of a custom action:
+
+ruby
+
+class UsersController < ApplicationController
+  def activate
+    @user = User.find(params[:id])
+    @user.activate!
+    redirect_to root_path, notice: "User activated!"
+  end
+end
+
+In this example, the activate action activates a user account by setting the active flag to true. Once the account is activated, the action redirects the user to the root page with a notice message.
+
+When a request is made to a URL that corresponds to a controller action, Rails will automatically invoke the action and render the appropriate view template (if one exists) or respond with JSON or another format if the request was made with a non-HTML content type.
+____________________________________________________________________
+
+###############	Defining Custom Root Page and Adding Dynamic Data in html templates ###############
+
+(1)===>	in config/routes.rb
+
+Rails.application.routes.draw do
+
+  root 'home#index'	 #=> root path must be a get type action
+
+end
+
+
+(2)===>	Adding dynamic data in home controller
+
+#in home_controller.rb
+class HomeController < ApplicationController 
+
+  def index
+    @title_text = 'Hello World!'
+    @subtitle_text = 'I am learning Rails'
+  end
+
+end
+
+(3)===>	Adding dynamic data in index file
+<h1>	<%= @title_text %>	</h1>
+<p>	<%= @subtitle_text %>	</p>
+____________________________________________________________________
+
+############ Creating Controller using Rails Generators ############
+
+()===>	
+
+rails generate controller pages about_us contact_us privacy_policy terms_and_conditions
+
+##=> rails generate controller ARG1 ARG2[OPTIONAL]
+#ARG1== CONTROLLER_NAME => pages
+#ARG2 (optional) == ACTIONS => about_us contact_us privacy_policy terms_and_conditions
+
+##=> this command will do the following changes:
+1) create controller with name "pages" and actions defined with name "about_us contact_us privacy_policy terms_and_conditions"
+
+2) make html.erb file of "about_us contact_us privacy_policy terms_and_conditions" in app/views/pages 
+
+3) add get http request (by default) of " about_us contact_us privacy_policy terms_and_conditions" in routes.rb
+
+
+##===>	Edit the routes as per good practice for routes.
+
+==>
+beryl@beryl-HP-ProBook-6560b:~/Neeraj/Training/rails/projects/hr-mitra$ rails generate controller pages about_us contact_us privacy_policy terms_and_conditions
+      create  app/controllers/pages_controller.rb
+       route  get 'pages/about_us'
+              get 'pages/contact_us'
+              get 'pages/privacy_policy'
+              get 'pages/terms_and_conditions'
+      invoke  erb
+      create    app/views/pages
+      create    app/views/pages/about_us.html.erb
+      create    app/views/pages/contact_us.html.erb
+      create    app/views/pages/privacy_policy.html.erb
+      create    app/views/pages/terms_and_conditions.html.erb
+      invoke  test_unit
+      create    test/controllers/pages_controller_test.rb
+      invoke  helper
+      create    app/helpers/pages_helper.rb
+      invoke    test_unit
+      
+____________________________________________________________________
+
+###############	Working with link_to helpers	###############
+
+(1)===> adding link in html.erb files
+
+//in about_us.html.erb
+
+<h1>	<%= @title_text %>	</h1>
+<p>	<%= @subtitle_text %>	</p>
+
+<%= link_to 'About Us', about_path %>   
+(#== since route name is 'about' in routes.rb thats why mentions 'about_path' )
+(#== 'About Us' is the text name of the link)
+(#== it will convert to code --> <a href="/about">About Us</a> )
+or
+<%= link_to 'About Us', controller: :pages, action: :about_us %>
+(#== it will convert to code --> <a href="/about">About Us</a> )
+or
+<%= link_to 'About Us', '/about' %>
+(#== it will convert to code --> <a href="/about">About Us</a> )
+or
+<%= link_to nil, about_path %>
+(#== it will convert to code --> <a href="/about"></a> ) or
+(#== it will convert to code -->/about <a href="/about"></a> )
+or
+<%= link_to 'About Us', about_path, target: '_blank', data:{name: 'about-page', resource: 'pages'} %> 
+(#== it will convert to code --> <a target="_blank" data-name="about-page" data-resources="pages" href="/about">About Us</a> )
+or
+<%= link_to 'HR-Mitra', root_path, class: 'navbar-brand' %> 
+
+____________________________________________________________________
+
+############## Using Partials to Refactor Rails Views ##############
+
+(1)===>	create 'shared' directory in view folder
+(2)===> create '_links.html.erb' file in shared folder
+(## html.erb files with name starting with '_' signifies it is a Partial file)
+
+(3)===>
+``` <%= render 'shared/links' %> ```
+
+##add above lines in the links wherever we want to use the '_links.html.erb' partial
+____________________________________________________________________
+
+########## Add Bootstrap 5 to Rails Application using CDN ##########
+
+(1)===>	Add bootstrap cdn link at "app/views/layouts" in
+'application.html.erb' file 
+
+#at place similar to what we do in HTML file
+# between <head></head> tag, close to the closing </head> tag
+
+(2)===>	Add bootstrap js script cdn link at "app/views/layouts" in
+'application.html.erb' file 
+
+#at place similar to what we do in HTML file
+# between <body></body> tag, close to the closing </body> tag
+
+(3)===> Create Header using Partial and Bootstrap
+// create '_header.html.erb' in 'shared' folder.
+//in header partial paste the navigation bar code from bootstrap.
+
+
+(4)===> Add render partial code in 'application.html.erb' 
+<!Doctype html>
+...
+..
+.
+<body>
+
+```<%= render 'shared/header' %>```
+
+<% yield %>
+...
+..
+.
+	
+
+##===> 	<% yield %> is containing all the rendering part including controllers, actions etc.
+
+
+HW===> Similary	Add Footer also
+____________________________________________________________________
+
+//continue from lecture 14/41
+###############	Getting Started	###############
+
+()===>	
+
+###############	Getting Started	###############
+
+()===>	
+
+
