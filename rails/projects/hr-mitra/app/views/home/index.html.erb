@@ -1,3 +1,7 @@
 <h1>	<%= @title_text %>	</h1>
 <p>	<%= @subtitle_text %>	</p>
 <h2> I am	<%= @page_name %>	page </h2>
+<%= link_to 'About Us', about_us_path, target: '_blank' %>   
+<%= link_to 'Contact Us', controller: :pages, action: :contact_us %>   
+<%= link_to 'Privacy Policy', privacy_policy_path , class: 'navbar-brand'%>   
+<%= link_to 'Terms and Conditions', terms_and_conditions_path, data: {name: 'terms and conditions ', resources: 'pages'} %>   
