@@ -1,0 +1,301 @@
+What is Rails?
+Rails is a web application development framework written in the Ruby programming language.
+
+The Rails philosophy includes two major guiding principles:
+
+    Don't Repeat Yourself
+    Convention Over Configuration
+_____________________________________________________________________
+
+################## Creating a New Rails Project ##################
+
+(0)--> Install RVM
+(1)--> Install Ruby
+(2)--> Install PostgreSQL
+(3)--> Install Rails
+
+``` gem install rails ```
+
+version check = rails --version
+
+(4)--> ``` rails new blog ```
+#This will create a Rails application called Blog in a blog directory and install the gem dependencies
+
+(5)--> After you create the blog application, switch to its folder:
+``` cd blog ```
+
+<-------------------------------###--------------------------------> 
+
+The blog directory will have a number of generated files and folders that make up the structure of a Rails application. Most of the work in this tutorial will happen in the app folder, but here's a basic rundown on the function of each of the files and folders that Rails creates by default:
+
+File/Folder  ==>	Purpose
+
+(*) app/ ==>		Contains the controllers, models, views, helpers, mailers, channels, jobs, and assets for your application. 
+
+(*) bin/ ==>		Contains the rails script that starts your app and can contain other scripts you use to set up, update, deploy, or run your application.
+
+(*) config/  ==>	Contains configuration for your application's routes, database, and more. This is covered in more detail in Configuring Rails Applications.
+
+(*) config.ru   ==>		Rack configuration for Rack-based servers used to start the application. For more information about Rack, see the Rack website.
+
+(*) db/	==>	Contains your current database schema, as well as the database migrations.
+____________________________________________________________________
+
+(*) Gemfile	Gemfile.lock   ==>	These files allow you to specify what gem dependencies are needed for your Rails application. These files are used by the Bundler gem. For more information about Bundler, see the Bundler website.
+
+(*) lib/ 	==>	Extended modules for your application.
+
+(*) log/ 	==>	Application log files.
+
+(*) public/ 	==>	Contains static files and compiled assets. When your app is running, this directory will be exposed as-is.
+
+(*) Rakefile 	==>	This file locates and loads tasks that can be run from the command line. The task definitions are defined throughout the components of Rails. Rather than changing Rakefile, you should add your own tasks by adding files to the lib/tasks directory of your application.
+
+(*) README.md 	==>	This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on.
+
+(*) storage/ 	==>	Active Storage files for Disk Service. This is covered in Active Storage Overview.
+
+(*) test/ 	==>	Unit tests, fixtures, and other test apparatus. These are covered in Testing Rails Applications.
+
+(*) tmp/ 	==>	Temporary files (like cache and pid files).
+
+(*) vendor/ 	==>	A place for all third-party code. In a typical Rails application this includes vendored gems.
+
+(*) .gitattributes 	==>	This file defines metadata for specific paths in a git repository. This metadata can be used by git and other tools to enhance their behavior. See the gitattributes documentation for more information.
+
+(*) .gitignore 	==>	This file tells git which files (or patterns) it should ignore. See GitHub - Ignoring files for more information about ignoring files.
+
+(*) .ruby-version 	==>	This file contains the default Ruby version.
+
+_____________________________________________________________________
+
+################## Starting up the Web Server ##################
+(1)--> bin/rails server
+#When you want to stop the web server, hit Ctrl+C in the terminal window where it's running.
+
+(2)--> in config/routes.rb
+
+Rails.application.routes.draw do
+  get "/articles", to: "articles#index"
+
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+end
+
+___________
+##The route above declares that GET /articles requests are mapped to the index action of ArticlesController.
+
+(3)--> Create Controller
+To create ArticlesController and its index action, we'll run the controller generator (with the --skip-routes option because we already have an appropriate route):
+
+```bin/rails generate controller Articles index --skip-routes```
+
+__________________________________________
+##Rails will create several files for you:
+create  app/controllers/articles_controller.rb
+invoke  erb
+create    app/views/articles
+create    app/views/articles/index.html.erb
+invoke  test_unit
+create    test/controllers/articles_controller_test.rb
+invoke  helper
+create    app/helpers/articles_helper.rb
+invoke    test_unit
+
+ 
+(4)--> Open  app/controllers/articles_controller.rb
+
+class ArticlesController < ApplicationController
+  def index
+  end
+end
+__________________
+##The index action is empty. 
+When an action does not explicitly render a view (or otherwise trigger an HTTP response), Rails will automatically render a view that matches the name of the controller and action. 
+
+Convention Over Configuration! Views are located in the app/views directory. So the index action will render app/views/articles/index.html.erb by default.
+
+(5)--> Open app/views/articles/index.html.erb, and replace its contents with:
+
+<h1>Hello, Rails!</h1>
+
+(6)--> Setting the Application Home Page
+
+//open config/routes.rb 
+Rails.application.routes.draw do
+  root "articles#index"
+
+  get "/articles", to: "articles#index"
+end
+ 
+(7)--> Start the server or refresh the page
+
+_____________________________________________________________________
+
+################## Autoloading ##################
+Rails applications do not use require to load application code.
+
+Application classes and modules are available everywhere, you do not need and should not load anything under app with require. This feature is called autoloading
+
+You only need require calls for two use cases:
+
+    To load files under the lib directory.
+    To load gem dependencies that have require: false in the Gemfile.
+
+_____________________________________________________________________
+
+################## MVC (Model-View-Controller) ##################
+MVC is a design pattern that divides the responsibilities of an application to make it easier to reason about. Rails follows this design pattern by convention.
+
+(1)--> Generating a Model : 
+A model is a Ruby class that is used to represent data. Additionally, models can interact with the application's database through a feature of Rails called Active Record.
+
+To define a model, we will use the model generator:
+
+	```bin/rails generate model Article title:string body:text```
+_______________________________
+This will create several files:
+
+invoke  active_record
+create    db/migrate/<timestamp>_create_articles.rb
+create    app/models/article.rb
+invoke    test_unit
+create      test/models/article_test.rb
+create      test/fixtures/articles.yml
+
+
+(2)--> Database Migrations
+Migrations are used to alter the structure of an application's database.
+
+Let's take a look at the contents of our new migration file:
+
+class CreateArticles < ActiveRecord::Migration[7.0]
+  def change
+    create_table :articles do |t|
+      t.string :title
+      t.text :body
+
+      t.timestamps
+    end
+  end
+end
+
+______________________________
+##By default, the create_table method adds an id column as an auto-incrementing primary key
+
+## Inside the block for create_table, two columns are defined: title and body. These were added by the generator because we included them in our generate command (bin/rails generate model Article title:string body:text).
+
+##On the last line of the block is a call to t.timestamps. This method defines two additional columns named created_at and updated_at.
+
+(3)--> Let's run our migration with the following command:
+
+``` bin/rails db:migrate ```
+
+_____________________
+## The command will display output indicating that the table was created:
+==  CreateArticles: migrating ===================================
+-- create_table(:articles)
+   -> 0.0018s
+==  CreateArticles: migrated (0.0018s) ==========================
+
+
+(4)--> Using a Model to Interact with the Database
+To play with our model a bit, we're going to use a feature of Rails called the console. The console is an interactive coding environment just like irb, but it also automatically loads Rails and our application code.
+
+_______________
+Let's launch the console with this command:
+$ bin/rails console
+
+_______________
+At this prompt, we can initialize a new Article object:
+irb> article = Article.new(title: "Hello Rails", body: "I am on Rails!")
+
+______________
+It's important to note that we have only initialized this object. This object is not saved to the database at all. It's only available in the console at the moment. To save the object to the database, we must call save:
+
+irb> article.save
+(0.1ms)  begin transaction
+Article Create (0.4ms)  INSERT INTO "articles" ("title", "body", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["title", "Hello Rails"], ["body", "I am on Rails!"], ["created_at", "2020-01-18 23:47:30.734416"], ["updated_at", "2020-01-18 23:47:30.734416"]]
+(0.9ms)  commit transaction
+=> true
+______________
+irb> article
+=> #<Article id: 1, title: "Hello Rails", body: "I am on Rails!", created_at: "2020-01-18 23:47:30", updated_at: "2020-01-18 23:47:30">
+
+ The id, created_at, and updated_at attributes of the object are now set. Rails did this for us when we saved the object.
+______________
+When we want to fetch this article from the database, we can call find on the model and pass the id as an argument:
+
+irb> Article.find(1)
+=> #<Article id: 1, title: "Hello Rails", body: "I am on Rails!", created_at: "2020-01-18 23:47:30", updated_at: "2020-01-18 23:47:30">
+______________
+And when we want to fetch all articles from the database, we can call all on the model:
+
+irb> Article.all
+=> #<ActiveRecord::Relation [#<Article id: 1, title: "Hello Rails", body: "I am on Rails!", created_at: "2020-01-18 23:47:30", updated_at: "2020-01-18 23:47:30">]>
+______________
+
+
+(5)--> Showing a List of Articles
+
+// in app/controllers/articles_controller.rb,and change the index action to fetch all articles from the database:
+
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+end
+______________
+
+(6)--> edit index.html.erb
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+    <li>
+      <%= article.title %>
+    </li>
+  <% end %>
+</ul>
+______________
+## The above code is a mixture of HTML and ERB. 
+ERB is a templating system that evaluates Ruby code embedded in a document. 
+Here, we can see two types of ERB tags: <% %> and <%= %>. 
+
+The <% %> tag means "evaluate the enclosed Ruby code." 
+
+The <%= %> tag means "evaluate the enclosed Ruby code, and output the value it returns." Anything you could write in a regular Ruby program can go inside these ERB tags, though it's usually best to keep the contents of ERB tags short, for readability.
+
+## Since we don't want to output the value returned by @articles.each, we've enclosed that code in <% %>. But, since we do want to output the value returned by article.title (for each article), we've enclosed that code in <%= %>.
+
+
+(7)--> Restart Server or Reload
+
+<--()--> 
+We can see the final result by visiting http://localhost:3000. (Remember that bin/rails server must be running!) Here's what happens when we do that:
+
+   1. The browser makes a request: GET http://localhost:3000.
+   2. Our Rails application receives this request.
+   3. The Rails router maps the root route to the index action of ArticlesController.
+   4. The index action uses the Article model to fetch all articles in the database.
+   5. Rails automatically renders the app/views/articles/index.html.erb view.
+   6. The ERB code in the view is evaluated to output HTML.
+   7. The server sends a response containing the HTML back to the browser.
+____________________________________________________________________
+
+##################  ##################
+
+()--> 
+()--> 
+()--> _____________________________________________________________________
+
+##################  ##################
+
+()--> 
+()--> 
+()--> _____________________________________________________________________
+
+##################  ##################
+
+()--> 
+()--> 
+()--> 
