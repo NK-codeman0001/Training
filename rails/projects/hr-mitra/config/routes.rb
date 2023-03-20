@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
-  get 'pages/about_us'
-  get 'pages/contact_us'
-  get 'pages/privacy_policy'
-  get 'pages/terms_and_conditions'
-  get '/home' => 'home#index'
+  root 'home#index'
+  get '/about-us' => 'pages#about_us'
+  get '/contact-us' => 'pages#contact_us'
+  get '/privacy-policy' => 'pages#privacy_policy'
+  get '/terms-and-conditions' => 'pages#terms_and_conditions'
+  
 end
