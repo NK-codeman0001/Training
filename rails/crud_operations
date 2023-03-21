@@ -1,0 +1,515 @@
+	 CRUD (Create, Read, Update, and Delete) operations. 
+____________________________________________________________________
+
+################## Showing a Single Article ##################
+
+(1)--> We start by adding a new route that maps to a new controller action (which we will add next). Open config/routes.rb, and insert the last route shown here:
+
+Rails.application.routes.draw do
+  root "articles#index"
+-----------------
+  get "/articles", to: "articles#index"
+  get "/articles/:id", to: "articles#show"
+-----------------
+end
+
+##The new route is another get route, but it has something extra in its path: :id. This designates a route parameter.
+
+## when handling a request like GET http://localhost:3000/articles/1, 1 would be captured as the value for :id, which would then be accessible as params[:id] in the show action of ArticlesController.
+
+
+(2)--> Let's add that show action now, below the index action in app/controllers/articles_controller.rb:
+
+class ArticlesController < ApplicationController
+-----------------
+  def index
+    @articles = Article.all
+  end
+
+  def show
+    @article = Article.find(params[:id])
+  end
+-----------------
+end
+
+## The show action calls Article.find (mentioned previously) with the ID captured by the route parameter. The returned article is stored in the @article instance variable, so it is accessible by the view. By default, the show action will render app/views/articles/show.html.erb.
+
+(3)--> Let's create app/views/articles/show.html.erb, with the following contents:
+-----------------
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+-----------------
+## Now we can see the article when we visit http://localhost:3000/articles/1
+
+
+(4)--> To finish up, let's add a convenient way to get to an article's page. We'll link each article's title in app/views/articles/index.html.erb to its page:
+-----------------
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+    <li>
+      <a href="/articles/<%= article.id %>">
+        <%= article.title %>
+      </a>
+    </li>
+  <% end %>
+</ul>
+-----------------
+
+_____________________________________________________________________
+
+################## Resourceful Routing ##################
+Whenever we have such a combination of routes, controller actions, and views that work together to perform CRUD operations on an entity, we call that entity a resource. For example, in our application, we would say an article is a resource.
+
+Rails provides a routes method named resources that maps all of the conventional routes for a collection of resources, such as articles.
+
+(1)--> let's replace the two get routes in config/routes.rb with resources:
+
+Rails.application.routes.draw do
+  root "articles#index"
+-----------------
+  resources :articles
+-----------------
+end
+
+##()==> We can inspect what routes are mapped by running the ```bin/rails routes``` command.
+
+$ bin/rails routes
+      Prefix Verb   URI Pattern                  Controller#Action
+        root GET    /                            articles#index
+    articles GET    /articles(.:format)          articles#index
+ new_article GET    /articles/new(.:format)      articles#new
+     article GET    /articles/:id(.:format)      articles#show
+             POST   /articles(.:format)          articles#create
+edit_article GET    /articles/:id/edit(.:format) articles#edit
+             PATCH  /articles/:id(.:format)      articles#update
+             DELETE /articles/:id(.:format)      articles#destroy
+
+(2)-->  in app/views/articles/index.html.erb:
+-----------------
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+    <li>
+      <a href="<%= article_path(article) %>">
+        <%= article.title %>
+      </a>
+    </li>
+  <% end %>
+</ul>
+-----------------
+
+(3)--> using the link_to helper
+//in app/views/articles/index.html.erb
+
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+    <li>
+      <%= link_to article.title, article %>
+    </li>
+  <% end %>
+</ul>
+
+_____________________________________________________________________
+
+################## Creating a New Article ##################
+In a Rails application, these steps are conventionally handled by a controller's new and create actions.
+
+(1)--> Let's add a typical implementation of these actions to app/controllers/articles_controller.rb, below the show action:
+
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+
+  def show
+    @article = Article.find(params[:id])
+  end
+-----------------
+  def new
+    @article = Article.new
+  end
+
+  def create
+    @article = Article.new(title: "...", body: "...")
+
+    if @article.save
+      redirect_to @article
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+-----------------
+end
+
+##The new action instantiates a new article, but does not save it. This article will be used in the view when building the form. By default, the new action will render app/views/articles/new.html.erb, which we will create next.
+
+##The create action instantiates a new article with values for the title and body, and attempts to save it. If the article is saved successfully, the action redirects the browser to the article's page at "http://localhost:3000/articles/#{@article.id}". Else, the action redisplays the form by rendering app/views/articles/new.html.erb with status code 422 Unprocessable Entity. The title and body here are dummy values. After we create the form, we will come back and change these.
+
+(2)--> Using a Form Builder
+We will use a feature of Rails called a form builder to create our form. Using a form builder, we can write a minimal amount of code to output a form that is fully configured and follows Rails conventions.
+
+Let's create app/views/articles/new.html.erb with the following contents:
+-----------------
+<h1>New Article</h1>
+
+<%= form_with model: @article do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+-----------------
+## The form_with helper method instantiates a form builder. In the form_with block we call methods like label and text_field on the form builder to output the appropriate form elements.
+
+##The resulting output from our form_with call will look like:
+
+<form action="/articles" accept-charset="UTF-8" method="post">
+  <input type="hidden" name="authenticity_token" value="...">
+
+  <div>
+    <label for="article_title">Title</label><br>
+    <input type="text" name="article[title]" id="article_title">
+  </div>
+
+  <div>
+    <label for="article_body">Body</label><br>
+    <textarea name="article[body]" id="article_body"></textarea>
+  </div>
+
+  <div>
+    <input type="submit" name="commit" value="Create Article" data-disable-with="Create Article">
+  </div>
+</form>
+
+
+(3)--> Using Strong Parameters
+Submitted form data is put into the params Hash, alongside captured route parameters. Thus, the create action can access the submitted title via params[:article][:title] and the submitted body via params[:article][:body]. We could pass these values individually to Article.new, but that would be verbose and possibly error-prone. And it would become worse as we add more fields.
+
+Instead, we will pass a single Hash that contains the values. However, we must still specify what values are allowed in that Hash. Otherwise, a malicious user could potentially submit extra form fields and overwrite private data. In fact, if we pass the unfiltered params[:article] Hash directly to Article.new, Rails will raise a ForbiddenAttributesError to alert us about the problem. So we will use a feature of Rails called Strong Parameters to filter params. Think of it as strong typing for params.
+
+Let's add a private method to the bottom of app/controllers/articles_controller.rb named article_params that filters params. And let's change create to use it:
+
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+
+  def show
+    @article = Article.find(params[:id])
+  end
+
+  def new
+    @article = Article.new
+  end
+
+  def create
+    @article = Article.new(article_params)
+
+    if @article.save
+      redirect_to @article
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+-----------------
+  private
+    def article_params
+      params.require(:article).permit(:title, :body)
+    end
+-----------------
+end
+
+
+(4)--> Validations and Displaying Error Messages
+Rails provides a feature called validations to help us deal with invalid user input. Validations are rules that are checked before a model object is saved. 
+If any of the checks fail, the save will be aborted, and appropriate error messages will be added to the errors attribute of the model object.
+
+Let's add some validations to our model in app/models/article.rb:
+
+class Article < ApplicationRecord
+  validates :title, presence: true
+  validates :body, presence: true, length: { minimum: 10 }
+end
+
+##The first validation declares that a title value must be present. Because title is a string, this means that the title value must contain at least one non-whitespace character.
+
+##The second validation declares that a body value must also be present. Additionally, it declares that the body value must be at least 10 characters long.
+
+(5)--> modify app/views/articles/new.html.erb to display any error messages for title and body:
+
+<h1>New Article</h1>
+
+<%= form_with model: @article do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+    -----------------
+    <% @article.errors.full_messages_for(:title).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+    -----------------
+  </div>
+
+  <div>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %><br>
+    -----------------
+    <% @article.errors.full_messages_for(:body).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+    -----------------
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+
+## The full_messages_for method returns an array of user-friendly error messages for a specified attribute. If there are no errors for that attribute, the array will be empty.
+
+
+(6)--> When we visit http://localhost:3000/articles/new, the GET /articles/new request is mapped to the new action. The new action does not attempt to save @article. Therefore, validations are not checked, and there will be no error messages.
+
+When we submit the form, the POST /articles request is mapped to the create action. The create action does attempt to save @article. Therefore, validations are checked. If any validation fails, @article will not be saved, and app/views/articles/new.html.erb will be rendered with error messages.
+
+(7)--> Finishing Up
+
+We can now create an article by visiting http://localhost:3000/articles/new. To finish up, let's link to that page from the bottom of app/views/articles/index.html.erb:
+
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+    <li>
+      <%= link_to article.title, article %>
+    </li>
+  <% end %>
+</ul>
+-----------------
+<%= link_to "New Article", new_article_path %>
+-----------------
+_____________________________________________________________________
+
+################## Updating an Article ##################
+Updating a resource is very similar to creating a resource. They are both multi-step processes. First, the user requests a form to edit the data. Then, the user submits the form. If there are no errors, then the resource is updated. Else, the form is redisplayed with error messages, and the process is repeated.
+
+These steps are conventionally handled by a controller's edit and update actions.
+
+(1)--> add a typical implementation of these actions to app/controllers/articles_controller.rb, below the create action:
+
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+
+  def show
+    @article = Article.find(params[:id])
+  end
+
+  def new
+    @article = Article.new
+  end
+
+  def create
+    @article = Article.new(article_params)
+
+    if @article.save
+      redirect_to @article
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+-----------------
+  def edit
+    @article = Article.find(params[:id])
+  end
+
+  def update
+    @article = Article.find(params[:id])
+
+    if @article.update(article_params)
+      redirect_to @article
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+----------------
+  private
+    def article_params
+      params.require(:article).permit(:title, :body)
+    end
+end
+
+##Notice how the edit and update actions resemble the new and create actions.
+
+##The edit action fetches the article from the database, and stores it in @article so that it can be used when building the form. By default, the edit action will render app/views/articles/edit.html.erb.
+
+##The update action (re-)fetches the article from the database, and attempts to update it with the submitted form data filtered by article_params. If no validations fail and the update is successful, the action redirects the browser to the article's page. Else, the action redisplays the form — with error messages — by rendering app/views/articles/edit.html.erb.
+
+(2)--> Using Partials to Share View Code
+Our edit form will look the same as our new form.
+Because the code will be the same, we're going to factor it out into a shared view called a partial. 
+
+Let's create app/views/articles/_form.html.erb with the following contents:
+-----------------------
+<%= form_with model: article do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+    <% article.errors.full_messages_for(:title).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %><br>
+    <% article.errors.full_messages_for(:body).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+-----------------------
+
+##The above code is the same as our form in app/views/articles/new.html.erb, except that all occurrences of @article have been replaced with article. Because partials are shared code, it is best practice that they do not depend on specific instance variables set by a controller action. Instead, we will pass the article to the partial as a local variable.
+
+
+(3)--> Let's update app/views/articles/new.html.erb to use the partial via render:
+
+
+<h1>New Article</h1>
+----------------
+<%= render "form", article: @article %>
+----------------
+
+(4)--> et's create a very similar app/views/articles/edit.html.erb:
+
+<h1>Edit Article</h1>
+----------------
+<%= render "form", article: @article %>
+----------------
+
+(5)--> Finishing Up
+We can now update an article by visiting its edit page, e.g. http://localhost:3000/articles/1/edit. To finish up, let's link to the edit page from the bottom of app/views/articles/show.html.erb:
+
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+----------------
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+</ul>
+----------------
+__________________________________________________________________
+
+################## Deleting an Article ##################
+Deleting a resource is a simpler process than creating or updating. It only requires a route and a controller action. And our resourceful routing (resources :articles) already provides the route, which maps DELETE /articles/:id requests to the destroy action of ArticlesController.
+
+(1)--> let's add a typical destroy action to app/controllers/articles_controller.rb, below the update action:
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+
+  def show
+    @article = Article.find(params[:id])
+  end
+
+  def new
+    @article = Article.new
+  end
+
+  def create
+    @article = Article.new(article_params)
+
+    if @article.save
+      redirect_to @article
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    @article = Article.find(params[:id])
+  end
+
+  def update
+    @article = Article.find(params[:id])
+
+    if @article.update(article_params)
+      redirect_to @article
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+-----------------
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+
+    redirect_to root_path, status: :see_other
+  end
+----------------
+  private
+    def article_params
+      params.require(:article).permit(:title, :body)
+    end
+end
+
+
+##The destroy action fetches the article from the database, and calls destroy on it. Then, it redirects the browser to the root path with status code 303 See Other.
+
+(2)--> Now let's add a link at the bottom of app/views/articles/show.html.erb so that we can delete an article from its own page:
+
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+--------------------------------
+  <li><%= link_to "Destroy", article_path(@article), data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Are you sure?"
+                  } %></li>
+--------------------------------                  
+</ul>
+
+##In the above code, we use the data option to set the data-turbo-method and data-turbo-confirm HTML attributes of the "Destroy" link. Both of these attributes hook into Turbo, which is included by default in fresh Rails applications. data-turbo-method="delete" will cause the link to make a DELETE request instead of a GET request. data-turbo-confirm="Are you sure?" will cause a confirmation dialog to appear when the link is clicked. If the user cancels the dialog, the request will be aborted.
+_____________________________________________________________________
+
+##################  ##################
+
+()--> 
+()--> 
+()--> 
+
+_____________________________________________________________________
+
+##################  ##################
+
+()--> 
+()--> 
+()--> 
+
+
