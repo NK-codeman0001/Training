@@ -282,20 +282,604 @@ We can see the final result by visiting http://localhost:3000. (Remember that bi
    7. The server sends a response containing the HTML back to the browser.
 ____________________________________________________________________
 
-##################  ##################
+		ALSO READ CRUD NOTES BEFORE THAT
+____________________________________________________________________
 
-()--> 
-()--> 
-()--> _____________________________________________________________________
+################## Adding a Second Model ##################
 
-##################  ##################
+(1)--> Generating a Model
 
-()--> 
-()--> 
-()--> _____________________________________________________________________
+```
+bin/rails generate model Comment commenter:string body:text article:references
 
-##################  ##################
+```
 
-()--> 
-()--> 
-()--> 
+(2)--> ake a look at app/models/comment.rb:
+
+class Comment < ApplicationRecord
+  belongs_to :article
+end
+
+##The (:references) keyword used in the shell command is a special data type for models. It creates a new column on your database table with the provided model name appended with an _id that can hold integer values. To get a better understanding, analyze the db/schema.rb file after running the migration.
+
+
+(3)--> In addition to the model, Rails has also made a migration to create the corresponding database table:
+
+class CreateComments < ActiveRecord::Migration[7.0]
+  def change
+    create_table :comments do |t|
+      t.string :commenter
+      t.text :body
+      t.references :article, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+
+##The t.references line creates an integer column called article_id, an index for it, and a foreign key constraint that points to the id column of the articles table. 
+
+
+(4)--> Go ahead and run the migration:
+```
+bin/rails db:migrate
+
+```
+## Rails is smart enough to only execute the migrations that have not already been run against the current database.
+
+(5)--> Associating Models
+
+Active Record associations let you easily declare the relationship between two models. In the case of comments and articles, you could write out the relationships this way:
+
+    Each comment belongs to one article.
+    One article can have many comments.
+
+In fact, this is very close to the syntax that Rails uses to declare this association. You've already seen the line of code inside the Comment model (app/models/comment.rb) that makes each comment belong to an Article:
+
+class Comment < ApplicationRecord
+  belongs_to :article
+end
+
+
+(6)--> You'll need to edit app/models/article.rb to add the other side of the association:
+
+class Article < ApplicationRecord
+---------
+  has_many :comments
+---------
+  validates :title, presence: true
+  validates :body, presence: true, length: { minimum: 10 }
+end
+
+
+(7)--> Adding a Route for Comments
+As with the articles controller, we will need to add a route so that Rails knows where we would like to navigate to see comments.
+
+Open up the config/routes.rb file again, and edit it as follows:
+
+Rails.application.routes.draw do
+  root "articles#index"
+--------
+  resources :articles do
+    resources :comments
+  end
+--------
+end
+
+##This creates comments as a nested resource within articles. This is another part of capturing the hierarchical relationship that exists between articles and comments.
+
+
+(8)--> Generating a Controller
+
+```
+bin/rails generate controller Comments
+
+```
+
+(9)--> we'll wire up the Article show template (app/views/articles/show.html.erb) to let us make a new comment:
+
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+  <li><%= link_to "Destroy", article_path(@article), data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Are you sure?"
+                  } %></li>
+</ul>
+------------
+<h2>Add a comment:</h2>
+<%= form_with model: [ @article, @article.comments.build ] do |form| %>
+  <p>
+    <%= form.label :commenter %><br>
+    <%= form.text_field :commenter %>
+  </p>
+  <p>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </p>
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
+------------
+
+##This adds a form on the Article show page that creates a new comment by calling the CommentsController create action. The form_with call here uses an array, which will build a nested route, such as /articles/1/comments.
+
+
+(10)--> Let's wire up the create in app/controllers/comments_controller.rb:
+
+
+class CommentsController < ApplicationController
+  def create
+    @article = Article.find(params[:article_id])
+    @comment = @article.comments.create(comment_params)
+    redirect_to article_path(@article)
+  end
+
+  private
+    def comment_params
+      params.require(:comment).permit(:commenter, :body)
+    end
+end
+
+##Each request for a comment has to keep track of the article to which the comment is attached, thus the initial call to the find method of the Article model to get the article in question.
+
+##In addition, the code takes advantage of some of the methods available for an association. We use the create method on @article.comments to create and save the comment. This will automatically link the comment so that it belongs to that particular article.
+
+(11)--> so let's add that to the app/views/articles/show.html.erb.
+Once we have made the new comment, we send the user back to the original article using the article_path(@article) helper. As we have already seen, this calls the show action of the ArticlesController which in turn renders the show.html.erb template. This is where we want the comment to show, so let's add that to the app/views/articles/show.html.erb.
+
+
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+  <li><%= link_to "Destroy", article_path(@article), data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Are you sure?"
+                  } %></li>
+</ul>
+-----------
+<h2>Comments</h2>
+<% @article.comments.each do |comment| %>
+  <p>
+    <strong>Commenter:</strong>
+    <%= comment.commenter %>
+  </p>
+
+  <p>
+    <strong>Comment:</strong>
+    <%= comment.body %>
+  </p>
+<% end %>
+------------
+<h2>Add a comment:</h2>
+<%= form_with model: [ @article, @article.comments.build ] do |form| %>
+  <p>
+    <%= form.label :commenter %><br>
+    <%= form.text_field :commenter %>
+  </p>
+  <p>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </p>
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
+
+____________________________________________________________________
+
+################## Refactoring ##################
+Now that we have articles and comments working, take a look at the app/views/articles/show.html.erb template. It is getting long and awkward. We can use partials to clean it up.
+
+(1)--> Rendering Partial Collections
+we will make a comment partial to extract showing all the comments for the article. Create the file app/views/comments/_comment.html.erb and put the following into it:
+
+<p>
+  <strong>Commenter:</strong>
+  <%= comment.commenter %>
+</p>
+
+<p>
+  <strong>Comment:</strong>
+  <%= comment.body %>
+</p>
+
+
+(2)--> Then you can change app/views/articles/show.html.erb to look like the following:
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+  <li><%= link_to "Destroy", article_path(@article), data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Are you sure?"
+                  } %></li>
+</ul>
+
+<h2>Comments</h2>
+----------
+<%= render @article.comments %>
+----------
+<h2>Add a comment:</h2>
+<%= form_with model: [ @article, @article.comments.build ] do |form| %>
+  <p>
+    <%= form.label :commenter %><br>
+    <%= form.text_field :commenter %>
+  </p>
+  <p>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </p>
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
+
+
+(3)--> Rendering a Partial Form
+create a file app/views/comments/_form.html.erb containing:
+
+<%= form_with model: [ @article, @article.comments.build ] do |form| %>
+  <p>
+    <%= form.label :commenter %><br>
+    <%= form.text_field :commenter %>
+  </p>
+  <p>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </p>
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
+
+
+(4)--> Then you make the app/views/articles/show.html.erb look like the following:
+
+<h1><%= @article.title %></h1>
+
+<p><%= @article.body %></p>
+
+<ul>
+  <li><%= link_to "Edit", edit_article_path(@article) %></li>
+  <li><%= link_to "Destroy", article_path(@article), data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Are you sure?"
+                  } %></li>
+</ul>
+
+<h2>Comments</h2>
+<%= render @article.comments %>
+
+<h2>Add a comment:</h2>
+---------
+<%= render 'comments/form' %>
+---------
+____________________________________________________________________
+
+################## Using Concerns ##################
+
+(1)-->First, let's run the following migrations to add status to Articles and Comments:
+
+$ bin/rails generate migration AddStatusToArticles status:string
+$ bin/rails generate migration AddStatusToComments status:string
+
+
+(2)--> next, let's update the database with the generated migrations:
+
+$ bin/rails db:migrate
+
+(3)--> We also have to permit the :status key as part of the strong parameter, in app/controllers/articles_controller.rb:
+
+  private
+    def article_params
+      params.require(:article).permit(:title, :body, :status)
+    end
+
+
+(4)--> and in app/controllers/comments_controller.rb:
+  private
+    def comment_params
+      params.require(:comment).permit(:commenter, :body, :status)
+    end
+
+
+(5)--> In article model:
+
+class Article < ApplicationRecord
+  has_many :comments
+
+  validates :title, presence: true
+  validates :body, presence: true, length: { minimum: 10 }
+-----------
+  VALID_STATUSES = ['public', 'private', 'archived']
+
+  validates :status, inclusion: { in: VALID_STATUSES }
+
+  def archived?
+    status == 'archived'
+  end
+----------
+end
+
+
+(6)--> and in the Comment model:
+class Comment < ApplicationRecord
+  belongs_to :article
+-------
+  VALID_STATUSES = ['public', 'private', 'archived']
+
+  validates :status, inclusion: { in: VALID_STATUSES }
+
+  def archived?
+    status == 'archived'
+  end
+-------
+end
+
+
+(7)--> Then, in our index action template (app/views/articles/index.html.erb) we would use the archived? method to avoid displaying any article that is archived:
+
+<h1>Articles</h1>
+
+<ul>
+  <% @articles.each do |article| %>
+-------
+    <% unless article.archived? %>
+      <li>
+        <%= link_to article.title, article %>
+      </li>
+    <% end %>
+-------
+  <% end %>
+</ul>
+
+<%= link_to "New Article", new_article_path %>
+
+
+(8)-->  Similarly, in our comment partial view (app/views/comments/_comment.html.erb) we would use the archived? method to avoid displaying any comment that is archived:
+
+<% unless comment.archived? %>
+  <p>
+    <strong>Commenter:</strong>
+    <%= comment.commenter %>
+  </p>
+
+  <p>
+    <strong>Comment:</strong>
+    <%= comment.body %>
+  </p>
+<% end %>
+
+--------------------------------------------------------------------
+However, if you look again at our models now, you can see that the logic is duplicated. If in the future we increase the functionality of our blog - to include private messages, for instance - we might find ourselves duplicating the logic yet again. This is where concerns come in handy.
+
+A concern is only responsible for a focused subset of the model's responsibility; the methods in our concern will all be related to the visibility of a model. Let's call our new concern (module) Visible. We can create a new file inside app/models/concerns called visible.rb , and store all of the status methods that were duplicated in the models.
+--------------------------------------------------------------------
+
+(9)--> In app/models/concerns/visible.rb
+
+module Visible
+  extend ActiveSupport::Concern
+
+  VALID_STATUSES = ['public', 'private', 'archived']
+
+  included do
+    validates :status, inclusion: { in: VALID_STATUSES }
+  end
+
+  def archived?
+    status == 'archived'
+  end
+end
+
+
+##Now, we can remove the duplicated logic from each model and instead include our new Visible module:
+
+(10)--> In app/models/article.rb:
+
+class Article < ApplicationRecord
+-------
+  include Visible
+-------
+  has_many :comments
+
+  validates :title, presence: true
+  validates :body, presence: true, length: { minimum: 10 }
+end
+
+
+(11)-->  and in app/models/comment.rb:
+class Comment < ApplicationRecord
+-------
+  include Visible
+-------
+  belongs_to :article
+end
+
+(12)--> Class methods can also be added to concerns.
+
+If we want to display a count of public articles or comments on our main page, we might add a class method to Visible as follows:
+
+module Visible
+  extend ActiveSupport::Concern
+
+  VALID_STATUSES = ['public', 'private', 'archived']
+
+  included do
+    validates :status, inclusion: { in: VALID_STATUSES }
+  end
+
+  class_methods do
+    def public_count
+      where(status: 'public').count
+    end
+  end
+
+  def archived?
+    status == 'archived'
+  end
+end
+
+ 
+(13)--> Then in the view, you can call it like any class method:
+
+<h1>Articles</h1>
+
+Our blog has <%= Article.public_count %> articles and counting!
+
+<ul>
+  <% @articles.each do |article| %>
+    <% unless article.archived? %>
+      <li>
+        <%= link_to article.title, article %>
+      </li>
+    <% end %>
+  <% end %>
+</ul>
+
+<%= link_to "New Article", new_article_path %>
+
+
+(14)--> To finish up, we will add a select box to the forms, and let the user select the status when they create a new article or post a new comment. We can also specify the default status as public. In app/views/articles/_form.html.erb, we can add:
+
+<div>
+  <%= form.label :status %><br>
+  <%= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
+</div>
+
+
+(15)-->and in app/views/comments/_form.html.erb:
+<p>
+  <%= form.label :status %><br>
+  <%= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
+</p>
+ 
+____________________________________________________________________
+
+################## Deleting Comments ##################
+Another important feature of a blog is being able to delete spam comments. To do this, we need to implement a link of some sort in the view and a destroy action in the CommentsController.
+
+(1)--> So first, let's add the delete link in the app/views/comments/_comment.html.erb partial:
+
+<% unless comment.archived? %>
+  <p>
+    <strong>Commenter:</strong>
+    <%= comment.commenter %>
+  </p>
+
+  <p>
+    <strong>Comment:</strong>
+    <%= comment.body %>
+  </p>
+
+  <p>
+--------
+    <%= link_to "Destroy Comment", [comment.article, comment], data: {
+                  turbo_method: :delete,
+                  turbo_confirm: "Are you sure?"
+                } %>
+--------
+  </p>
+<% end %>
+
+##Clicking this new "Destroy Comment" link will fire off a DELETE
+/articles/:article_id/comments/:id to our CommentsController, which can then use this to find the comment we want to delete, 
+
+(2)--> so let's add a destroy action to our controller (app/controllers/comments_controller.rb):
+
+class CommentsController < ApplicationController
+  def create
+    @article = Article.find(params[:article_id])
+    @comment = @article.comments.create(comment_params)
+    redirect_to article_path(@article)
+  end
+--------
+  def destroy
+    @article = Article.find(params[:article_id])
+    @comment = @article.comments.find(params[:id])
+    @comment.destroy
+    redirect_to article_path(@article), status: :see_other
+  end
+--------
+  private
+    def comment_params
+      params.require(:comment).permit(:commenter, :body, :status)
+    end
+end
+
+##The destroy action will find the article we are looking at, locate the comment within the @article.comments collection, and then remove it from the database and send us back to the show action for the article.
+
+(3)--> Deleting Associated Objects
+If you delete an article, its associated comments will also need to be deleted, otherwise they would simply occupy space in the database. Rails allows you to use the dependent option of an association to achieve this.
+
+Modify the Article model, app/models/article.rb, as follows:
+
+class Article < ApplicationRecord
+  include Visible
+--------
+  has_many :comments, dependent: :destroy
+--------
+  validates :title, presence: true
+  validates :body, presence: true, length: { minimum: 10 }
+end
+
+ 
+____________________________________________________________________
+
+################## Security ##################
+
+Basic Authentication
+
+If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
+
+Rails provides an HTTP authentication system that will work nicely in this situation.
+
+In the ArticlesController we need to have a way to block access to the various actions if the person is not authenticated. Here we can use the Rails http_basic_authenticate_with method, which allows access to the requested action if that method allows it.
+
+To use the authentication system, we specify it at the top of our ArticlesController in app/controllers/articles_controller.rb. In our case, we want the user to be authenticated on every action except index and show, so we write that:
+
+(1)--> in app/controllers/articles_controller.rb
+
+class ArticlesController < ApplicationController
+
+  http_basic_authenticate_with name: "dhh", password: "secret", except: [:index, :show]
+
+  def index
+    @articles = Article.all
+  end
+
+  # snippet for brevity
+
+
+(2)-->We also want to allow only authenticated users to delete comments, so in the CommentsController (app/controllers/comments_controller.rb) we write:
+class CommentsController < ApplicationController
+
+  http_basic_authenticate_with name: "dhh", password: "secret", only: :destroy
+
+  def create
+    @article = Article.find(params[:article_id])
+    # ...
+  end
+
+  # snippet for brevity
+
+
+
+##After entering the correct username and password, you will remain authenticated until a different username and password is required or the browser is closed.
+
+##Other authentication methods are available for Rails applications. Two popular authentication add-ons for Rails are the Devise rails engine and the Authlogic gem, along with a number of others.
+
+____________________________________________________________________
+
+################## END ##################
+
