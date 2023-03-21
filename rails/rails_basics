@@ -305,6 +305,7 @@ end
 
 (3)--> In addition to the model, Rails has also made a migration to create the corresponding database table:
 
+//in app/db/migrations
 class CreateComments < ActiveRecord::Migration[7.0]
   def change
     create_table :comments do |t|
