@@ -8,6 +8,18 @@
   } %></li>
 
 </ul>
+<h3>Comments</h3>
+<% @article.comments.each do |comment| %>
+  <p>
+    <b>Commenter: </b>
+    <%= comment.commenter %>
+  </p>
+
+  <p>
+    <b>Comment: </b>
+    <%= comment.body%>
+  </p>
+<%end%>
 
 <h3>Add a comment:</h3>
 <%= form_with model: [@article, @article.comments.build] do |form|%>
