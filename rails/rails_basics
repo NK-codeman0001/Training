@@ -18,10 +18,34 @@ _____________________________________________________________________
 
 version check = rails --version
 
-(4)--> ``` rails new blog ```
+(5)--> ``` rails new blog --database=postgresql```
 #This will create a Rails application called Blog in a blog directory and install the gem dependencies
 
-(5)--> After you create the blog application, switch to its folder:
+(6)--> in config/database.yml
+Once configured, your database.yml should contain something like this:
+
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: DB_NAME_development
+  pool: 5
+  username: postgres
+  password: changeit
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: DB_NAME_test
+  pool: 5
+  username: postgres
+  password: changeit
+
+
+(7)--> You can then run:
+``` rake db:setup ```
+
+
+()--> After you create the blog application, switch to its folder:
 ``` cd blog ```
 
 <-------------------------------###--------------------------------> 

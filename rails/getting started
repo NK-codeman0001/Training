@@ -24,7 +24,29 @@ ___________________________________________________________________
 ##########  Create New Rails Application from Scratch ##########
 (tutorial followed : https://www.youtube.com/playlist?list=PLSfx1NJkuWPWlVjFy5datW4Y-54ltIFw7)
 
-(1)===>	rails new hr-mitra
+(1)===>	rails new hr-mitra --database=postgresql
+
+configured, your database.yml should contain something like this:
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: myapp_development
+  pool: 5
+  username: myapp
+  password: password1
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: myapp_test
+  pool: 5
+  username: myapp
+  password: password1
+  
+  
+You can then run:
+rake db:setup
+ 
 (2)===>	cd hr-mitra
 (3)===>	bundle install
 (4)===>	rails server or rails s
