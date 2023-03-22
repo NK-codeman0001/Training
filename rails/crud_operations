@@ -403,7 +403,7 @@ Let's create app/views/articles/_form.html.erb with the following contents:
 <%= render "form", article: @article %>
 ----------------
 
-(4)--> et's create a very similar app/views/articles/edit.html.erb:
+(4)--> Let's create a very similar app/views/articles/edit.html.erb:
 
 <h1>Edit Article</h1>
 ----------------
