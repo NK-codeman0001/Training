@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_23_190351) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_24_045717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,8 +40,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_190351) do
     t.string "supplier_type", null: false
     t.bigint "supplier_id", null: false
     t.text "part_number"
-    t.string "name"
-    t.boolean "approved", default: true
+    t.string "name", null: false
+    t.boolean "approved", default: false
     t.index ["part_number"], name: "index_products_on_part_number"
     t.index ["supplier_type", "supplier_id"], name: "index_products_on_supplier"
     t.index ["user_id"], name: "index_products_on_user_id"
