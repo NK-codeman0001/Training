@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_24_045717) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_24_050622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_045717) do
     t.datetime "updated_at", null: false
     t.string "status"
     t.index ["article_id"], name: "index_comments_on_article_id"
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string "name", comment: "User's Full Name"
+    t.boolean "active", default: false
+    t.text "summary"
+    t.string "email", null: false
+    t.decimal "spend", precision: 10, scale: 2, comment: "in Thousand INR"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_customers_on_name"
   end
 
   create_table "products", force: :cascade do |t|
