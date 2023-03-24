@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_24_065907) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_24_113001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
 
-  create_table "admin", force: :cascade do |t|
+  create_table "admin", primary_key: "emp_id", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "age"
     t.boolean "is_admin", default: false
