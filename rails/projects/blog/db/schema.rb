@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_24_065041) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_24_065907) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "hstore"
   enable_extension "plpgsql"
+
+  create_table "admin", force: :cascade do |t|
+    t.string "name"
+    t.integer "age"
+    t.boolean "is_admin", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "articles", force: :cascade do |t|
     t.string "title"
@@ -45,6 +54,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_065041) do
     t.index ["name"], name: "index_customers_on_name"
   end
 
+  create_table "customers_xxxes", id: false, force: :cascade do |t|
+    t.bigint "xxx_id", null: false
+    t.bigint "customer_id", null: false
+  end
+
   create_table "products", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -61,6 +75,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_065041) do
   create_table "products_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "product_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "test_table", comment: "New Table Comment", force: :cascade do |t|
+    t.string "name", null: false, comment: "new comment added"
+    t.string "number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "email", default: "example@mail.com"
+    t.integer "customer_id"
+    t.bigint "users_id"
+    t.index ["name"], name: "index_xxxes_on_new_name"
+    t.index ["users_id"], name: "index_test_table_on_users_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -73,13 +101,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_065041) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "xxxes", force: :cascade do |t|
-    t.string "name"
-    t.string "part_number"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   add_foreign_key "comments", "articles"
   add_foreign_key "products", "users"
+  add_foreign_key "test_table", "customers"
 end
