@@ -346,17 +346,124 @@ ___________________________________________________________________
 Column modifiers can be applied when creating or changing a column:
 	
 (*) comment ===> Adds a comment for the column.
+
 (*) collation ===> Specifies the collation for a string or text column.
+In database systems, Collation specifies how data is sorted and compared in a database. Collation provides the sorting rules, case, and accent sensitivity properties for the data in the database.
+
+For example, when you run a query using the ORDER BY clause, collation determines whether or not uppercase letters and lowercase letters are treated the same.
+
+
 (*) default ===> Allows to set a default value on the column. Note that if you are using a dynamic value (such as a date), the default will only be calculated the first time (i.e. on the date the migration is applied). Use nil for NULL.
 (*) limit ===> Sets the maximum number of characters for a string column and the maximum number of bytes for text/binary/integer columns.
 (*) null ===> Allows or disallows NULL values in the column.
+
+
 (*) precision ===> Specifies the precision for decimal/numeric/datetime/time columns.
+
+the precision is the number of significant digits, while the scale is the number of digits that can be stored following the decimal point. For example, the number 123.45 has a precision of 5 and a scale of 2. A decimal with a precision of 5 and a scale of 2 can range from -999.99 to 999.99.
+
+
 (*) scale ===> Specifies the scale for the decimal and numeric columns, representing the number of digits after the decimal point.
+
 
 ##For add_column or change_column there is no option for adding indexes. They need to be added separately using add_index.
 
 ##null and default cannot be specified via command line.
 
+In Rails, column modifiers are used to modify the attributes of database columns. Some of the commonly used column modifiers in Rails, along with examples, are:
+
+===> limit: This modifier is used to specify the maximum size of the column. For example:
+
+ruby
+
+# Create a table with a string column of maximum length 255 characters
+create_table :users do |t|
+  t.string :name, limit: 255
+end
+
+===> default: This modifier is used to set a default value for the column. For example:
+
+ruby
+
+# Create a table with a boolean column with a default value of false
+create_table :users do |t|
+  t.boolean :active, default: false
+end
+
+===> null: This modifier is used to specify whether the column allows null values or not. For example:
+
+ruby
+
+# Create a table with a string column that does not allow null values
+create_table :users do |t|
+  t.string :email, null: false
+end
+
+===> precision and :scale: These modifiers are used to specify the precision and scale of decimal columns. For example:
+
+ruby
+
+# Create a table with a decimal column with precision 10 and scale 2
+create_table :products do |t|
+  t.decimal :price, precision: 10, scale: 2
+end
+
+===> index: This modifier is used to create an index on the column for faster database searches. For example:
+
+ruby
+
+# Create a table with an index on the email column
+create_table :users do |t|
+  t.string :email
+  t.index :email
+end
+
+===> unique: This modifier is used to create a unique constraint on the column to prevent duplicate values. For example:
+
+ruby
+
+# Create a table with a unique index on the email column
+create_table :users do |t|
+  t.string :email, unique: true
+end
+
+===> foreign_key: This modifier is used to specify a foreign key constraint on the column. For example:
+
+ruby
+
+# Create a table with a foreign key constraint on the user_id column
+create_table :posts do |t|
+  t.string :title
+  t.text :body
+  t.integer :user_id
+  t.foreign_key :users
+end
+
+===> comment: This modifier is used to add a comment to a column in the database schema. This can be useful for providing additional information about the purpose or usage of a particular column. For example:
+
+ruby
+
+# Create a table with a string column with a comment
+create_table :users do |t|
+  t.string :name, comment: "The user's full name"
+end
+
+In this example, the comment "The user's full name" will be added to the name column in the users table in the database schema.
+
+===> collation: This modifier is used to set the collation for a string or text column in the database schema. The collation determines the sorting and comparison rules used for the column. For example:
+
+ruby
+
+# Create a table with a text column with a custom collation
+create_table :posts do |t|
+  t.text :body, collation: "utf8mb4_general_ci"
+end
+
+In this example, the body column in the posts table will use the utf8mb4_general_ci collation for sorting and comparison.
+
+These are the two additional column modifiers in Rails, which can be useful for adding comments and setting collations for database columns.
+
+These are some of the commonly used column modifiers in Rails. There are many more modifiers available, and you can find a full list in the Rails documentation.
 ___________________________________________________________________
 
 ############### References ###############
@@ -473,6 +580,84 @@ remove_column is reversible if you supply the column type as the third argument.
   remove_column :posts, :slug, :string, null: false, default: ''
 
 ##If you're going to need to use any other methods, you should use reversible or write the up and down methods instead of using the change method.
+
+
+Here are some examples of each method in Rails migration:
+
+(*)===> add_column: adds a new column to a table.
+add_column :users, :age, :integer
+
+(*)===> add_foreign_key: adds a foreign key constraint between two tables.
+add_foreign_key :comments, :users
+
+(*)===> add_index: adds an index to a table.
+add_index :posts, :title
+
+(*)===> add_reference: adds a new reference column to a table.
+add_reference :comments, :post, foreign_key: true
+
+(*)===> add_timestamps: adds created_at and updated_at columns to a table.
+add_timestamps :users
+
+(*)===> change_column_comment: changes the comment of a column.
+change_column_comment :users, :name, from: 'Old comment', to: 'New comment'
+
+(*)===> change_column_default: changes the default value of a column.
+change_column_default :users, :admin, from: false, to: true
+
+(*)===> change_column_null: changes the nullability of a column.
+change_column_null :users, :name, false
+
+(*)===> change_table_comment: changes the comment of a table.
+change_table_comment :users, from: 'Old comment', to: 'New comment'
+
+(*)===> create_join_table: creates a join table between two tables.
+create_join_table :posts, :tags
+
+(*)===> create_table: creates a new table.
+create_table :users do |t|
+  t.string :name
+  t.integer :age
+  t.boolean :admin, default: false
+  t.timestamps
+end
+
+(*)===> disable_extension: disables a PostgreSQL extension.
+disable_extension 'hstore'
+
+(*)===> drop_join_table: drops a join table.
+drop_join_table :posts, :tags
+
+(*)===> drop_table: drops a table.
+drop_table :users
+
+(*)===> enable_extension: enables a PostgreSQL extension.
+enable_extension 'hstore'
+
+(*)===> remove_column: removes a column from a table.
+remove_column :users, :age, :integer
+
+(*)===> remove_foreign_key: removes a foreign key constraint between two tables.
+remove_foreign_key :comments, :users
+
+(*)===> remove_index: removes an index from a table.
+remove_index :posts, :title
+
+(*)===> remove_reference: removes a reference column from a table.
+remove_reference :comments, :post, foreign_key: true
+
+(*)===> remove_timestamps: removes created_at and updated_at columns from a table.
+remove_timestamps :users
+
+(*)===> rename_column: renames a column in a table.
+rename_column :users, :name, :full_name
+
+(*)===> rename_index: renames an index in a table.
+rename_index :posts, 'index_posts_on_title', 'index_posts_on_subject'
+
+(*)===> rename_table: renames a table.
+rename_table :users, :accounts
+
 
 ___________________________________________________________________
 
