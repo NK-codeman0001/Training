@@ -42,7 +42,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_055547) do
     t.datetime "updated_at", null: false
     t.bigint "users_id"
     t.index ["name"], name: "index_customers_on_name"
-    t.index ["users_id"], name: "index_customers_on_users_id"
   end
 
   create_table "products", force: :cascade do |t|
