@@ -137,47 +137,107 @@ ___________________________________________________________________
  updated_at: nil>                                           
  
 (*)===> User.create!
-/usr/share/rvm/gems/ruby-3.2.1/gems/activerecord-7.0.4.3/lib/active_record/validations.rb:80:in `raise_validation_error': Validation failed: Name can't be blank (ActiveRecord::RecordInvalid)  
+/usr/share/rvm/gems/ruby-3.2.1/gems/activerecord-7.0.4.3/lib/active_record/validations.rb:80:in `raise_validation_error': Validation failed: Name can't be blank (ActiveRecord::RecordInvalid) 
+
+
+(*)===>  User.new.errors[:name]
+ => [] 
+
+(*)===>  User.new.errors[:name].any?
+ => false
+ 
+(*)===>  User.create.errors[:name].any?
+ => true
+ 
+(*)===>  User.create.errors[:name]
+ => ["can't be blank"]  
+
 
 ___________________________________________________________________
 
-###############  ###############
+############### Validation Helpers : acceptance ###############
 
-()===>
-	
-()===>
+ _______________________________________________________
+|  class User < ApplicationRecord     			|
+|    validates :terms_and_conditions, acceptance: true  |
+|  end                                			|
+|_______________________________________________________|
 
-()===>
-	
-()===>
+##This check is performed only if terms_of_service is not nil. The default error message for this helper is "must be accepted". You can also pass in a custom message via the message option.
 
-___________________________________________________________________
+ ________________________________________________________________________________
+|  class User < ApplicationRecord     						 |
+|    validates :terms_and_conditions, acceptance: { message: 'must be abided' }  |
+|  end                                						 |
+|________________________________________________________________________________|
+##It can also receive an :accept option, which determines the allowed values that will be considered as accepted. It defaults to ['1', true] and can be easily changed
+________________________________________________________________________________
+|  class User < ApplicationRecord     						 |
+|    validates :terms_and_conditions, acceptance: { accept: 'yes' }  		 |
+|                                  OR						 |
+|    validates :terms_and_conditions, acceptance { accept: ['TRUE', 'accepted'] }|
+|  end                                						 |
+|________________________________________________________________________________|
 
-###############  ###############
-
-()===>
-	
-()===>
-
-()===>
-	
-()===>
-
-___________________________________________________________________
-
-###############  ###############
-
-()===>
-	
-()===>
-
-()===>
-	
-()===>
+##This validation is very specific to web applications and this 'acceptance' does not need to be recorded anywhere in your database. If you don't have a field for it, the helper will create a virtual attribute. If the field does exist in your database, the accept option must be set to or include true or else the validation will not run.
 
 ___________________________________________________________________
 
-###############  ###############
+#############  Validation Helpers : validates_associated  #############
+________________________________________________________________________________
+|    class Library < ApplicationRecord 						|
+|     has_many :books  		 						|
+|     validates_associated :books 						|
+|    end                                					|
+|_______________________________________________________________________________|
+
+##This validation will work with all of the association types
+
+##Don't use validates_associated on both ends of your associations. 
+They would call each other in an infinite loop.
+
+##The default error message for validates_associated is "is invalid". 
+Note that each associated object will contain its own errors collection; 
+errors do not bubble up to the calling model.
+
+___________________________________________________________________
+
+############### Validation Helpers : confirmation  ###############
+
+ _______________________________________________________
+|  class User < ApplicationRecord     			|
+|    validates :email, confirmation: true		|
+|  end                                			|
+|_______________________________________________________|
+
+
+(*)===> In your view template you could use something like.
+
+<%= text_field :person, :email %>
+<%= text_field :person, :email_confirmation %>
+	
+
+(*)===> This check is performed only if email_confirmation is not nil. To require confirmation, make sure to add a presence check for the confirmation attribute (we'll take a look at presence later on in this guide):
+
+ _______________________________________________________
+|  class User < ApplicationRecord     			|
+|    validates :email, confirmation: true		|
+|    validates :email_confirmation, presence: true      |
+|  end                                			|
+|_______________________________________________________|
+
+
+(*)===> There is also a :case_sensitive option that you can use to define whether the confirmation constraint will be case sensitive or not. This option defaults to true.
+ _______________________________________________________________________
+|  class User < ApplicationRecord     					|
+|    validates :email, confirmation: { case_sensitive: false }		|
+|  end                                					|
+|_______________________________________________________________________|
+
+##The default error message for this helper is "doesn't match confirmation".
+___________________________________________________________________
+
+############### Validation Helpers :  ###############
 
 ()===>
 	
