@@ -1145,15 +1145,173 @@ ____________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
+############### Working with Validation Errors ###############
 
-()===>
-	
-()===>
+(*)===> errors
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: true, length: { minimum: 3 }
+end
+____________________________________________
 
-()===>
+irb> person = Person.new
+irb> person.valid?
+=> false
+irb> person.errors.full_messages
+=> ["Name can't be blank", "Name is too short (minimum is 3 characters)"]
+
+irb> person = Person.new(name: "John Doe")
+irb> person.valid?
+=> true
+irb> person.errors.full_messages
+=> []
+
+
 	
-()===>
+(*)===> errors[]
+
+errors[] is used when you want to check the error messages for a specific attribute. 
+
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: true, length: { minimum: 3 }
+end
+____________________________________________
+
+irb> person = Person.new(name: "John Doe")
+irb> person.valid?
+=> true
+irb> person.errors[:name]
+=> []
+
+
+
+(*)===> errors.where and error object
+
+where returns an array of error objects, filtered by various degree of conditions.
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: true, length: { minimum: 3 }
+end
+____________________________________________
+
+irb> person = Person.new
+irb> person.valid?
+=> false
+
+irb> person.errors.where(:name)
+=> [ ... ] # all errors for :name attribute
+
+irb> person.errors.where(:name, :too_short)
+=> [ ... ] # :too_short errors for :name attribute
+
+
+
+## You can read various information from these error objects:
+
+irb> error = person.errors.where(:name).last
+
+irb> error.attribute
+=> :name
+irb> error.type
+=> :too_short
+irb> error.options[:count]
+=> 3
+
+## You can also generate the error message:
+irb> error.message
+=> "is too short (minimum is 3 characters)"
+irb> error.full_message
+=> "Name is too short (minimum is 3 characters)"
+
+##The full_message method generates a more user-friendly message, with the capitalized attribute name prepended. 
+
+
+
+(*)===> errors.add
+
+The add method creates the error object by taking the attribute, the error type and additional options hash. This is useful for writing your own validator.
+
+____________________________________________
+class Person < ApplicationRecord
+  validate do |person|
+    errors.add :name, :too_plain, message: "is not cool enough"
+  end
+end
+____________________________________________
+
+irb> person = Person.create
+irb> person.errors.where(:name).first.type
+=> :too_plain
+irb> person.errors.where(:name).first.full_message
+=> "Name is not cool enough"
+
+
+(*)===> errors[:base]
+
+____________________________________________
+class Person < ApplicationRecord
+  validate do |person|
+    errors.add :base, :invalid, message: "This person is invalid because ..."
+  end
+end
+____________________________________________
+
+irb> person = Person.create
+irb> person.errors.where(:base).first.full_message
+=> "This person is invalid because ..."
+
+
+(*)===> errors.clear
+
+The clear method is used when you intentionally want to clear the errors collection. Of course, calling errors.clear upon an invalid object won't actually make it valid.
+
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: true, length: { minimum: 3 }
+end
+____________________________________________
+
+irb> person = Person.new
+irb> person.valid?
+=> false
+irb> person.errors.empty?
+=> false
+
+irb> person.errors.clear
+irb> person.errors.empty?
+=> true
+
+irb> person.save
+=> false
+
+irb> person.errors.empty?
+=> false
+
+
+(*)===> errors.size
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: true, length: { minimum: 3 }
+end
+____________________________________________
+
+irb> person = Person.new
+irb> person.valid?
+=> false
+irb> person.errors.size
+=> 2
+
+irb> person = Person.new(name: "Andrea", email: "andrea@example.com")
+irb> person.valid?
+=> true
+irb> person.errors.size
+=> 0
+
+
+(*)===>
+____________________________________________
+____________________________________________
 
 ___________________________________________________________________
 
