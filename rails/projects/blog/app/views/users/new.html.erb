@@ -17,6 +17,15 @@
   </div>
 
   <div>
+    <%= form.label :email %><br>
+    <%= form.text_field :email %>
+  </div>
+  <div>
+    <%= form.label :email_confirmation %><br>
+    <%= form.text_field :email_confirmation %>
+  </div>
+
+  <div>
     <%= form.label :gender %><br>
     <%= form.radio_button :gender, "male" %> 
     <%= form.label :gender, "Male" %><br>
