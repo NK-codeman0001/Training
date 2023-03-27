@@ -33,24 +33,53 @@ ___________________________________________________________________
 
 The following methods skip validations, and will save the object to the database regardless of its validity. They should be used with caution.
 
-(*)===>    decrement!
-(*)===>    decrement_counter
-(*)===>    increment!
-(*)===>    increment_counter
-(*)===>    insert
-(*)===>    insert!
-(*)===>    insert_all
-(*)===>    insert_all!
-(*)===>    toggle!
-(*)===>    touch
-(*)===>    touch_all
-(*)===>    update_all
-(*)===>    update_attribute
-(*)===>    update_column
-(*)===>    update_columns
-(*)===>    update_counters
-(*)===>    upsert
-(*)===>    upsert_all
+The following methods are listed as "skipping validations" in the Rails documentation:
+
+(*)===>     decrement! - Decrements a numeric attribute by one and saves the record without validations.
+
+(*)===>     decrement_counter - Decrements a counter cache attribute by one and saves the record without validations.
+
+(*)===>     increment! - Increments a numeric attribute by one and saves the record without validations.
+
+(*)===>     increment_counter - Increments a counter cache attribute by one and saves the record without validations.
+
+(*)===>     insert - Inserts a new record into the database and saves it without validations.
+
+(*)===>     insert! - Inserts a new record into the database and saves it without validations. Raises an exception if validation fails.
+
+(*)===>     insert_all - Inserts multiple records into the database and saves them without validations.
+
+(*)===>     insert_all! - Inserts multiple records into the database and saves them without validations. Raises an exception if any validation fails.
+
+(*)===>     toggle! - Toggles a boolean attribute and saves the record without validations.
+
+(*)===>     touch - Updates the updated_at timestamp of a record and saves it without validations.
+
+(*)===>    touch_all - Updates the updated_at timestamp of multiple records and saves them without validations.
+
+(*)===>    update_all - Updates multiple records in the database without running validations.
+
+(*)===>    update_attribute - Updates a single attribute of a record and saves it without validations.
+
+(*)===>    update_column - Updates a single column of a record and saves it without validations.
+
+(*)===>    update_columns - Updates multiple columns of a record and saves it without validations.
+
+(*)===>    update_counters - Updates counter cache attributes and saves the record without validations.
+
+(*)===>    upsert - Upserts a record into the database and saves it without validations.
+
+(*)===>    upsert_all - Upserts multiple records into the database and saves them without validations.
+
+It's important to use these methods with caution, as bypassing validations can lead to invalid or inconsistent data in the database. In general, it's recommended to use these methods only when you are sure that the data being saved is valid and that skipping validations is necessary for performance or other reasons.
+
+As mentioned in the note, the save method also has the ability to skip validations if passed validate: false as an argument. Here's an example:
+__________________________________________________________
+@user = User.new(name: "John", email: "john@example.com")
+@user.save(validate: false)
+__________________________________________________________
+
+This would save the @user object to the database without running its validations. Again, this technique should be used with caution and only when you are sure that skipping validations is necessary.
 
 Note that save also has the ability to skip validations if passed validate:
 false as an argument. This technique should be used with caution.
