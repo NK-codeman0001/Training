@@ -1,12 +1,21 @@
 <h1>New User</h1>
+<% if @user.errors.any? %>
+  <div style="color: red">
+    <h4><%= pluralize(@user.errors.count, "error") %> prohibited you from being registered:</h4>
 
+    <ul>
+      <% @user.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 <%= form_with model: @user do |form| %>
   <div>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
   </div>
 
-  
   <div>
     <%= form.label :gender %><br>
     <%= form.radio_button :gender, "male" %> 
