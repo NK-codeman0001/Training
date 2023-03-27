@@ -1060,15 +1060,88 @@ ____________________________________________
 ## The validation only runs when all the :if conditions and none of the :unless conditions are evaluated to true.
 ___________________________________________________________________
 
-###############  ###############
+############### Performing Custom Validations ###############
 
-()===>
-	
-()===>
+(*)===> Custom Validators
 
-()===>
+Custom validators are classes that inherit from ActiveModel::Validator. These classes must implement the validate method which takes a record as an argument and performs the validation on it. The custom validator is called using the validates_with method.
+
+____________________________________________
+class MyValidator < ActiveModel::Validator
+  def validate(record)
+    unless record.name.start_with? 'X'
+      record.errors.add :name, "Need a name starting with X please!"
+    end
+  end
+end
+
+class Person
+  include ActiveModel::Validations
+  validates_with MyValidator
+end
+____________________________________________
+
+
 	
-()===>
+(*)===> The easiest way to add custom validators for validating individual attributes is with the convenient ActiveModel::EachValidator.
+
+In this case, the custom validator class must implement a validate_each method which takes three arguments: record, attribute, and value. These correspond to the instance, the attribute to be validated, and the value of the attribute in the passed instance.
+____________________________________________
+class EmailValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    unless value =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+      record.errors.add attribute, (options[:message] || "is not an email")
+    end
+  end
+end
+
+class Person < ApplicationRecord
+  validates :email, presence: true, email: true
+end
+____________________________________________
+
+
+
+(*)===> Custom Methods
+
+## You can also create methods that verify the state of your models and add errors to the errors collection when they are invalid. You must then register these methods by using the validate class method, passing in the symbols for the validation methods' names.
+
+## You can pass more than one symbol for each class method and the respective validations will be run in the same order as they were registered.
+
+## The valid? method will verify that the errors collection is empty, so your custom validation methods should add errors to it when you wish validation to fail:
+____________________________________________
+class Invoice < ApplicationRecord
+  validate :expiration_date_cannot_be_in_the_past,
+    :discount_cannot_be_greater_than_total_value
+
+  def expiration_date_cannot_be_in_the_past
+    if expiration_date.present? && expiration_date < Date.today
+      errors.add(:expiration_date, "can't be in the past")
+    end
+  end
+
+  def discount_cannot_be_greater_than_total_value
+    if discount > total_value
+      errors.add(:discount, "can't be greater than total value")
+    end
+  end
+end
+____________________________________________
+	
+	
+	
+(*)===> By default, such validations will run every time you call valid? or save the object. But it is also possible to control when to run these custom validations by giving an :on option to the validate method, with either: :create or :update.
+
+____________________________________________
+class Invoice < ApplicationRecord
+  validate :active_customer, on: :create
+
+  def active_customer
+    errors.add(:customer_id, "is not active") unless customer.active?
+  end
+end
+____________________________________________
+
 
 ___________________________________________________________________
 
