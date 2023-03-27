@@ -158,25 +158,25 @@ ___________________________________________________________________
 ############### Validation Helpers : acceptance ###############
 
  _______________________________________________________
-|  class User < ApplicationRecord     			|
+|  class User < ApplicationRecord     			            |
 |    validates :terms_and_conditions, acceptance: true  |
-|  end                                			|
+|  end                                			            |
 |_______________________________________________________|
 
 ##This check is performed only if terms_of_service is not nil. The default error message for this helper is "must be accepted". You can also pass in a custom message via the message option.
 
  ________________________________________________________________________________
-|  class User < ApplicationRecord     						 |
+|  class User < ApplicationRecord     						                               |
 |    validates :terms_and_conditions, acceptance: { message: 'must be abided' }  |
-|  end                                						 |
+|  end                                						                               |
 |________________________________________________________________________________|
 ##It can also receive an :accept option, which determines the allowed values that will be considered as accepted. It defaults to ['1', true] and can be easily changed
-________________________________________________________________________________
-|  class User < ApplicationRecord     						 |
-|    validates :terms_and_conditions, acceptance: { accept: 'yes' }  		 |
-|                                  OR						 |
+_________________________________________________________________________________
+|  class User < ApplicationRecord     						                               |
+|    validates :terms_and_conditions, acceptance: { accept: 'yes' }  		         |
+|                                  OR					                                	 |
 |    validates :terms_and_conditions, acceptance { accept: ['TRUE', 'accepted'] }|
-|  end                                						 |
+|  end                                                                           |
 |________________________________________________________________________________|
 
 ##This validation is very specific to web applications and this 'acceptance' does not need to be recorded anywhere in your database. If you don't have a field for it, the helper will create a virtual attribute. If the field does exist in your database, the accept option must be set to or include true or else the validation will not run.
@@ -185,10 +185,10 @@ ___________________________________________________________________
 
 #############  Validation Helpers : validates_associated  #############
 ________________________________________________________________________________
-|    class Library < ApplicationRecord 						|
-|     has_many :books  		 						|
-|     validates_associated :books 						|
-|    end                                					|
+|    class Library < ApplicationRecord 				                              		|
+|     has_many :books  		 				                                          		|
+|     validates_associated :books 	                                  					|
+|    end                                                              					|
 |_______________________________________________________________________________|
 
 ##This validation will work with all of the association types
@@ -205,9 +205,9 @@ ___________________________________________________________________
 ############### Validation Helpers : confirmation  ###############
 
  _______________________________________________________
-|  class User < ApplicationRecord     			|
-|    validates :email, confirmation: true		|
-|  end                                			|
+|  class User < ApplicationRecord     		            	|
+|    validates :email, confirmation: true	            	|
+|  end                                			            |
 |_______________________________________________________|
 
 
@@ -220,213 +220,844 @@ ___________________________________________________________________
 (*)===> This check is performed only if email_confirmation is not nil. To require confirmation, make sure to add a presence check for the confirmation attribute (we'll take a look at presence later on in this guide):
 
  _______________________________________________________
-|  class User < ApplicationRecord     			|
-|    validates :email, confirmation: true		|
+|  class User < ApplicationRecord     			            |
+|    validates :email, confirmation: true           		|
 |    validates :email_confirmation, presence: true      |
-|  end                                			|
+|  end                                		            	|
 |_______________________________________________________|
 
 
 (*)===> There is also a :case_sensitive option that you can use to define whether the confirmation constraint will be case sensitive or not. This option defaults to true.
  _______________________________________________________________________
-|  class User < ApplicationRecord     					|
-|    validates :email, confirmation: { case_sensitive: false }		|
-|  end                                					|
+|  class User < ApplicationRecord                                       |
+|    validates :email, confirmation: { case_sensitive: false }		      |
+|  end                                					                        |
 |_______________________________________________________________________|
 
 ##The default error message for this helper is "doesn't match confirmation".
 ___________________________________________________________________
 
-############### Validation Helpers :  ###############
+############### Validation Helpers : comparison ###############
 
-()===>
-	
-()===>
+_________________________________________________________________
 
-()===>
-	
-()===>
+class Promotion < ApplicationRecord
+  validates :start_date, comparison: { greater_than: :end_date }
+end
+_________________________________________________________________
 
-___________________________________________________________________
+##Each option accepts a value, proc, or symbol. 
 
-###############  ###############
+These options are all supported:
 
-()===>
-	
-()===>
 
-()===>
-	
-()===>
+(*)===>  greater_than: This option specifies that the value must be greater than the supplied value. For example:
 
-___________________________________________________________________
+_________________________________________________________
+class Product < ApplicationRecord
+  validates_numericality_of :price, greater_than: 0
+end
+_________________________________________________________
 
-###############  ###############
+This ensures that the price attribute is a numerical value greater than 0.
 
-()===>
-	
-()===>
 
-()===>
-	
-()===>
 
-___________________________________________________________________
+(*)===>  greater_than_or_equal_to: This option specifies that the value must be greater than or equal to the supplied value. For example:
 
-###############  ###############
+_________________________________________________________
+class User < ApplicationRecord
+  validates_numericality_of :age, greater_than_or_equal_to: 18
+end
+_________________________________________________________
+This ensures that the age attribute is a numerical value greater than or equal to 18.
 
-()===>
-	
-()===>
 
-()===>
-	
-()===>
 
-___________________________________________________________________
+(*)===>  equal_to: This option specifies that the value must be equal to the supplied value. For example:
 
-###############  ###############
+_________________________________________________________
+class Order < ApplicationRecord
+  validates_numericality_of :quantity, equal_to: 1
+end
+_________________________________________________________
+This ensures that the quantity attribute is a numerical value equal to 1.
 
-()===>
-	
-()===>
 
-()===>
-	
-()===>
 
-___________________________________________________________________
+(*)===>  less_than: This option specifies that the value must be less than the supplied value. For example:
+_________________________________________________________
+class Coupon < ApplicationRecord
+  validates_numericality_of :discount, less_than: 100
+end
+_________________________________________________________
 
-###############  ###############
+This ensures that the discount attribute is a numerical value less than 100.
 
-()===>
-	
-()===>
 
-()===>
-	
-()===>
 
-___________________________________________________________________
+(*)===>  less_than_or_equal_to: This option specifies that the value must be less than or equal to the supplied value. For example:
 
-###############  ###############
+_________________________________________________________
+class Product < ApplicationRecord
+  validates_numericality_of :stock, less_than_or_equal_to: 100
+end
+_________________________________________________________
 
-()===>
-	
-()===>
+This ensures that the stock attribute is a numerical value less than or equal to 100.
 
-()===>
-	
-()===>
 
-___________________________________________________________________
+(*)===>  other_than: This option specifies that the value must be other than the supplied value. For example:
 
-###############  ###############
+_________________________________________________________
+class Post < ApplicationRecord
+  validates_numericality_of :category_id, other_than: 0
+end
+_________________________________________________________
 
-()===>
-	
-()===>
+This ensures that the category_id attribute is a numerical value other than 0.
 
-()===>
-	
-()===>
+These options allow you to ensure that the numerical values entered by users meet certain conditions, and provide helpful error messages if the values do not meet these conditions.
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : exclusion ###############
 
-()===>
-	
-()===>
+##The exclusion helper has an option :in that receives the set of values that will not be accepted for the validated attributes. 
 
-()===>
-	
-()===>
+##The :in option has an alias called :within that you can use for the same purpose, if you'd like to. 
+This example uses the :message option to show how you can include the attribute's value. 
 
-___________________________________________________________________
+The default error message is "is reserved".
 
-###############  ###############
+(*)===>
+_________________________________________________________	
+class Account < ApplicationRecord
+  validates :subdomain, exclusion: { in: %w(www us ca jp),
+    message: "%{value} is reserved." }
+end
+_________________________________________________________	
 
-()===>
-	
-()===>
-
-()===>
-	
-()===>
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : format ###############
 
-()===>
-	
-()===>
+(*)===>This helper validates the attributes' values by testing whether they match a given regular expression, which is specified using the :with option.
 
-()===>
+___________________________________________________________
+class Product < ApplicationRecord
+  validates :legacy_code, format: { with: /\A[a-zA-Z]+\z/,
+    message: "only allows letters" }
+end
+___________________________________________________________
 	
-()===>
+
+##Alternatively, you can require that the specified attribute does not match the regular expression by using the :without option.
+
+##The default error message is "is invalid".
+___________________________________________________________________
+
+
+###############  Validation Helpers : inclusion ###############
+
+()===> This helper validates that the attributes' values are included in a given set. In fact, this set can be any enumerable object.
+
+___________________________________________________________
+class Coffee < ApplicationRecord
+  validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }
+end
+___________________________________________________________
+	
+##The inclusion helper has an option :in that receives the set of values that will be accepted. 
+The :in option has an alias called :within that you can use for the same purpose, if you'd like to. 
+The previous example uses the :message option to show how you can include the attribute's value.
+
+##The default error message for this helper is "is not included in the list".	
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : length ###############
+
+()===>This helper validates the length of the attributes' values. It provides a variety of options, so you can specify length constraints in different ways:
+
+________________________________________________________
+class Person < ApplicationRecord
+  validates :name, length: { minimum: 2 }
+  validates :bio, length: { maximum: 500 }
+  validates :password, length: { in: 6..20 }
+  validates :registration_number, length: { is: 6 }
+end
+________________________________________________________
+	
+	
+## The possible length constraint options are:
+
+    :minimum - The attribute cannot have less than the specified length.
+    :maximum - The attribute cannot have more than the specified length.
+    :in (or :within) - The attribute length must be included in a given interval. The value for this option must be a range.
+    :is - The attribute length must be equal to the given value.
+
+
+()===> The default error messages depend on the type of length validation being performed. 
+You can customize these messages using the :wrong_length, :too_long, and :too_short options and 
+%{count} as a placeholder for the number corresponding to the length constraint being used. 
+You can still use the :message option to specify an error message.
 
 ()===>
-	
-()===>
+________________________________________________________
+class Person < ApplicationRecord
+  validates :bio, length: { maximum: 1000,
+    too_long: "%{count} characters is the maximum allowed" }
+end
+________________________________________________________
 
-()===>
-	
-()===>
+##Note that the default error messages are plural (e.g., "is too short (minimum is %{count} characters)"). 
+For this reason, when :minimum is 1 you should provide a custom message or use presence: true instead. 
+When :in or :within have a lower limit of 1, you should either provide a custom message or call presence prior to length.
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : numericality ###############
 
-()===>
+()===> To specify that only integer numbers are allowed, set :only_integer to true. Then it will use the
+/\A[+-]?\d+\z/
+regular expression to validate the attribute's value. 
+
+Otherwise, it will try to convert the value to a number using Float. Floats are casted to BigDecimal using the column's precision value or 15.
+________________________________________________________
+class Player < ApplicationRecord
+  validates :points, numericality: true
+  validates :games_played, numericality: { only_integer: true }
+end
+________________________________________________________
+
+	
+## The default error message for :only_integer is "must be an integer".
+
+## The default error message when no options are specified is "is not a number".
+
+
+()===> Besides :only_integer, this helper also accepts the following options to add constraints to acceptable values:
+
+
+
+class Player < ApplicationRecord
+  validates :points, numericality: true
+  validates :games_played, numericality: { only_integer: true }
+end
+
+The default error message for :only_integer is "must be an integer".
+
+Besides :only_integer, this helper also accepts the following options to add constraints to acceptable values:
+
+(*)===>    :greater_than - Specifies the value must be greater than the supplied value. The default error message for this option is "must be greater than %{count}".
+
+(*)===>    :greater_than_or_equal_to - Specifies the value must be greater than or equal to the supplied value. The default error message for this option is "must be greater than or equal to %{count}".
+
+(*)===>    :equal_to - Specifies the value must be equal to the supplied value. The default error message for this option is "must be equal to %{count}".
+
+(*)===>    :less_than - Specifies the value must be less than the supplied value. The default error message for this option is "must be less than %{count}".
+
+(*)===>    :less_than_or_equal_to - Specifies the value must be less than or equal to the supplied value. The default error message for this option is "must be less than or equal to %{count}".
+
+(*)===>    :other_than - Specifies the value must be other than the supplied value. The default error message for this option is "must be other than %{count}".
+
+(*)===>    :in - Specifies the value must be in the supplied range. The default error message for this option is "must be in %{count}".
+
+(*)===>    :odd - Specifies the value must be an odd number if set to true. The default error message for this option is "must be odd".
+
+(*)===>    :even - Specifies the value must be an even number if set to true. The default error message for this option is "must be even".
+
+_____________________________________________
+class Player < ApplicationRecord
+  validates :points, numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: 100,
+    message: "must be between 0 and 100"
+  }
+
+  validates :games_played, numericality: {
+    only_integer: true,
+    greater_than: 0,
+    message: "must be a positive integer"
+  }
+
+  validates :age, numericality: {
+    even: true,
+    message: "must be an even number"
+  }
+
+  validates :rating, numericality: {
+    other_than: 0,
+    message: "cannot be zero"
+  }
+end
+_____________________________________________
+
+##The first example validates that points is between 0 and 100, inclusive, and adds a custom error message. 
+The second example validates that games_played is a positive integer and adds a custom error message. 
+The third example validates that age is an even number. 
+The fourth example validates that rating is any value other than 0.
+
+
+(*)===>
+_____________________________________
+class Player < ApplicationRecord
+  validates :rating, numericality: {
+    greater_than_or_equal_to: 0.0,
+    less_than_or_equal_to: 10.0,
+    message: "must be between 0.0 and 10.0"
+  }
+end
+______________________________________
+
+## This validation rule checks that the rating attribute is a number greater than or equal to 0.0 and less than or equal to 10.0.
+
+If the rating attribute does not meet these criteria, an error message will be added to the object's errors collection. 
+The default error message for the :in option is "must be in %{count}", but in the above example we have specified a custom error message.	
+
 	
 ()===>
+__________________________________________
+class Product < ApplicationRecord
+  validates :price, numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: 100,
+    message: "must be between 0 and 100"
+  }
 
-()===>
-	
-()===>
+  validates :quantity, numericality: {
+    only_integer: true,
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: 10,
+    message: "must be between 0 and 10"
+  }
+
+  validates :rating, numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: 5,
+    message: "must be between 0 and 5"
+  }
+
+  validates :weight, numericality: {
+    in: 0.1..10.0,
+    message: "must be between 0.1 and 10.0"
+  }
+end
+____________________________________________
+
+##In this example, we have a Product model with four numerical attributes: price, quantity, rating, and weight.
+
+##The first three validations use greater_than_or_equal_to and less_than_or_equal_to to validate that the values fall within the specified ranges.
+
+##The fourth validation uses the :in option to specify a range of values for the weight attribute. 
+In this case, we've specified a range of 0.1 to 10.0 using the .. operator. This means that the weight attribute must be between 0.1 and 10.0, inclusive.
+
+##If any of these validations fail, an error message will be added to the object's errors collection with the custom message we've specified. 
+For example, if the weight attribute is less than 0.1 or greater than 10.0, the error message "must be between 0.1 and 10.0" will be added to the errors collection.
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : presence ###############
 
-()===>
-	
-()===>
+()===>This helper validates that the specified attributes are not empty. It uses the blank? method to check if the value is either nil or a blank string, that is, a string that is either empty or consists of whitespace.
 
-()===>
+_______________________________________________________
+class Person < ApplicationRecord
+  validates :name, :login, :email, presence: true
+end
+_______________________________________________________
+
+
 	
-()===>
+()===>If you want to be sure that an association is present, you'll need to test whether the associated object itself is present, and not the foreign key used to map the association.
+_____________________________________
+class Supplier < ApplicationRecord
+  has_one :account
+  validates :account, presence: true
+end
+_____________________________________
+
+
+This is a model definition in Ruby on Rails for a Supplier class that inherits from ApplicationRecord. The class includes two lines of code:
+
+    has_one :account: This is an association method provided by Rails that defines a one-to-one relationship between the Supplier model and the Account model. This means that a supplier can have at most one account, and an account belongs to exactly one supplier.
+
+    validates :account, presence: true: This line of code adds a validation to the Supplier model that requires the associated Account model to be present. This means that when a Supplier is saved to the database, it must have an associated Account record. If the associated Account is missing, a validation error will be added to the Supplier object's errors collection.
+
+By adding this validation, we ensure that a Supplier cannot be saved to the database without an associated Account. This helps to maintain the integrity of the data in the system and prevent issues such as orphaned records.
+
+
+()===>In order to validate associated records whose presence is required, you must specify the :inverse_of option for the association:
+
+____________________________________________
+class Order < ApplicationRecord
+  has_many :line_items, inverse_of: :order
+end
+____________________________________________
+
+##This is a model definition in Ruby on Rails for an Order class that inherits from ApplicationRecord. The class includes one line of code:
+
+    has_many :line_items, inverse_of: :order: This is an association method provided by Rails that defines a one-to-many relationship between the Order model and the LineItem model. This means that an order can have many line items, and a line item belongs to exactly one order.
+
+    The inverse_of option is used to specify the name of the association on the LineItem model that points back to the Order model. This option is used to optimize the loading of associated records and should be set to the name of the association that defines the opposite relationship on the associated model.
+
+By defining this association, we can easily retrieve all of the line items associated with an order and perform operations on them, such as calculating the total price of the order. It also allows us to easily retrieve the order to which a line item belongs.
+
+Note that this association assumes that the LineItem model has a foreign key order_id that references the id of the associated Order record.
+
+
+##In Ruby on Rails, associations between models are defined using various methods such as has_many, belongs_to, has_one, and so on. These methods create a relationship between two models that allows them to be associated with each other and accessed through a set of methods provided by Rails.
+
+When you define an association between two models, Rails automatically creates an inverse association on the associated model that points back to the original model. For example, if you define a has_many association between Order and LineItem models, Rails will automatically create a belongs_to association on the LineItem model that points back to the Order model.
+
+The inverse_of option is used to explicitly specify the name of the association on the associated model that points back to the original model. This option should be set to the name of the association that defines the opposite relationship on the associated model.
+
+By setting inverse_of, Rails is able to optimize the loading of associated records and reduce the number of database queries needed to retrieve the associated data. This is because when you use inverse_of, Rails can use the pre-loaded object instead of querying the database again to fetch the associated object. This can result in significant performance improvements, especially when dealing with complex associations or large datasets.
+
 
 ___________________________________________________________________
 
-###############  ###############
+###############  Validation Helpers : absence ###############
 
-()===>
-	
-()===>
+()===>This helper validates that the specified attributes are absent. It uses the present? method to check if the value is not either nil or a blank string, that is, a string that is either empty or consists of whitespace.
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, :login, :email, absence: true
+end
+____________________________________________
 
-()===>
+
+
+()===> If you want to be sure that an association is absent, you'll need to test whether the associated object itself is absent, and not the foreign key used to map the association.
+____________________________________________
+class LineItem < ApplicationRecord
+  belongs_to :order
+  validates :order, absence: true
+end
+____________________________________________
+
+
+()===> In order to validate associated records whose absence is required, you must specify the :inverse_of option for the association: 
+____________________________________________
+class Order < ApplicationRecord
+  has_many :line_items, inverse_of: :order
+end
+____________________________________________
+
+##If you validate the absence of an object associated via a has_one or has_many relationship, it will check that the object is neither present? nor marked_for_destruction?.
+
+##Since false.present? is false, if you want to validate the absence of a boolean field you should use validates :field_name, exclusion: { in: [true, false] }.
+
+##The default error message is "must be blank".	
+___________________________________________________________________
+
+###############  Validation Helpers : uniqueness ###############
+
+()===> This helper validates that the attribute's value is unique right before the object gets saved. It does not create a uniqueness constraint in the database
+
+____________________________________________
+class Account < ApplicationRecord
+  validates :email, uniqueness: true
+end
+____________________________________________
 	
-()===>
+()===> There is a :scope option that you can use to specify one or more attributes that are used to limit the uniqueness check:
+
+____________________________________________
+class Holiday < ApplicationRecord
+  validates :name, uniqueness: { scope: :year,
+    message: "should happen once per year" }
+end
+____________________________________________
+
+By default, the uniqueness validation checks that the value of the attribute is unique across all records in the table. However, sometimes it may be necessary to limit the uniqueness check to a specific subset of records based on one or more attributes. For example, you may want to ensure that a user's email address is unique only among users who belong to a certain organization.
+
+This is where the :scope option comes in. The :scope option is used to specify one or more attributes that are used to limit the uniqueness check to a specific subset of records. When you use :scope, the uniqueness validation will only be applied to records that match the specified scope.
+
+For example, consider the following code snippet:
+____________________________________________
+class User < ApplicationRecord
+  validates :email, uniqueness: { scope: :organization_id }
+end
+____________________________________________
+
+In this example, the uniqueness validation is applied to the email attribute, but only for records where the organization_id attribute is the same as the current record. This means that two users can have the same email address as long as they belong to different organizations.
+
+You can also specify multiple attributes for the :scope option by passing an array:
+
+____________________________________________
+class User < ApplicationRecord
+  validates :email, uniqueness: { scope: [:organization_id, :account_id] }
+end
+____________________________________________
+
+In this example, the uniqueness validation is applied to the email attribute, but only for records where the organization_id and account_id attributes are the same as the current record.
+
+Using the :scope option can be very useful when you need to enforce uniqueness constraints based on specific conditions. It allows you to ensure that a record is unique only among a specific subset of records, rather than across the entire table.
+
+
+()===>There is also a :case_sensitive option that you can use to define whether the uniqueness constraint will be case sensitive, case insensitive, or respects default database collation.
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, uniqueness: { case_sensitive: false }
+end
+____________________________________________
+
+##The default error message is "has already been taken".
+
+By default, the uniqueness validation is case sensitive, meaning that it distinguishes between uppercase and lowercase characters when comparing values. However, sometimes you may want to ignore case when checking for uniqueness, especially when dealing with string attributes like email or username.
+
+This is where the :case_sensitive option comes in. The :case_sensitive option is used to define whether the uniqueness constraint will be case sensitive or case insensitive. You can set this option to true to make the constraint case sensitive (which is the default behavior), or set it to false to make the constraint case insensitive.
+___________________________________________________________________
+
+##############  Validation Helpers : validates_with ##############
+
+()===> This helper passes the record to a separate class for validation.
+
+____________________________________________
+class GoodnessValidator < ActiveModel::Validator
+  def validate(record)
+    if record.first_name == "Evil"
+      record.errors.add :base, "This person is evil"
+    end
+  end
+end
+
+class Person < ApplicationRecord
+  validates_with GoodnessValidator
+end
+____________________________________________
+
+##The validates_with helper takes a class, or a list of classes to use for validation. 
+##There is no default error message for validates_with. 
+##You must manually add errors to the record's errors collection in the validator class.
+
+##To implement the validate method, you must have a record parameter defined, which is the record to be validated.
+
+()===>Like all other validations, validates_with takes the :if, :unless and :on options. If you pass any other options, it will send those options to the validator class as options:
+
+____________________________________________
+class GoodnessValidator < ActiveModel::Validator
+  def validate(record)
+    if options[:fields].any? { |field| record.send(field) == "Evil" }
+      record.errors.add :base, "This person is evil"
+    end
+  end
+end
+
+class Person < ApplicationRecord
+  validates_with GoodnessValidator, fields: [:first_name, :last_name]
+end
+____________________________________________
+
+## Note that the validator will be initialized only once for the whole application life cycle, and not on each validation run, so be careful about using instance variables inside it.
+
+
+()===> If your validator is complex enough that you want instance variables, you can easily use a plain old Ruby object instead:
+____________________________________________
+class Person < ApplicationRecord
+  validate do |person|
+    GoodnessValidator.new(person).validate
+  end
+end
+
+class GoodnessValidator
+  def initialize(person)
+    @person = person
+  end
+
+  def validate
+    if some_complex_condition_involving_ivars_and_private_methods?
+      @person.errors.add :base, "This person is evil"
+    end
+  end
+
+  # ...
+end
+____________________________________________
+
+
+	
+()===>using validates_with to add a custom validator to a model:
+
+____________________________________________
+class Product < ApplicationRecord
+  validates_with PriceValidator, fields: [:price, :discounted_price], on: :create
+
+  # other model code here
+end
+____________________________________________
+
+
+In this example, we're adding a custom validator called PriceValidator to the Product model. We're passing the fields option to the validator, which specifies the attributes to be validated. We're also using the on option to specify that the validation should only be run when creating a new record.
+
+Here's an example implementation of the PriceValidator:
+____________________________________________
+class PriceValidator < ActiveModel::Validator
+  def validate(record)
+    fields = options[:fields]
+    fields.each do |field|
+      value = record.send(field)
+      if value.present? && value < 0
+        record.errors.add(field, "must be greater than or equal to 0")
+      end
+    end
+  end
+end
+____________________________________________
+
+In this implementation, we're validating that the price and discounted_price fields are greater than or equal to 0. If either of these fields is negative, we add an error message to the record.errors object using the add method. The options hash passed to the validator's constructor is used to retrieve the fields to be validated.
+
 
 ___________________________________________________________________
 
-###############  ###############
+##############  Validation Helpers :  validates_each ##############
 
-()===>
+(*)===>This helper validates attributes against a block. It doesn't have a predefined validation function. You should create one using a block, and every attribute passed to validates_each will be tested against it.
+
+____________________________________________
+class Person < ApplicationRecord
+  validates_each :name, :surname do |record, attr, value|
+    record.errors.add(attr, 'must start with upper case') if value =~ /\A[[:lower:]]/
+  end
+end
+____________________________________________
+
+##The block receives the record, the attribute's name, and the attribute's value. 
+##You can do anything you like to check for valid data within the block. 
+##If your validation fails, you should add an error to the model, therefore making it invalid.
+___________________________________________________________________
+
+######  Common Validation Options : allow_nil, allow_blank  ######
+
+(*)===>allow_nil
+
+The :allow_nil option skips the validation when the value being validated is nil.
+
+____________________________________________
+class Coffee < ApplicationRecord
+  validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }, allow_nil: true
+end
+____________________________________________
+
 	
-()===>
+(*)===> allow_blank
 
-()===>
+The :allow_blank option is similar to the :allow_nil option. This option will let validation pass if the attribute's value is blank?, like nil or an empty string for example.
+
+____________________________________________
+class Topic < ApplicationRecord
+  validates :title, length: { is: 5 }, allow_blank: true
+end
+____________________________________________
+
+
+irb> Topic.create(title: "").valid?
+=> true
+irb> Topic.create(title: nil).valid?
+=> true
+
+___________________________________________________________________
+
+############### Common Validation Options :message ###############
+
+(*)===> the :message option lets you specify the message that will be added to the errors collection when validation fails. When this option is not used, Active Record will use the respective default error message for each validation helper. The :message option accepts a String or Proc.
+
+____________________________________________
+class Person < ApplicationRecord
+  # Hard-coded message
+  validates :name, presence: { message: "must be given please" }
+
+  # Message with dynamic attribute value. %{value} will be replaced
+  # with the actual value of the attribute. %{attribute} and %{model}
+  # are also available.
+  validates :age, numericality: { message: "%{value} seems wrong" }
+
+  # Proc
+  validates :username,
+    uniqueness: {
+      # object = person object being validated
+      # data = { model: "Person", attribute: "Username", value: <username> }
+      message: ->(object, data) do
+        "Hey #{object.name}, #{data[:value]} is already taken."
+      end
+    }
+end
+____________________________________________
+
+
 	
-()===>
+(*)===>A String :message value can optionally contain any/all of %{value}, %{attribute}, and %{model} which will be dynamically replaced when validation fails. This replacement is done using the I18n gem, and the placeholders must match exactly, no spaces are allowed.
 
+____________________________________________
+class Product < ApplicationRecord
+  validates :price, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100, message: "The price (%{value}) of %{model} must be between $0 and $100" }
+end
+____________________________________________
+
+In this example, we're validating the numericality of the price attribute. The :message option is set to a string that contains two of the available placeholders: %{value} and %{model}.
+
+When this validation fails, the %{value} placeholder will be dynamically replaced with the actual value of the price attribute that triggered the validation error. The %{model} placeholder will be replaced with the name of the model (in this case, "Product").
+
+So, for example, if we tried to create a Product with a price value of 200, the validation would fail and the error message would be:
+
+The price (200) of Product must be between $0 and $100
+
+This provides more specific information about the validation error and can help developers debug issues more easily.
+
+
+(*)===> A Proc :message value is given two arguments: the object being validated, and a hash with :model, :attribute, and :value key-value pairs.
+	
+____________________________________________
+class Product < ApplicationRecord
+  validates :price, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100, message: Proc.new { |product, options| "The price of #{product.name} must be between $#{options[:value][:greater_than_or_equal_to]} and $#{options[:value][:less_than_or_equal_to]}" } }
+end
+____________________________________________
+
+##In this example, we're validating the numericality of the price attribute. If the price is not between 0 and 100, the error message will be dynamically generated using a Proc that takes two arguments: the object being validated (in this case, a product) and a hash with key-value pairs for the model, attribute, and value being validated.
+
+##The Proc can use these arguments to generate a custom error message that includes information about the object being validated and the specific validation criteria that failed.
+	
+___________________________________________________________________
+
+############### Common Validation Options :on  ###############
+The :on option lets you specify when the validation should happen. The default behavior for all the built-in validation helpers is to be run on save (both when you're creating a new record and when you're updating it).
+
+
+()===> If you want to change it, you can use on: :create to run the validation only when a new record is created or on: :update to run the validation only when a record is updated.
+____________________________________________
+class Person < ApplicationRecord
+  # it will be possible to update email with a duplicated value
+  validates :email, uniqueness: true, on: :create
+
+  # it will be possible to create the record with a non-numerical age
+  validates :age, numericality: true, on: :update
+
+  # the default (validates on both create and update)
+  validates :name, presence: true
+end
+____________________________________________
+
+	
+()===>In Ruby on Rails, you can define custom contexts for validations using the on: option. Custom contexts allow you to define specific validation rules that are only applied in certain situations, and need to be triggered explicitly when validating or saving a model.
+
+____________________________________________
+class Person < ApplicationRecord
+  validates :email, uniqueness: true, on: :account_setup
+  validates :age, numericality: true, on: :account_setup
+end
+____________________________________________
+
+##In this example, we have a Person model with two validations that are only applied in the :account_setup context. The :email attribute is validated for uniqueness, and the :age attribute is validated for numericality.
+
+
+
+To trigger these validations in the :account_setup context, we need to use valid?(:account_setup) or save(context: :account_setup) instead of valid? or save. For example:
+____________________________________________
+person = Person.new(age: 'thirty-three')
+person.valid? #=> true
+person.valid?(:account_setup) #=> false
+person.errors.messages #=> {:email=>["has already been taken"], :age=>["is not a number"]}
+
+person.save(context: :account_setup) #=> false
+person.errors.messages #=> {:email=>["has already been taken"], :age=>["is not a number"]}
+____________________________________________
+
+##In this example, we create a new Person instance with an age attribute that is not a valid number. When we call valid?, the validation for :age is not applied because we're not in the :account_setup context. When we call valid?(:account_setup), the validation is applied and returns false, because the age attribute is not a valid number.
+
+##Similarly, when we call save(context: :account_setup), the validation is applied before saving the record, and returns false because the age attribute is not valid in the :account_setup context.
+
+##Custom contexts can be useful when you need to apply different validation rules in different situations, such as during user registration or when updating certain fields.
+
+___________________________________________________________________
+
+############### Strict Validations ###############
+
+()===>You can also specify validations to be strict and raise ActiveModel::StrictValidationFailed when the object is invalid.
+
+____________________________________________
+class Person < ApplicationRecord
+  validates :name, presence: { strict: true }
+end
+____________________________________________
+
+irb> Person.new.valid?
+ActiveModel::StrictValidationFailed: Name can't be blank
+	
+	
+	
+()===> There is also the ability to pass a custom exception to the :strict option.
+____________________________________________
+class Person < ApplicationRecord
+  validates :token, presence: true, uniqueness: true, strict: TokenGenerationException
+end
+____________________________________________
+
+irb> Person.new.valid?
+TokenGenerationException: Token can't be blank
+
+
+___________________________________________________________________
+
+############### Conditional Validation ###############
+Sometimes it will make sense to validate an object only when a given predicate is satisfied. You can do that by using the :if and :unless options, which can take a symbol, a Proc or an Array. You may use the :if option when you want to specify when the validation should happen. If you want to specify when the validation should not happen, then you may use the :unless option.
+
+
+(*)===> Using a Symbol with :if and :unless
+____________________________________________
+class Order < ApplicationRecord
+  validates :card_number, presence: true, if: :paid_with_card?
+
+  def paid_with_card?
+    payment_type == "card"
+  end
+end
+____________________________________________
+
+	
+(*)===> Using a Proc with :if and :unless
+____________________________________________
+class Account < ApplicationRecord
+  validates :password, confirmation: true,
+    unless: Proc.new { |a| a.password.blank? }
+end
+____________________________________________
+
+
+(*)===> As Lambdas are a type of Proc, they can also be used to write inline conditions in a shorter way.
+
+____________________________________________
+validates :password, confirmation: true, unless: -> { password.blank? }
+____________________________________________
+
+	
+(*)===> Grouping Conditional validations
+____________________________________________
+class User < ApplicationRecord
+  with_options if: :is_admin? do |admin|
+    admin.validates :password, length: { minimum: 10 }
+    admin.validates :email, presence: true
+  end
+end
+____________________________________________
+
+## All validations inside of the with_options block will have automatically passed the condition if: :is_admin?
+	
+	
+(*)===> Combining Validation Conditions
+____________________________________________
+class Computer < ApplicationRecord
+  validates :mouse, presence: true,
+                    if: [Proc.new { |c| c.market.retail? }, :desktop?],
+                    unless: Proc.new { |c| c.trackpad.present? }
+end
+____________________________________________
+
+## The validation only runs when all the :if conditions and none of the :unless conditions are evaluated to true.
 ___________________________________________________________________
 
 ###############  ###############
