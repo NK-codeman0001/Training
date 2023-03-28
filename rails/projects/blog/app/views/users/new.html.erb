@@ -34,6 +34,11 @@
   </div>
 
   <div>
+    <%= form.label :t_size %><br>
+    <%= form.text_field :t_size %>
+  </div>
+
+  <div>
     <%= form.label :age %><br>
     <%= form.select :age, options_for_select(1..30)%>
   </div>
