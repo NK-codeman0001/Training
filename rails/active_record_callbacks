@@ -349,16 +349,92 @@ ___________________________________________________________________
 
 ############ Available Callbacks: Destroying an Object ############
 
-(*)===>
+(*)===> before_destroy
 
+This callback is called before the object is destroyed from the database. It can be used to perform any necessary actions before the object is removed. For example:
 ____________________________________________
+class User < ApplicationRecord
+  before_destroy :send_goodbye_email
+
+  def send_goodbye_email
+    UserMailer.goodbye_notification(self).deliver_now
+  end
+end
+
+user = User.find(1)
+user.destroy
+
+# Output
+# Email notification sent to john@example.com
+____________________________________________
+## In this example, the send_goodbye_email method is called before the user object is destroyed from the database. It sends an email notification to the user to say goodbye. The output shows the message printed by the UserMailer class, indicating that the email was sent successfully.
+
+
+(*)===> around_destroy
+This callback is called around the destroy process. It can be used to perform additional actions before and after the destroy. For example:
+____________________________________________
+class User < ApplicationRecord
+  around_destroy :log_deletion
+
+  def log_deletion
+    puts "Deleting user with ID #{id}"
+    yield
+    puts "User deleted"
+  end
+end
+
+user = User.find(1)
+user.destroy
+
+# Output
+# Deleting user with ID 1
+# User deleted
+____________________________________________
+## In this example, the log_deletion method is called around the destroy process. It prints a message before and after the destroy and uses yield to call the actual destroy method. The output shows the messages printed before and after the destroy.
+
+(*)===> after_destroy
+This callback is called after the object is destroyed from the database. It can be used to perform any necessary actions after the object is removed. For example:
+____________________________________________
+class User < ApplicationRecord
+  after_destroy :log_deletion
+
+  def log_deletion
+    puts "User with ID #{id} deleted"
+  end
+end
+
+user = User.find(1)
+user.destroy
+
+# Output
+# User with ID 1 deleted
+____________________________________________
+## In this example, the log_deletion method is called after the user object is destroyed from the database. It prints a message to confirm that the user was deleted. The output shows the message printed by the puts method.
+
+
+
+(*)===>  after_commit / after_rollback 
+These callbacks are called after the transaction that contains the destroy is committed or rolled back. They can be used to perform any necessary actions after the transaction is completed. For example:
+____________________________________________
+class User < ApplicationRecord
+  after_destroy :log_deletion
+
+  def log_deletion
+    puts "User with ID #{id} deleted"
+  end
+end
+
+ActiveRecord::Base.transaction do
+  user = User.find(1)
+  user.destroy
+  raise ActiveRecord::Rollback
+end
+
+# Output
+# (no output)
 ____________________________________________
 
-(*)===>
-
-____________________________________________
-____________________________________________
-
+## In this example, a transaction is used to destroy the user object, but the transaction is rolled back intentionally. The log_deletion method is still called after the destroy, but because the transaction was rolled back, the user object is not actually deleted from the database. The output shows that no message is printed by the puts method. If the transaction had been committed instead, the message would have been printed as usual.
 
 ___________________________________________________________________
 
