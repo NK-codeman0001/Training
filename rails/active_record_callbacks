@@ -438,127 +438,295 @@ ____________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
+############### after_initialize and after_find ###############
+The after_initialize callback will be called whenever an Active Record object is instantiated, either by directly using new or when a record is loaded from the database. It can be useful to avoid the need to directly override your Active Record initialize method.
+
+The after_find callback will be called whenever Active Record loads a record from the database. after_find is called before after_initialize if both are defined.
+
+
+
+(*)===>The after_initialize and after_find callbacks have no before_* counterparts, but they can be registered just like the other Active Record callbacks.
+
+____________________________________________
+class User < ApplicationRecord
+  after_initialize do |user|
+    puts "You have initialized an object!"
+  end
+
+  after_find do |user|
+    puts "You have found an object!"
+  end
+end
+____________________________________________
 
 (*)===>
 
 ____________________________________________
-____________________________________________
+irb> User.new
+You have initialized an object!
+=> #<User id: nil>
 
-(*)===>
-
-____________________________________________
+irb> User.first
+You have found an object!
+You have initialized an object!
+=> #<User id: 1>
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### after_touch ###############
+
+(*)===>The after_touch callback will be called whenever an Active Record object is touched.
+____________________________________________
+class User < ApplicationRecord
+  after_touch do |user|
+    puts "You have touched an object"
+  end
+end
+____________________________________________
+irb> u = User.create(name: 'Kuldeep')
+=> #<User id: 1, name: "Kuldeep", created_at: "2013-11-25 12:17:49", updated_at: "2013-11-25 12:17:49">
+
+irb> u.touch
+You have touched an object
+=> true
+
+
+(*)===> It can be used along with belongs_to:
+
+____________________________________________
+class Employee < ApplicationRecord
+  belongs_to :company, touch: true
+  after_touch do
+    puts 'An Employee was touched'
+  end
+end
+
+class Company < ApplicationRecord
+  has_many :employees
+  after_touch :log_when_employees_or_company_touched
+
+  private
+    def log_when_employees_or_company_touched
+      puts 'Employee/Company was touched'
+    end
+end
+____________________________________________
+
+irb> @employee = Employee.last
+=> #<Employee id: 1, company_id: 1, created_at: "2013-11-25 17:04:22", updated_at: "2013-11-25 17:05:05">
+
+irb> @employee.touch # triggers @employee.company.touch
+An Employee was touched
+Employee/Company was touched
+=> true
+
+___________________________________________________________________
+
+############### Running Callbacks ###############
+
+(*)===> The following methods trigger callbacks:
+
+    create
+    create!
+    destroy
+    destroy!
+    destroy_all
+    destroy_by
+    save
+    save!
+    save(validate: false)
+    toggle!
+    touch
+    update_attribute
+    update
+    update!
+    valid?
+
+(*)===> Additionally, the after_find callback is triggered by the following finder methods:
+
+    all
+    first
+    find
+    find_by
+    find_by_*
+    find_by_*!
+    find_by_sql
+    last
+
+(*)===> The after_initialize callback is triggered every time a new object of the class is initialized.
+
+(*)===> The find_by_* and find_by_*! methods are dynamic finders generated automatically for every attribute.
+
+___________________________________________________________________
+
+############### Skipping Callbacks ###############
+
+(*)===> Just as with validations, it is also possible to skip callbacks by using the following methods:
+
+    decrement!
+    decrement_counter
+    delete
+    delete_all
+    delete_by
+    increment!
+    increment_counter
+    insert
+    insert!
+    insert_all
+    insert_all!
+    touch_all
+    update_column
+    update_columns
+    update_all
+    update_counters
+    upsert
+    upsert_all
+
+These methods should be used with caution, however, because important business rules and application logic may be kept in callbacks. Bypassing them without understanding the potential implications may lead to invalid data.
+
+___________________________________________________________________
+
+############### Halting Execution ###############
+As you start registering new callbacks for your models, they will be queued for execution. This queue will include all your model's validations, the registered callbacks, and the database operation to be executed.
+
+The whole callback chain is wrapped in a transaction. If any callback raises an exception, the execution chain gets halted and a ROLLBACK is issued. To intentionally stop a chain use:
+
+(*)===> throw :abort
+
+
+Any exception that is not ActiveRecord::Rollback or ActiveRecord::RecordInvalid will be re-raised by Rails after the callback chain is halted. Raising an exception other than ActiveRecord::Rollback or ActiveRecord::RecordInvalid may break code that does not expect methods like save and update (which normally try to return true or false) to raise an exception.
+
+___________________________________________________________________
+
+############### Relational Callbacks ###############
+Callbacks work through model relationships, and can even be defined by them. Suppose an example where a user has many articles. A user's articles should be destroyed if the user is destroyed. Let's add an after_destroy callback to the User model by way of its relationship to the Article model:
 
 (*)===>
-
 ____________________________________________
+class User < ApplicationRecord
+  has_many :articles, dependent: :destroy
+end
+
+class Article < ApplicationRecord
+  after_destroy :log_destroy_action
+
+  def log_destroy_action
+    puts 'Article destroyed'
+  end
+end
 ____________________________________________
 
-(*)===>
+irb> user = User.first
+=> #<User id: 1>
+irb> user.articles.create!
+=> #<Article id: 1, user_id: 1>
+irb> user.destroy
+Article destroyed
+=> #<User id: 1>
 
+
+___________________________________________________________________
+
+############### Conditional Callbacks ###############
+
+When using the :if option, the callback won't be executed if the predicate method returns false; 
+
+when using the :unless option, the callback won't be executed if the predicate method returns true.
+
+
+(*)===> Using :if and :unless with a Symbol
 ____________________________________________
+class Order < ApplicationRecord
+  before_save :normalize_card_number, if: :paid_with_card?
+end
+____________________________________________
+
+(*)===> Using :if and :unless with a Proc
+____________________________________________
+class Order < ApplicationRecord
+  before_save :normalize_card_number,
+    if: Proc.new { |order| order.paid_with_card? }
+end
+____________________________________________
+
+
+As the proc is evaluated in the context of the object, it is also possible to write this as:
+____________________________________________
+class Order < ApplicationRecord
+  before_save :normalize_card_number, if: Proc.new { paid_with_card? }
+end
+____________________________________________
+
+
+(*)===> Using both :if and :unless
+____________________________________________
+class Comment < ApplicationRecord
+  before_save :filter_content,
+    if: Proc.new { forum.parental_control? },
+    unless: Proc.new { author.trusted? }
+end
+____________________________________________
+
+
+(*)===> Multiple Callback Conditions
+____________________________________________
+class Comment < ApplicationRecord
+  before_save :filter_content,
+    if: [:subject_to_parental_control?, :untrusted_author?]
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### Callback Classes ###############
 
-(*)===>
+(*)===> Here's an example where we create a class with an after_destroy callback for a PictureFile model:
+____________________________________________
+class PictureFileCallbacks
+  def after_destroy(picture_file)
+    if File.exist?(picture_file.filepath)
+      File.delete(picture_file.filepath)
+    end
+  end
+end
+____________________________________________
+
+
+(*)===>When declared inside a class, as above, the callback methods will receive the model object as a parameter. We can now use the callback class in the model:
 
 ____________________________________________
+class PictureFile < ApplicationRecord
+  after_destroy PictureFileCallbacks.new
+end
+____________________________________________
+## Note that we needed to instantiate a new PictureFileCallbacks object, since we declared our callback as an instance method. This is particularly useful if the callbacks make use of the state of the instantiated object. 
+
+(*)===> ften, however, it will make more sense to declare the callbacks as class methods:
+____________________________________________
+class PictureFileCallbacks
+  def self.after_destroy(picture_file)
+    if File.exist?(picture_file.filepath)
+      File.delete(picture_file.filepath)
+    end
+  end
+end
 ____________________________________________
 
-(*)===>
 
+(*)===>If the callback method is declared this way, it won't be necessary to instantiate a PictureFileCallbacks object.
 ____________________________________________
+class PictureFile < ApplicationRecord
+  after_destroy PictureFileCallbacks
+end
 ____________________________________________
-
+## You can declare as many callbacks as you want inside your callback classes.
 
 ___________________________________________________________________
 
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
+############### Transaction Callbacks ###############
 
 (*)===>
 
