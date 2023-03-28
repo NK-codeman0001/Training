@@ -38,5 +38,12 @@ class User < ApplicationRecord
   def not_indian?
     country.downcase.strip !="india"
   end
+
+  validate :valid_gender
+  def valid_gender
+    if gender.nil?
+      errors.add(:gender, "is not selected")
+    end
+  end
 end
 
