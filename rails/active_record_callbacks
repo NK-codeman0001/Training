@@ -283,25 +283,71 @@ ____________________________________________
 ## This code defines an after_rollback callback that logs an error message to the Rails logger after a transaction is rolled back.
 
 
+___________________________________________________________________
+
+############# Available Callbacks: Updating an Object #############
+
+
+(*)===> before_update
+This callback is called before the object is updated in the database. This is a good place to modify the object's attributes before it is updated. For example:
+____________________________________________
+class User < ActiveRecord::Base
+  before_update :update_last_login
+
+  private
+
+  def update_last_login
+    self.last_login_at = Time.now.utc if sign_in_count_changed?
+  end
+end
+____________________________________________
+## In the example above, the update_last_login method is called before updating, which will update the last_login_at attribute of the user object if the sign_in_count attribute has changed.
+
+
+(*)===> around_update
+This callback is called around the update operation of the object. This is a good place to perform additional operations before and after the object is updated. For example:
+____________________________________________
+class User < ActiveRecord::Base
+  around_update :log_update
+
+  private
+
+  def log_update
+    Rails.logger.info("User is being updated with attributes: #{attributes_before_change}")
+    yield
+    Rails.logger.info("User has been updated with attributes: #{attributes}")
+  end
+end
+____________________________________________
+
+
+
+(*)===> after_update
+This callback is called after the object is updated in the database. It can be used to perform any necessary actions after the update. For example:
+
+____________________________________________
+class User < ApplicationRecord
+  after_update :send_email_notification
+
+  def send_email_notification
+    UserMailer.update_notification(self).deliver_now
+  end
+end
+
+user = User.find(1)
+user.first_name = 'John'
+user.last_name = 'Doe'
+user.save
+
+# Output
+# Email notification sent to john@example.com
+____________________________________________
+
+## In this example, the send_email_notification method is called after the user object is updated in the database. It sends an email notification to the user to notify them of the update. The output shows the message printed by the UserMailer class, indicating that the email was sent successfully.
 
 ___________________________________________________________________
 
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
+############ Available Callbacks: Destroying an Object ############
 
 (*)===>
 
