@@ -4,7 +4,7 @@ class CountryValidator < ActiveModel::Validator
     @i_country = record.country.downcase.strip
 
     if @ban_country.include?(@i_country)
-      record.errors.add :base, "Users from #{@i_country.capitalize} are not banned"
+      record.errors.add :base, "Users from #{@i_country.capitalize} are banned"
     elsif @i_country.empty?
       record.errors.add :base, "Country field can't be empty"
     end
@@ -23,6 +23,12 @@ class User < ApplicationRecord
   validates_with CountryValidator
   validates_each :name, :country do |record, attr, value|
     record.errors.add(attr, "must be letter only") if !(value =~/[a-zA-Z]/)
+  end
+
+  validates :address, presence: true, if: :not_indian?
+
+  def not_indian?
+    country.downcase.strip !="india"
   end
 end
 
