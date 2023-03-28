@@ -1,7 +1,286 @@
 ---------------------------------------------------------------------
                			Active Record Callbacks
 ---------------------------------------------------------------------
+Callbacks allow you to trigger logic before or after an alteration of an object's state.
+With callbacks it is possible to write code that will run whenever an Active Record object is 
+created, 
+saved, 
+updated, 
+deleted, 
+validated, or 
+loaded from the database.
+___________________________________________________________________
 
+############### Callback Registration ###############
+
+(*)===> in model
+____________________________________________
+class User < ApplicationRecord
+  validates :login, :email, presence: true
+
+  before_validation :ensure_login_has_a_value
+
+  private
+    def ensure_login_has_a_value
+      if login.nil?
+        self.login = email unless email.blank?
+      end
+    end
+end
+____________________________________________
+
+Explaination:
+
+(*)    validates :login, :email, presence: true is a validation that checks if the login and email attributes are present before saving a record to the database. If either of these attributes are missing, the record will not be saved.
+
+(*)    before_create do is a Rails callback that runs before a record is created in the database.
+
+(*)    self.name = login.capitalize if name.blank? is code that sets the name attribute of a User object to the capitalized version of its login attribute if the name attribute is blank (i.e., it has not been set yet).
+
+In summary, this code ensures that every User record in the database has a login and email attribute, and that every User record also has a name attribute that defaults to the capitalized version of its login attribute if name is not already set. 
+
+
+OR
+____________________________________________
+class User < ApplicationRecord
+  validates :login, :email, presence: true
+
+  before_create do
+    self.name = login.capitalize if name.blank?
+  end
+end
+____________________________________________
+
+
+(*)===>
+____________________________________________
+class User < ApplicationRecord
+  before_validation :normalize_name, on: :create
+
+  # :on takes an array as well
+  after_validation :set_location, on: [ :create, :update ]
+
+  private
+    def normalize_name
+      self.name = name.downcase.titleize
+    end
+
+    def set_location
+      self.location = LocationService.query(self)
+    end
+end
+____________________________________________
+
+It includes two callbacks: before_validation and after_validation.
+
+(*) before_validation :normalize_name, on: :create is a callback that runs before validation is performed on a User object. Specifically, it calls the normalize_name method, which downcases the name attribute and capitalizes the first letter of each word in the string using the titleize method. This ensures that the name attribute is consistently formatted before it is validated.
+
+(*) :on => :create means that this callback will only be called when creating a new record in the database.
+
+(*) after_validation :set_location, on: [ :create, :update ] is a callback that runs after validation is performed on a User object. Specifically, it calls the set_location method, which queries a LocationService to get the location of the user based on their IP address or other relevant information. This ensures that the location attribute is set or updated after validation, so it is always up-to-date in the database.
+
+(*) :on => [:create, :update] means that this callback will be called when creating a new record in the database or updating an existing one.
+
+Both of these callbacks are defined as private methods within the User class, which means that they cannot be called from outside the class.
+
+___________________________________________________________________
+
+############# Available Callbacks: Creating an Object #############
+
+(*)===> before_validation
+
+This callback is called before the model is validated, and is used to modify attributes of the model before validation takes place. 
+This can be useful, for example, to ensure that certain attributes are always set to a specific value. Here's an example:
+____________________________________________
+class User < ApplicationRecord
+  before_validation :normalize_email
+
+  private
+
+  def normalize_email
+    self.email = email.downcase.strip
+  end
+end
+____________________________________________
+
+## In this example, the normalize_email method is called before validation, which ensures that the email attribute is always in lowercase and has no whitespace before or after the email address.
+
+
+(*)===> after_validation
+
+This callback is called after the model has been validated, and can be used to perform additional checks or modifications based on the validation results. Here's an example:
+____________________________________________
+class User < ApplicationRecord
+  after_validation :check_errors
+
+  private
+
+  def check_errors
+    if errors.any?
+      puts "There are errors with the user object!"
+    end
+  end
+end
+____________________________________________
+
+## In this example, the check_errors method is called after validation, and prints a message to the console if there are any errors on the object.
+
+
+
+(*)===> before_save
+This callback is called before the model is saved to the database, and can be used to perform additional modifications to the model attributes. Here's an example:
+____________________________________________
+class User < ApplicationRecord
+  before_save :update_username
+
+  private
+
+  def update_username
+    self.username = "#{first_name}.#{last_name}"
+  end
+end
+____________________________________________
+
+## In this example, the update_username method is called before the model is saved to the database, and sets the username attribute to the concatenation of the user's first name and last name with a period in between.
+
+
+(*)===> around_save
+This callback is called before and after the model is saved to the database, and can be used to perform additional actions before and after the save operation. Here's an example:
+
+____________________________________________
+class User < ApplicationRecord
+  around_save :print_save_message
+
+  private
+
+  def print_save_message
+    puts "About to save the user object!"
+    yield
+    puts "User object has been saved!"
+  end
+end
+____________________________________________
+
+## In this example, the print_save_message method is called before and after the save operation, and prints a message to the console before and after the save operation.
+
+Here's an example of how this code works:
+____________________________________________
+user = User.new(name: "John Doe", email: "john.doe@example.com")
+user.save
+____________________________________________
+
+When this code is executed, the following output will be printed to the console:
+____________________________________________
+About to save the user object!
+User object has been saved!
+____________________________________________
+
+The print_save_message method is called before the save operation, which prints the "About to save the user object!" message. The yield statement allows the save operation to take place. After the save operation is complete, the print_save_message method is called again, which prints the "User object has been saved!" message.
+
+
+
+
+(*)===> before_create
+This callback is called before a new record is created in the database, and can be used to perform additional modifications to the model attributes. Here's an example:
+____________________________________________
+class User < ApplicationRecord
+  before_create :set_default_status
+
+  private
+
+  def set_default_status
+    self.status = "Active"
+  end
+end
+____________________________________________
+
+## In this example, the set_default_status method is called before a new record is created in the database, and sets the status attribute to "Active" by default.
+
+(*)===> around_create
+This callback is called before and after a new record is created in the database, and can be used to perform additional actions before and after the create operation. Here's an example:
+
+____________________________________________
+class User < ApplicationRecord
+  around_create :print_create_message
+
+  private
+
+  def print_create_message
+    puts "About to create a new user record!"
+    yield
+    puts "New user record has been created!"
+  end
+end
+____________________________________________
+
+## In this example, the print_create_message method is called before and after a new record is created in
+
+
+(*)===> after_create
+
+This callback is called after a new object is successfully created and saved to the database.
+____________________________________________
+class User < ApplicationRecord
+  after_create :send_welcome_email
+
+  private
+
+  def send_welcome_email
+    UserMailer.welcome_email(self).deliver_now
+  end
+end
+____________________________________________
+## This code defines an after_create callback that sends a welcome email to a new user after they are created and saved to the database.
+
+
+(*)===> after_save
+
+This callback is called after an object is created or updated and saved to the database.
+____________________________________________
+class User < ApplicationRecord
+  after_save :update_search_index
+
+  private
+
+  def update_search_index
+    SearchIndexService.update(self)
+  end
+end
+____________________________________________
+## This code defines an after_save callback that updates a search index every time a user is created or updated and saved to the database.
+
+
+(*)===>  after_commit
+This callback is called after a database transaction is committed.
+
+____________________________________________
+class User < ApplicationRecord
+  after_commit :notify_slack, on: :create
+
+  private
+
+  def notify_slack
+    SlackService.notify("New user created: #{self.name}")
+  end
+end
+____________________________________________
+## This code defines an after_commit callback that sends a notification to a Slack channel after a new user is created and the transaction is committed.
+
+
+(*)===> after_rollback 
+This callback is called after a database transaction is rolled back.
+____________________________________________
+class User < ApplicationRecord
+  after_rollback :log_error
+
+  private
+
+  def log_error
+    Rails.logger.error("Transaction failed: #{self.errors.full_messages}")
+  end
+end
+____________________________________________
+## This code defines an after_rollback callback that logs an error message to the Rails logger after a transaction is rolled back.
 
 
 
@@ -14,5 +293,266 @@ ___________________________________________________________________
 ____________________________________________
 ____________________________________________
 
+(*)===>
 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+############### END ###############
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+(*)===>
+
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
 
