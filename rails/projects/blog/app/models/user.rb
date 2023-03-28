@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  validates :name, presence: true
+  validates :name, presence: true, format: {with: /\A[a-zA-Z]+\z/, message: "only allows letters"}
   validates :terms_and_conditions, acceptance: { message: 'must be abided'}
   validates :email, confirmation: true
   validates :email_confirmation, presence: true
