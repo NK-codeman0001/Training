@@ -1,3 +1,16 @@
+class CountryValidator < ActiveModel::Validator 
+  def validate(record)
+    @ban_country = %w(pakistan russia china)
+    @i_country = record.country.downcase.strip
+
+    if @ban_country.include?(@i_country)
+      record.errors.add :base, "Users from #{@i_country.capitalize} are not banned"
+    elsif @i_country.empty?
+      record.errors.add :base, "Country field cann't be empty"
+    end
+  end
+end
+
 class User < ApplicationRecord
   validates :name, presence: true, format: {with: /\A[a-zA-Z]+\z/, message: "only allows letters"}
   validates :terms_and_conditions, acceptance: { message: 'must be abided'}
@@ -7,5 +20,6 @@ class User < ApplicationRecord
   validates :country, exclusion: {  in: %w(pakistan russia china), message: "%{value} of %{attribute} for %{model} is reserved."}
   validates :t_size, inclusion: {in: %w(small medium large xl xxl xxxl)}
   validates :password, length: {in: 8..16}
-  validates :address, absence: true
+  validates_with CountryValidator
 end
+
