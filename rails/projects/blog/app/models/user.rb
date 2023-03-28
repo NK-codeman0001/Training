@@ -1,3 +1,11 @@
+class EmailValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    unless value =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+      record.errors.add attribute, (options[:message] || "is not a valid email")
+    end
+  end
+end
+
 class CountryValidator < ActiveModel::Validator 
   def validate(record)
     @ban_country = %w(pakistan russia china)
@@ -14,7 +22,7 @@ end
 class User < ApplicationRecord
   validates :name, presence: {strict: true}, on: create #, format: {with: /\A[a-zA-Z]+\z/, message: "only allows letters"}
   validates :terms_and_conditions, acceptance: { message: 'must be abided'}
-  validates :email, confirmation: true, uniqueness: { case_sensitive: false }
+  validates :email, confirmation: true, uniqueness: { case_sensitive: false }, email:true
   validates :email_confirmation, presence: true
   validates :age, numericality: {only_integer: true,greater_than_or_equal_to: 18, less_than_or_equal_to: 25, other_than: 20}
   # validates :country, exclusion: {  in: %w(pakistan russia china), message: "%{value} of %{attribute} for %{model} is reserved."}
