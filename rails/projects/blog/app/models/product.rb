@@ -1,3 +1,13 @@
+class DeleteProductsCallbacks
+  def self.before_destroy(p)
+    puts "Before Destroy for DeleteProductCallback"
+  end
+
+  def self.after_destroy(p)
+    puts "After Destroy for DeleteProductCallback"
+  end
+end
+
 class Product < ApplicationRecord
   validates :name, :brand_name, presence: true
   
@@ -57,6 +67,10 @@ class Product < ApplicationRecord
   after_create_commit :log_after_create_commit
   after_update_commit :log_after_update_commit
   after_destroy_commit :log_after_destroy_commit
+
+  after_destroy DeleteProductsCallbacks, if: :price_is_nil?
+  before_destroy DeleteProductsCallbacks, if: :price_is_nil?
+
 
 
   private
