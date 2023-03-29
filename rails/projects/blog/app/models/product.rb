@@ -47,8 +47,24 @@ class Product < ApplicationRecord
 
   after_rollback :log_rollback
 
+  after_initialize :log_initialization
+  after_find :log_quering
+  after_touch :log_touch
+
 
   private
+
+  def log_touch
+    puts "object had been touched"
+  end
+
+  def log_initialization
+    puts "object had been initialized"
+  end
+
+  def log_quering
+    puts "record had been fetched from database"
+  end
 
   def log_rollback
     puts "WARNING: TRANSITION FAILED"
