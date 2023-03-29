@@ -29,13 +29,11 @@ class Product < ApplicationRecord
 
   # around_save :add_title
 
-  # before_create :set_default_values
+  # before_create :set_default_values, if: [:title_is_empty?, :price_is_nil?]
 
   # around_create  :add_title
 
   # after_create :add_title_2
-
-  after_save :add_title_2
   
   before_update :update_time
 
@@ -52,7 +50,24 @@ class Product < ApplicationRecord
   after_touch :log_touch
 
 
+  after_save :add_title_2, if: :title_is_empty?
+
+  before_save :log_multiple_conditional, if: [:title_is_empty?, :price_is_nil?]
+
+
   private
+
+  def log_multiple_conditional
+    puts "Multiple Conditonal Callback had been called"
+  end
+
+  def price_is_nil?
+    self.price.nil?
+  end
+
+  def title_is_empty?
+    self.title.nil?
+  end
 
   def log_touch
     puts "object had been touched"
@@ -89,6 +104,7 @@ class Product < ApplicationRecord
     puts "Updated"
     self.updated_at = Time.now.utc
   end
+
   def add_title
     self.title = self.name.titleize 
     puts self.title, "Before Save"
