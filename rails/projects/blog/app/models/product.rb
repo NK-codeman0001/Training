@@ -27,8 +27,10 @@ class Product < ApplicationRecord
   #   self.title = self.name.titleize + " " + self.brand_name.titleize
   # end
 
-  around_save :add_title
+  # around_save :add_title
 
+  before_create :set_default_values
+  
   private 
   def add_title
     self.title = self.name.titleize 
@@ -37,6 +39,16 @@ class Product < ApplicationRecord
     self.title += " " + self.brand_name.titleize
     puts self.title, "After Save"
   end
+
+  def set_default_values
+    puts "Before Create"
+    self.name = ""
+    self.brand_name = ""
+    self.title = ""
+    self.price = 0
+  end
+
+
 
 
 
