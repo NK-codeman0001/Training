@@ -31,7 +31,9 @@ class Product < ApplicationRecord
 
   # before_create :set_default_values
 
-  around_create  :add_title
+  # around_create  :add_title
+
+  after_create :add_title_2
   
   private 
   def add_title
@@ -40,6 +42,10 @@ class Product < ApplicationRecord
     yield
     self.title += " " + self.brand_name.titleize
     puts self.title, "After Save"
+  end
+
+  def add_title_2
+    self.title = self.name.titleize + " " + self.brand_name.titleize
   end
 
   def set_default_values
