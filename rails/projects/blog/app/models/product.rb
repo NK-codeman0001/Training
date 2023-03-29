@@ -43,8 +43,20 @@ class Product < ApplicationRecord
 
   around_destroy :log_delete
   
-  
-  private 
+  after_commit :log_commit
+
+  after_rollback :log_rollback
+
+
+  private
+
+  def log_rollback
+    puts "WARNING: TRANSITION FAILED"
+  end
+
+  def log_commit
+    puts "Transition had been committed"
+  end
 
   def log_delete
     puts "#{self.title} is logged"
