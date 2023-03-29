@@ -54,8 +54,24 @@ class Product < ApplicationRecord
 
   before_save :log_multiple_conditional, if: [:title_is_empty?, :price_is_nil?]
 
+  after_create_commit :log_after_create_commit
+  after_update_commit :log_after_update_commit
+  after_destroy_commit :log_after_destroy_commit
+
 
   private
+
+  def log_after_create_commit
+    puts "Commit for Create"
+  end
+
+  def log_after_update_commit
+    puts "Commit for Update"
+  end
+
+  def log_after_destroy_commit
+    puts "Commit for Destroy"
+  end
 
   def log_multiple_conditional
     puts "Multiple Conditonal Callback had been called"
