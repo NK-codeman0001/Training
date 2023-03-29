@@ -33,7 +33,9 @@ class Product < ApplicationRecord
 
   # around_create  :add_title
 
-  after_create :add_title_2
+  # after_create :add_title_2
+
+  after_save : add_title_2
   
   private 
   def add_title
