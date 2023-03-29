@@ -35,9 +35,22 @@ class Product < ApplicationRecord
 
   # after_create :add_title_2
 
-  after_save : add_title_2
+  after_save :add_title_2
+  
+  before_update :update_time
+
+  after_update :print_after_update
   
   private 
+
+  def print_after_update
+    puts "After Update Callback"
+  end
+
+  def update_time
+    puts "Updated"
+    self.updated_at = Time.now.utc
+  end
   def add_title
     self.title = self.name.titleize 
     puts self.title, "Before Save"
