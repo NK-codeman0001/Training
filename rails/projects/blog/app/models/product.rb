@@ -21,10 +21,21 @@ class Product < ApplicationRecord
     self.brand_name = self.brand_name.downcase
   end
 
-  before_save :add_title
+  # before_save :add_title
 
+  # def add_title
+  #   self.title = self.name.titleize + " " + self.brand_name.titleize
+  # end
+
+  around_save :add_title
+
+  private 
   def add_title
-    self.title = self.name.titleize + " " + self.brand_name.titleize
+    self.title = self.name.titleize 
+    puts self.title, "Before Save"
+    yield
+    self.title += " " + self.brand_name.titleize
+    puts self.title, "After Save"
   end
 
 
