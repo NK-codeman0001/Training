@@ -40,8 +40,18 @@ class Product < ApplicationRecord
   before_update :update_time
 
   after_update :print_after_update
+
+  around_destroy :log_delete
+  
   
   private 
+
+  def log_delete
+    puts "#{self.title} is logged"
+    yield
+    puts "id: #{self.id} deleted"
+
+  end
 
   def print_after_update
     puts "After Update Callback"
