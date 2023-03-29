@@ -29,7 +29,9 @@ class Product < ApplicationRecord
 
   # around_save :add_title
 
-  before_create :set_default_values
+  # before_create :set_default_values
+
+  around_create  :add_title
   
   private 
   def add_title
