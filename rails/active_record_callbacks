@@ -477,6 +477,8 @@ ___________________________________________________________________
 
 ############### after_touch ###############
 
+after_touch is a callback method in Ruby on Rails that gets called after a record has been touched. A record is considered touched if one of its associated records (e.g., a belongs_to or has_many association) has been added, updated, or removed.
+
 (*)===>The after_touch callback will be called whenever an Active Record object is touched.
 ____________________________________________
 class User < ApplicationRecord
@@ -598,6 +600,28 @@ The whole callback chain is wrapped in a transaction. If any callback raises an 
 
 Any exception that is not ActiveRecord::Rollback or ActiveRecord::RecordInvalid will be re-raised by Rails after the callback chain is halted. Raising an exception other than ActiveRecord::Rollback or ActiveRecord::RecordInvalid may break code that does not expect methods like save and update (which normally try to return true or false) to raise an exception.
 
+
+(*)===>  you can halt the execution of a callback by returning false 
+
+In Rails, you can halt the execution of a callback by returning false from the callback method. This is useful when you need to stop further processing based on some condition, such as failing a validation check or detecting an error.
+
+Here's an example of halting the execution of a before_save callback if the user's email is invalid:
+
+_________________________________________________
+class User < ApplicationRecord
+  before_save :validate_email
+
+  def validate_email
+    unless email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
+      errors.add(:email, "is invalid")
+      return false
+    end
+  end
+end
+_________________________________________________
+
+## In this example, the before_save callback validate_email checks if the user's email is valid using a regular expression. If the email is invalid, the callback adds an error to the model's errors collection and returns false. This stops the execution of the before_save callback and prevents the user from being saved to the database.
+
 ___________________________________________________________________
 
 ############### Relational Callbacks ###############
@@ -704,7 +728,7 @@ end
 ____________________________________________
 ## Note that we needed to instantiate a new PictureFileCallbacks object, since we declared our callback as an instance method. This is particularly useful if the callbacks make use of the state of the instantiated object. 
 
-(*)===> ften, however, it will make more sense to declare the callbacks as class methods:
+(*)===> often, however, it will make more sense to declare the callbacks as class methods:
 ____________________________________________
 class PictureFileCallbacks
   def self.after_destroy(picture_file)
@@ -727,122 +751,74 @@ ____________________________________________
 ___________________________________________________________________
 
 ############### Transaction Callbacks ###############
+There are two additional callbacks that are triggered by the completion of a database transaction: after_commit and after_rollback. 
 
-(*)===>
 
+(*)===>Consider, for example, the previous example where the PictureFile model
 ____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
+PictureFile.transaction do
+  picture_file_1.destroy
+  picture_file_2.save!
+end
 ____________________________________________
 
-(*)===>
-
+By using the after_commit callback we can account for this case.
 ____________________________________________
+class PictureFile < ApplicationRecord
+  after_commit :delete_picture_file_from_disk, on: :destroy
+
+  def delete_picture_file_from_disk
+    if File.exist?(filepath)
+      File.delete(filepath)
+    end
+  end
+end
 ____________________________________________
 
 
-___________________________________________________________________
 
-###############  ###############
+(*)===> Since using the after_commit callback only on create, update, or delete is common, there are aliases for those operations:
 
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
+    after_create_commit
+    after_update_commit
+    after_destroy_commit
 
 ____________________________________________
-____________________________________________
+class PictureFile < ApplicationRecord
+  after_destroy_commit :delete_picture_file_from_disk
 
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
+  def delete_picture_file_from_disk
+    if File.exist?(filepath)
+      File.delete(filepath)
+    end
+  end
+end
 ____________________________________________
 
 
-___________________________________________________________________
 
-###############  ###############
+(*)===> There is also an alias for using the after_commit callback for both create and update together:
 
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
+    after_save_commit
 
 ____________________________________________
+class User < ApplicationRecord
+  after_save_commit :log_user_saved_to_db
+
+  private
+  def log_user_saved_to_db
+    puts 'User was saved to database'
+  end
+end
 ____________________________________________
 
+irb> @user = User.create # creating a User
+User was saved to database
 
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
+irb> @user.save # updating @user
+User was saved to database
 
 ___________________________________________________________________
 
 ############### END ###############
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-(*)===>
-
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
 
