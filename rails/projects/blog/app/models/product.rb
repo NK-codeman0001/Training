@@ -21,5 +21,13 @@ class Product < ApplicationRecord
     self.brand_name = self.brand_name.downcase
   end
 
+  before_save :add_title
+
+  def add_title
+    self.title = self.name.titleize + " " + self.brand_name.titleize
+  end
+
+
+
 
 end
