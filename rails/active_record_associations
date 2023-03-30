@@ -720,6 +720,507 @@ ____________________________________________
 
 ___________________________________________________________________
 
+############### Controlling caching ###############
+
+(*)===> All of the association methods are built around caching, which keeps the result of the most recent query available for further operations.
+
+ The cache is even shared across methods. For example:
+____________________________________________
+# retrieves books from the database
+author.books.load
+
+# uses the cached copy of books
+author.books.size
+
+# uses the cached copy of books
+author.books.empty?
+____________________________________________
+
+(*)===> But what if you want to reload the cache, because data might have been changed by some other part of the application? 
+
+Just call reload on the association:
+____________________________________________
+# retrieves books from the database
+author.books.load
+
+# uses the cached copy of books
+author.books.size
+
+# discards the cached copy of books and goes back to the database
+author.books.reload.empty?
+____________________________________________
+
+
+___________________________________________________________________
+
+############### Avoiding name collisions ###############
+In Rails, when you create an association between two models, a method with that association's name is added to the model. However, if the association name conflicts with an existing method in ActiveRecord::Base, it can cause unexpected behavior and break your application.
+
+For example, let's say you have a model called User, and you want to create an association to a model called Attribute. If you create an association called attributes, which is the plural form of the attribute model name, you will run into issues because attributes is already a method defined in ActiveRecord::Base.
+
+
+(*)===> Here's an example of what can happen:
+____________________________________________
+class User < ActiveRecord::Base
+  has_many :attributes
+end
+
+user = User.first
+user.attributes # This will return an empty hash, not the associated records
+____________________________________________
+## In this case, calling user.attributes will return an empty hash instead of the associated records because attributes is being overridden by the association method.
+
+
+
+(*)===> Another example is using the name connection for an association:
+____________________________________________
+class User < ActiveRecord::Base
+  belongs_to :connection
+end
+
+user = User.first
+user.connection # This will return a Connection object, not the associated record
+____________________________________________
+## In this case, calling user.connection will return a Connection object instead of the associated record because connection is being overridden by the association method.
+
+
+(*)===> To avoid these issues, it's important to choose association names that don't conflict with any existing methods in ActiveRecord::Base. You can use singular or plural forms of model names, or add a prefix or suffix to the name to make it more descriptive and unique. For example, you could use user_attributes instead of attributes for the association name in the first example, or connected_user instead of connection in the second example.
+
+___________________________________________________________________
+
+############### Updating the schema ###############
+ou are responsible for maintaining your database schema to match your associations. 
+In practice, this means two things, depending on what sort of associations you are creating. 
+
+For belongs_to associations you need to create foreign keys, and for has_and_belongs_to_many associations you need to create the appropriate join table.
+
+
+(*)===> Creating Foreign Keys for belongs_to Associations
+
+When you declare a belongs_to association, you need to create foreign keys as appropriate. For example, consider this model:
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author
+end
+____________________________________________
+
+
+This declaration needs to be backed up by a corresponding foreign key column in the books table. For a brand new table, the migration might look something like this:
+____________________________________________
+class CreateBooks < ActiveRecord::Migration[7.0]
+  def change
+    create_table :books do |t|
+      t.datetime   :published_at
+      t.string     :book_number
+      t.references :author
+    end
+  end
+end
+____________________________________________
+
+Whereas for an existing table, it might look like this:
+____________________________________________
+class AddAuthorToBooks < ActiveRecord::Migration[7.0]
+  def change
+    add_reference :books, :author
+  end
+end
+____________________________________________
+
+## If you wish to enforce referential integrity at the database level, add the foreign_key: true option to the ‘reference’ column declarations above.
+
+
+
+(*)===> Creating Join Tables for has_and_belongs_to_many Associations
+
+If you create a has_and_belongs_to_many association, you need to explicitly create the joining table. Unless the name of the join table is explicitly specified by using the :join_table option, Active Record creates the name by using the lexical order of the class names. So a join between author and book models will give the default join table name of "authors_books" because "a" outranks "b" in lexical ordering.
+
+## The precedence between model names is calculated using the <=> operator for String. This means that if the strings are of different lengths, and the strings are equal when compared up to the shortest length, then the longer string is considered of higher lexical precedence than the shorter one. For example, one would expect the tables "paper_boxes" and "papers" to generate a join table name of "papers_paper_boxes" because of the length of the name "paper_boxes", but it in fact generates a join table name of "paper_boxes_papers" (because the underscore '_' is lexicographically less than 's' in common encodings).
+
+
+Whatever the name, you must manually generate the join table with an appropriate migration. For example, consider these associations:
+____________________________________________
+class Assembly < ApplicationRecord
+  has_and_belongs_to_many :parts
+end
+
+class Part < ApplicationRecord
+  has_and_belongs_to_many :assemblies
+end
+____________________________________________
+
+You can use the method create_join_table
+____________________________________________
+class CreateAssembliesPartsJoinTable < ActiveRecord::Migration[7.0]
+  def change
+    create_join_table :assemblies, :parts do |t|
+      t.index :assembly_id
+      t.index :part_id
+    end
+  end
+end
+____________________________________________
+
+
+___________________________________________________________________
+
+############### Controlling association scope ###############
+
+By default, associations look for objects only within the current module's scope. This can be important when you declare Active Record models within a module.
+
+(*)===> This will work fine, because both the Supplier and the Account class are defined within the same scope.
+____________________________________________
+module MyApplication
+  module Business
+    class Supplier < ApplicationRecord
+      has_one :account
+    end
+
+    class Account < ApplicationRecord
+      belongs_to :supplier
+    end
+  end
+end
+____________________________________________
+
+
+(*)===> But the following will not work, because Supplier and Account are defined in different scopes:
+____________________________________________
+module MyApplication
+  module Business
+    class Supplier < ApplicationRecord
+      has_one :account
+    end
+  end
+
+  module Billing
+    class Account < ApplicationRecord
+      belongs_to :supplier
+    end
+  end
+end
+____________________________________________
+
+
+
+(*)===> To associate a model with a model in a different namespace, you must specify the complete class name in your association declaration:
+____________________________________________
+module MyApplication
+  module Business
+    class Supplier < ApplicationRecord
+      has_one :account,
+        class_name: "MyApplication::Billing::Account"
+    end
+  end
+
+  module Billing
+    class Account < ApplicationRecord
+      belongs_to :supplier,
+        class_name: "MyApplication::Business::Supplier"
+    end
+  end
+end
+____________________________________________
+
+___________________________________________________________________
+
+############### Bi-directional associations ###############
+
+ It's normal for associations to work in two directions, requiring declaration on two different models:
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+____________________________________________
+
+
+____________________________________________
+irb> a = Author.first
+irb> b = a.books.first
+irb> a.first_name == b.author.first_name
+=> true
+irb> a.first_name = 'David'
+irb> a.first_name == b.author.first_name
+=> true
+____________________________________________
+
+## Active Record supports automatic identification for most associations with standard names. 
+## However, Active Record will not automatically identify bi-directional associations that contain the :through or :foreign_key options. 
+## Custom scopes on the opposite association also prevent automatic identification, as do custom scopes on the association itself 
+unless config.active_record.automatic_scope_inversing is set to true (the default for new applications).
+
+For example, consider the following model declarations:
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books
+end
+
+class Book < ApplicationRecord
+  belongs_to :writer, class_name: 'Author', foreign_key: 'author_id'
+end
+____________________________________________
+
+## In the Book class definition, the belongs_to association is specified with an option class_name: 'Author'. This means that the writer attribute of a Book object is associated with an Author object.
+
+## The writer attribute is not a built-in attribute of a Book object, but rather a custom attribute that is defined in the Book class. This custom attribute is used to create a more descriptive name for the association between a Book object and an Author object.
+
+## By default, when a belongs_to association is defined in Rails, the name of the association is used as the name of the attribute for the associated object. In this case, if the belongs_to association was defined with the default options, the attribute for the associated Author object would be called author.
+
+## However, by specifying class_name: 'Author' and using the custom attribute name writer, the code makes the association more readable and easier to understand. It also provides more clarity and consistency with the has_many association in the Author class, which specifies that an author has many books.
+
+## So in short, writer is used as a custom attribute name for the belongs_to association between a Book object and an Author object, in order to make the code more readable and easier to understand.
+ 
+
+ Active Record will no longer automatically recognize the bi-directional association:
+____________________________________________
+irb> a = Author.first
+irb> b = a.books.first
+irb> a.first_name == b.writer.first_name
+=> true
+irb> a.first_name = 'David'
+irb> a.first_name == b.writer.first_name
+=> false
+____________________________________________
+
+
+
+Active Record provides the :inverse_of option so you can explicitly declare bi-directional associations:
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, inverse_of: 'writer'
+end
+
+class Book < ApplicationRecord
+  belongs_to :writer, class_name: 'Author', foreign_key: 'author_id'
+end
+____________________________________________
+
+By including the :inverse_of option in the has_many association declaration, Active Record will now recognize the bi-directional association:
+____________________________________________
+irb> a = Author.first
+irb> b = a.books.first
+irb> a.first_name == b.writer.first_name
+=> true
+irb> a.first_name = 'David'
+irb> a.first_name == b.writer.first_name
+=> true
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
 ############### END ###############
 
 (*)===> 
