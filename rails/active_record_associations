@@ -1013,82 +1013,487 @@ ____________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
 
-(*)===> 
+___________________________________________________________________
+                  belongs_to Association Reference
+___________________________________________________________________
+
+In database terms, the belongs_to association says that this model's table contains a column which represents a reference to another table. This can be used to set up one-to-one or one-to-many relations, depending on the setup.
+___________________________________________________________________
+
+############### belongs_to Association Reference : Methods Added by belongs_to ###############
+
+When you declare a belongs_to association, the declaring class automatically gains 8 methods related to the association:
+
+In all of these methods, association is replaced with the symbol passed as the first argument to belongs_to. For example, given the declaration:
 ____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author
+end
 ____________________________________________
 
-(*)===> 
+
+## Each instance of the Book model will have these methods:
 ____________________________________________
+author
+author=
+build_author
+create_author
+create_author!
+reload_author
+author_changed?
+author_previously_changed?
+____________________________________________
+
+
+
+(*)===> association
+The association method returns the associated object, if any. If no associated object is found, it returns nil.
+____________________________________________
+@author = @book.author
+____________________________________________
+
+
+(*)===> reload_association
+
+If the associated object has already been retrieved from the database for this object, the cached version will be returned.
+To override this behavior (and force a database read), call #reload_association on the parent object.
+____________________________________________
+@author = @book.reload_author
+____________________________________________
+
+
+(*)===> association=(associate)
+
+The association= method assigns an associated object to this object. 
+Behind the scenes, this means extracting the primary key from the associated object and setting this object's foreign key to the same value.
+____________________________________________
+@book.author = @author
+____________________________________________
+
+
+(*)===> build_association(attributes = {})
+
+The build_association method returns a new object of the associated type. 
+This object will be instantiated from the passed attributes, and the link through this object's foreign key will be set, 
+
+## but the associated object will not yet be saved.
+____________________________________________
+@author = @book.build_author(author_number: 123,           author_name: "John Doe")
+____________________________________________
+
+
+(*)===> create_association(attributes = {})
+
+The create_association method returns a new object of the associated type. 
+This object will be instantiated from the passed attributes, the link through this object's foreign key will be set, and, once it passes all of the validations specified on the associated model, 
+
+## the associated object will be saved.
+____________________________________________
+@author = @book.create_author(author_number: 123,
+                              author_name: "John Doe")
+____________________________________________
+
+
+(*)===> create_association!(attributes = {})
+
+Does the same as create_association above, but raises 
+ActiveRecord::RecordInvalid if the record is invalid.
+____________________________________________
+@author = @book.create_author!(author_number: 123,
+                              author_name: "John Doe")
+____________________________________________
+
+
+(*)===> association_changed?
+
+method returns true if a new associated object has been assigned and the foreign key will be updated in the next save.
+____________________________________________
+@book.author # => #<Book author_number: 123, author_name: "John Doe">
+@book.author_changed? # => false
+
+@book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
+@book.author_changed? # => true
+
+@book.save!
+@book.author_changed? # => false
+____________________________________________
+
+
+(*)===> association_previously_changed?
+
+method returns true if the previous save updated the association to reference a new associate object.
+____________________________________________
+@book.author # => #<Book author_number: 123, author_name: "John Doe">
+@book.author_previously_changed? # => false
+
+@book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
+@book.save!
+@book.author_previously_changed? # => true
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+###############  belongs_to Association Reference : Options for belongs_to  ###############
 
-(*)===> 
+Example:
 ____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, touch: :books_updated_at,
+    counter_cache: true
+end
 ____________________________________________
 
-(*)===> 
+        The belongs_to association supports these options:
+
+(*)===> :autosave
+
 ____________________________________________
+class Author < ApplicationRecord
+  has_many :books, autosave: false
+end
 ____________________________________________
 
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, autosave: false
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.first
+book = author.books.first
+book.title = 'New Title'
+author.save
+____________________________________________
+
+## In this code, we have the same Author and Book models, but with :autosave set to false. We load an Author object and one of its associated Book objects. We update the title of the Book object, and then we save the Author object. Because :autosave is set to false, Rails does not automatically save the associated Book object with the updated title. If we want to save the updated Book object, we need to call book.save explicitly.
+
+## If the :autosave option is not present, then new associated objects will be saved, but updated associated objects will not be saved. 
+
+
+
+(*)===> :class_name
+
+If the name of the other model cannot be derived from the association name, you can use the :class_name option to supply the model name. For example, if a book belongs to an author, but the actual name of the model containing authors is Patron, you'd set things up this way:
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, class_name: "Patron"
+end
+____________________________________________
+
+
+(*)===> :counter_cache
+
+asking for the value of @author.books.size requires making a call to the database to perform a COUNT(*) query. 
+To avoid this call, you can add a counter cache to the belonging model:
+
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, counter_cache: true
+end
+
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+## With this declaration, Rails will keep the cache value up to date, and then return that value in response to the size method.
+
+## Although the :counter_cache option is specified on the model that includes the belongs_to declaration, the actual column must be added to the associated (has_many) model. 
+In the case above, you would need to add a column named books_count to the Author model.
+
+## You can override the default column name by specifying a custom column name in the counter_cache declaration instead of true. 
+
+For example, to use count_of_books instead of books_count:
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, counter_cache: :count_of_books
+end
+
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+
+## You only need to specify the :counter_cache option on the belongs_to side of the association.
+
+
+
+(*)===> :dependent
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :destroy
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.first
+author.destroy # this will also destroy all of the author's books
+____________________________________________
+
+If you set the :dependent option to:
+
+    :destroy, when the object is destroyed, destroy will be called on its associated objects.
+    
+    :delete, when the object is destroyed, all its associated objects will be deleted directly from the database without calling their destroy method.
+    
+    :destroy_async: when the object is destroyed, an ActiveRecord::DestroyAssociationAsyncJob job is enqueued which will call destroy on its associated objects. Active Job must be set up for this to work.
+
+##You should not specify this option on a belongs_to association that is connected with a has_many association on the other class. Doing so can lead to orphaned records in your database.
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+class Author < ApplicationRecord
+  has_many :books
+end
+
+class Book < ApplicationRecord
+  belongs_to :author, dependent: :destroy
+end
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+## This is not recommended because if you destroy an author, it will attempt to destroy all of its associated books. However, since the book also belongs to an author, it will attempt to destroy the author again, creating an infinite loop and potentially orphaned records in the database.
+
+
+
+(*)===> :foreign_key
+
+By convention, Rails assumes that the column used to hold the foreign key on this model is the name of the association with the suffix _id added. 
+
+The :foreign_key option lets you set the name of the foreign key directly:
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, class_name: "Patron",
+                      foreign_key: "patron_id"
+end
+____________________________________________
+
+##In any case, Rails will not create foreign key columns for you. 
+You need to explicitly define them as part of your migrations.
+
+
+
+(*)===> :primary_key
+
+## By convention, Rails assumes that the id column is used to hold the primary key of its tables. The :primary_key option allows you to specify a different column.
+
+## For example, given we have a users table with guid as the primary key. If we want a separate todos table to hold the foreign key user_id in the guid column, then we can use primary_key to achieve this like so:
+____________________________________________
+class User < ApplicationRecord
+  self.primary_key = 'guid' # primary key is guid and not id
+end
+
+class Todo < ApplicationRecord
+  belongs_to :user, primary_key: 'guid'
+end
+____________________________________________
+## When we execute @user.todos.create then the @todo record will have its user_id value as the guid value of @user.
+
+
+
+(*)===> :inverse_of
+
+The :inverse_of option specifies the name of the has_many or has_one association that is the inverse of this association.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, inverse_of: :author
+end
+
+class Book < ApplicationRecord
+  belongs_to :author, inverse_of: :books
+end
+____________________________________________
+
+
+(*)===> :polymorphic
+
+Passing true to the :polymorphic option indicates that this is a polymorphic association. Polymorphic associations were discussed in detail ====> 615
+
+
+(*)===> :touch
+
+If you set the :touch option to true, then the updated_at or updated_on timestamp on the associated object will be set to the current time whenever this object is saved or destroyed:
+
+## The touch option allows you to update a timestamp on the associated Author object when a Book object is created or updated. 
+## In this case, the books_updated_at attribute of the Author object is updated when a Book object is created or updated. 
+## This can be useful for caching or performance reasons, or for tracking when an author's works were last updated.
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, touch: true
+end
+
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+
+## In this case, saving or destroying a book will update the timestamp on the associated author. 
+
+You can also specify a particular timestamp attribute to update:
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, touch: :books_updated_at
+end
+____________________________________________
+
+
+(*)===> :validate
+
+##If you set the :validate option to true, then new associated objects will be validated whenever you save this object. 
+
+##By default, this is false: new associated objects will not be validated when this object is saved.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, validate: true
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+  validates :title, presence: true
+end
+
+author = Author.new(name: "Jane Doe")
+book = author.books.build(title: "")
+author.save # returns false, and the book will not be saved because of its validation error
+____________________________________________
+
+
+(*)===> :optional
+
+## If you set the :optional option to true, then the presence of the associated object won't be validated. By default, this option is set to false.
+____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, optional: true
+end
+
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+
+##With this setup, you can create a book without specifying an author:
+
+irb=> book = Book.new(title: "The Hitchhiker's Guide to the Galaxy")
+irb=> book.save  # this will save the book without an associated author
+
+
+
+## Without the optional: true option, this would raise an error:
+
+irb=> book = Book.new(title: "The Hitchhiker's Guide to the Galaxy")
+irb=> book.save  # this would raise an error, because an author is required
 
 ___________________________________________________________________
 
-###############  ###############
+###############  belongs_to Association Reference : Scopes for belongs_to ###############
 
-(*)===> 
+There may be times when you wish to customize the query used by belongs_to. Such customizations can be achieved via a scope block.
 ____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, -> { where active: true }
+end
 ____________________________________________
 
-(*)===> 
+      You can use any of the standard querying methods inside the scope block. The following ones are discussed below:
+
+(*)===> where
+
+The where method lets you specify the conditions that the associated object must meet.
 ____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, -> { where active: true }
+end
 ____________________________________________
 
-(*)===> 
+(*)===> includes
+
+If you frequently retrieve authors directly from chapters (@chapter.book.author), then you can make your code somewhat more efficient by including authors in the association from chapters to books:
 ____________________________________________
+class Chapter < ApplicationRecord
+  belongs_to :book, -> { includes :author }
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+  has_many :chapters
+end
+
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+
+## With this setup, when you retrieve a chapter and its associated book, the associated author will also be loaded in a single query:
+
+irb=> chapter = Chapter.find(1)
+irb=> chapter.book.author  # this will retrieve the associated author without sending an additional query
+
+## Without the includes option, this would result in two separate SQL queries being sent to the database:
+
+irb=> chapter = Chapter.find(1)
+irb=> book = chapter.book  # this sends one query
+irb=> author = book.author  # this sends a second query
+
+## By including the includes :author option in the belongs_to association from Chapter to Book, 
+Rails will automatically generate a single SQL query that retrieves both the book and its associated author in a single join. 
+This can result in significant performance improvements when you frequently retrieve associated records.
+
+## Note that eager loading can be used with other types of associations as well, not just belongs_to. However, it should be used judiciously, as it can result in loading a large amount of data into memory if not used carefully.
+
+##There's no need to use includes for immediate associations - that is, if you have Book belongs_to :author, then the author is eager-loaded automatically when it's needed.
+
+(*)===> readonly
+If you use readonly, then the associated object will be read-only when retrieved via the association.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, readonly: true
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+____________________________________________
+
+## With this setup, when you retrieve an author and its associated books, the associated books will be read-only:
+
+irb=> author = Author.find(1)
+irb=> author.books.first.update(title: "New Title")  # This will raise an ActiveRecord::ReadOnlyRecord error
+
+
+## If you want to update a read-only associated object, you can use the readonly(false) method to disable the read-only constraint:
+
+irb=> author = Author.find(1)
+irb=> book = author.books.first.readonly(false)
+irb=> book.update(title: "New Title")  # This will update the book's title
+
+## Note that using readonly does not prevent updates to the associated records via other associations or by directly manipulating the database. It only prevents updates via the association that includes the readonly option.
+
+## Also note that using readonly can be a useful security measure, but it should be used carefully, as it can make debugging and troubleshooting more difficult. Additionally, it may not be appropriate in all situations, so use your judgment when deciding whether to use it.
+
+
+
+(*)===> select
+
+The select method lets you override the SQL SELECT clause that is used to retrieve data about the associated object. By default, Rails retrieves all columns.
+
+If we want to retrieve only the name and email columns from the associated author for a given book, we can use the select method as follows:
+____________________________________________
+book = Book.select(:id, :title).includes(:author).select("authors.name, authors.email").find(1)
 ____________________________________________
 
 
-___________________________________________________________________
+## If you use the select method on a belongs_to association, you should also set the :foreign_key option to guarantee the correct results.
 
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
+______________________________________________
+class Book < ApplicationRecord
+  belongs_to :author, foreign_key: 'writer_id'
+end
+______________________________________________
 ___________________________________________________________________
 
 ###############  ###############
