@@ -4,137 +4,723 @@
 In Rails, an association is a connection between two Active Record models. Why do we need associations between models? Because they make common operations simpler and easier in your code. 
 ___________________________________________________________________
 
-###############  ###############
+############### The Types of Associations : The belongs_to Association ###############
 
-(*)===> 
+-----
+books
+-----
+Model: Book
+belongs to author
+
+id :integer
+author_id :integer
+published_at :datetime
+
+=================
+
+-------
+authors
+-------
+Model: Author
+
+id :integer
+name :string
+
+=============================
+class Book < ApplicationRecord
+belongs_to :author
+end
+
+
+(*)===> A belongs_to association sets up a connection with another model, such that each instance of the declaring model "belongs to" one instance of the other model. For example, if your application includes authors and books, and each book can be assigned to exactly one author, you'd declare the book model this way:
+
 ____________________________________________
+class Book < ApplicationRecord
+  belongs_to :author
+end
 ____________________________________________
 
-(*)===> 
+## belongs_to associations must use the singular term. 
+If you used the pluralized form in the above example for the author association in the Book model and tried to create the instance by Book.create(authors: @author),
+ you would be told that there was an "uninitialized constant Book::Authors". 
+ This is because Rails automatically infers the class name from the association name. If the association name is wrongly pluralized, then the inferred class will be wrongly pluralized too.
+
+
+(*)===> The corresponding migration might look like this:
 ____________________________________________
+class CreateBooks < ActiveRecord::Migration[7.0]
+  def change
+    create_table :authors do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :books do |t|
+      t.belongs_to :author
+      t.datetime :published_at
+      t.timestamps
+    end
+  end
+end
+____________________________________________
+
+## When used alone, belongs_to produces a one-directional one-to-one connection. Therefore each book in the above example "knows" its author, but the authors don't know about their books. To setup a bi-directional association - use belongs_to in combination with a has_one or has_many on the other model.
+
+
+(*)===> belongs_to does not ensure reference consistency, so depending on the use case, you might also need to add a database-level foreign key constraint on the reference column, like this:
+____________________________________________
+create_table :books do |t|
+  t.belongs_to :author, foreign_key: true
+  # ...
+end
+____________________________________________
+
+___________________________________________________________________
+
+############### The Types of Associations : The has_one Association ###############
+A has_one association indicates that one other model has a reference to this model. That model can be fetched through this association.
+
+----------
+supplierss
+----------
+Model: Supplier
+has one account
+
+id :integer
+name :string
+
+=============
+
+---------
+accountss
+---------
+Model: Account
+
+id :integer
+supplier_id :integer
+account number :string
+
+=================================
+
+class Supplier < ApplicationRecord
+has one :account
+end
+
+
+(*)===> if each supplier in your application has only one account, you'd declare the supplier model like this:
+____________________________________________
+class Supplier < ApplicationRecord
+  has_one :account
+end
+____________________________________________
+
+##The main difference from belongs_to is that the link column supplier_id is located in the other table
+
+
+
+(*)===> The corresponding migration might look like this:
+____________________________________________
+class CreateSuppliers < ActiveRecord::Migration[7.0]
+  def change
+    create_table :suppliers do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :accounts do |t|
+      t.belongs_to :supplier
+      t.string :account_number
+      t.timestamps
+    end
+  end
+end
+____________________________________________
+
+
+(*)===> Depending on the use case, you might also need to create a unique index and/or a foreign key constraint on the supplier column for the accounts table. 
+In this case, the column definition might look like this:
+____________________________________________
+create_table :accounts do |t|
+  t.belongs_to :supplier, index: { unique: true }, foreign_key: true
+  # ...
+end
+____________________________________________
+
+## This relation can be bi-directional when used in combination with belongs_to on the other model.
+___________________________________________________________________
+
+############### The Types of Associations :  The has_many Association ###############
+
+A has_many association is similar to has_one, but indicates a one-to-many connection with another model. You'll often find this association on the "other side" of a belongs_to association. This association indicates that each instance of the model has zero or more instances of another model.
+
+(*)===> For example, in an application containing authors and books, the author model could be declared like this:
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books
+end
+____________________________________________
+
+## The name of the other model is pluralized when declaring a has_many association.
+
+
+-------
+authors
+-------
+Model: Author
+has many :books
+
+id :integer
+name :string
+
+==========
+
+-----
+books
+-----
+Model: Book
+
+id :integer
+author_id :integer
+published_at :datetime
+
+==============================
+
+class Author< ApplicationRecord
+has_many :books
+end
+
+
+(*)===> The corresponding migration might look like this:
+____________________________________________
+class CreateAuthors < ActiveRecord::Migration[7.0]
+  def change
+    create_table :authors do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :books do |t|
+      t.belongs_to :author
+      t.datetime :published_at
+      t.timestamps
+    end
+  end
+end
+____________________________________________
+
+
+(*)===> Depending on the use case, it's usually a good idea to create a non-unique index and optionally a foreign key constraint on the author column for the books table:
+
+____________________________________________
+create_table :books do |t|
+  t.belongs_to :author, index: true, foreign_key: true
+  # ...
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### The Types of Associations : The has_many :through Association ###############
 
-(*)===> 
+A has_many :through association is often used to set up a many-to-many connection with another model. This association indicates that the declaring model can be matched with zero or more instances of another model by proceeding through a third model.
+
+
+
+(*)===> For example, consider a medical practice where patients make appointments to see physicians. The relevant association declarations could look like this:
 ____________________________________________
+class Physician < ApplicationRecord
+  has_many :appointments
+  has_many :patients, through: :appointments
+end
+
+class Appointment < ApplicationRecord
+  belongs_to :physician
+  belongs_to :patient
+end
+
+class Patient < ApplicationRecord
+  has_many :appointments
+  has_many :physicians, through: :appointments
+end
 ____________________________________________
 
-(*)===> 
+-----------
+physicians
+-----------
+Model: Physician
+han many :appointments
+han many :patients, through: :apointments
+
+id :integer
+name :string
+
+==================
+------------
+appointments
+------------
+Model: Appointment
+belongs_to :physician
+belongs_to :patient
+
+id :integer
+physician_id :integer
+patient_id :integer
+appointment_date :datetime
+
+=================
+
+---------
+patients
+---------
+Model: Patient
+has_many :acpointments
+has_many :phsicans, through: :appointments
+
+id :integer
+name :string
+===================
+
+class Physician < ApplicationRecord
+has_many :appointments
+has_many :patients, :through =>:appointments
+end
+
+class Appointment < ApplicationRecord
+belongs_to :physician
+belongs_to :patient
+end
+
+class Patient < ApplicationRecord
+has_many :appointments
+has many :physicians, :through => :appointments
+end
+
+
+(*)===> The corresponding migration might look like this:
 ____________________________________________
+class CreateAppointments < ActiveRecord::Migration[7.0]
+  def change
+    create_table :physicians do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :patients do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :appointments do |t|
+      t.belongs_to :physician
+      t.belongs_to :patient
+      t.datetime :appointment_date
+      t.timestamps
+    end
+  end
+end
+____________________________________________
+
+
+(*)===> The collection of join models can be managed via the has_many association methods. For example, if you assign:
+
+irb=> physician.patients = patients
+
+## Then new join models are automatically created for the newly associated objects. 
+If some that existed previously are now missing, then their join rows are automatically deleted.
+
+____________________________________________
+Automatic deletion of join models is direct, no destroy callbacks are triggered.
+____________________________________________
+
+## The has_many :through association is also useful for setting up "shortcuts" through nested has_many associations.
+
+
+(*)===> For example, if a document has many sections, and a section has many paragraphs, you may sometimes want to get a simple collection of all paragraphs in the document. 
+
+You could set that up this way:
+____________________________________________
+class Document < ApplicationRecord
+  has_many :sections
+  has_many :paragraphs, through: :sections
+end
+
+class Section < ApplicationRecord
+  belongs_to :document
+  has_many :paragraphs
+end
+
+class Paragraph < ApplicationRecord
+  belongs_to :section
+end
+____________________________________________
+
+
+(*)===>  With through: :sections specified, Rails will now understand:
+
+irb => @document.paragraphs
+
+___________________________________________________________________
+
+############### The Types of Associations : The has_one :through Association ###############
+
+A has_one :through association sets up a one-to-one connection with another model. This association indicates that the declaring model can be matched with one instance of another model by proceeding through a third model.
+
+(*)===> For example, if each supplier has one account, and each account is associated with one account history, then the supplier model could look like this:
+____________________________________________
+class Supplier < ApplicationRecord
+  has_one :account
+  has_one :account_history, through: :account
+end
+
+class Account < ApplicationRecord
+  belongs_to :supplier
+  has_one :account_history
+end
+
+class AccountHistory < ApplicationRecord
+  belongs_to :account
+end
+____________________________________________
+
+---------
+suppliers
+---------
+Model: Supplier
+has_one :account
+has_one aocount_history, :through :account
+
+id :integer
+name :string
+=============
+
+---------
+accounts
+---------
+Model: Account
+belongs_to :supplier
+has_one :account_history
+
+id :integer
+supplier_id :integer
+account_number :string
+==================
+
+-----------------
+account_histories
+-----------------
+Model: AccountHistory
+belongs_to :account
+
+id :integer
+account_id :integer
+credit_rating :integer
+=====================
+
+
+(*)===> The corresponding migration might look like this:
+____________________________________________
+class CreateAccountHistories < ActiveRecord::Migration[7.0]
+  def change
+    create_table :suppliers do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :accounts do |t|
+      t.belongs_to :supplier
+      t.string :account_number
+      t.timestamps
+    end
+
+    create_table :account_histories do |t|
+      t.belongs_to :account
+      t.integer :credit_rating
+      t.timestamps
+    end
+  end
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### The Types of Associations : The has_and_belongs_to_many Association ###############
 
-(*)===> 
+(*)===> A has_and_belongs_to_many association creates a direct many-to-many connection with another model, with no intervening model. This association indicates that each instance of the declaring model refers to zero or more instances of another model.
+
+For example, if your application includes assemblies and parts, with each assembly having many parts and each part appearing in many assemblies, you could declare the models this way:
 ____________________________________________
-____________________________________________
+class Assembly < ApplicationRecord
+  has_and_belongs_to_many :parts
+end
 
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
+class Part < ApplicationRecord
+  has_and_belongs_to_many :assemblies
+end
 ____________________________________________
 
-(*)===> 
+-----------
+assemblies
+----------
+Model: Assembly
+has and belongs.to many parts
+
+id :integer 
+name :string 
+============
+
+----------------
+assemblies_parts
+----------------
+assembly_id :integer
+part id :integer
+================
+
+------
+parts
+------
+Model: Part
+has and belongs to_many :assemblies
+
+id :integer
+part_number :string
+===================
+
+
+(*)===> The corresponding migration might look like this:
+
 ____________________________________________
-____________________________________________
+class CreateAssembliesAndParts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :assemblies do |t|
+      t.string :name
+      t.timestamps
+    end
 
+    create_table :parts do |t|
+      t.string :part_number
+      t.timestamps
+    end
 
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
+    create_table :assemblies_parts, id: false do |t|
+      t.belongs_to :assembly
+      t.belongs_to :part
+    end
+  end
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### Choosing Between belongs_to and has_one ###############
 
-(*)===> 
+If you want to set up a one-to-one relationship between two models, you'll need to add belongs_to to one, and has_one to the other.
+
+
+(*)===> How do you know which is which?
+
+The distinction is in where you place the foreign key
+(it goes on the table for the class declaring the belongs_to association),
+
+For example, it makes more sense to say that a supplier owns an account than that an account owns a supplier. 
+
+This suggests that the correct relationships are like this:
 ____________________________________________
+class Supplier < ApplicationRecord
+  has_one :account
+end
+
+class Account < ApplicationRecord
+  belongs_to :supplier
+end
 ____________________________________________
 
-(*)===> 
+
+(*)===> The corresponding migration might look like this:
+
 ____________________________________________
+class CreateSuppliers < ActiveRecord::Migration[7.0]
+  def change
+    create_table :suppliers do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :accounts do |t|
+      #t.bigint  :supplier_id
+      t.references :supplier
+      t.string  :account_number
+      t.timestamps
+    end
+
+    add_index :accounts, :supplier_id
+  end
+end
+____________________________________________
+
+## Traditionally, in Rails, you would use the t.bigint method to specify the foreign key column's data type, and then explicitly name the column something like supplier_id. This made it clear that the column was a foreign key referencing the id column of the suppliers table.
+
+Using t.bigint :supplier_id makes the foreign key naming obvious and explicit. 
+
+In current versions of Rails, you can abstract away this implementation detail by using t.references :supplier instead.
+
+___________________________________________________________________
+
+############### Choosing Between has_many :through and has_and_belongs_to_many ###############
+
+Rails offers two different ways to declare a many-to-many relationship between models.
+
+(*)===> The first way is to use has_and_belongs_to_many, which allows you to make the association directly:
+____________________________________________
+class Assembly < ApplicationRecord
+  has_and_belongs_to_many :parts
+end
+
+class Part < ApplicationRecord
+  has_and_belongs_to_many :assemblies
+end
+____________________________________________
+
+
+(*)===> The second way to declare a many-to-many relationship is to use has_many :through. This makes the association indirectly, through a join model:
+____________________________________________
+class Assembly < ApplicationRecord
+  has_many :manifests
+  has_many :parts, through: :manifests
+end
+
+class Manifest < ApplicationRecord
+  belongs_to :assembly
+  belongs_to :part
+end
+
+class Part < ApplicationRecord
+  has_many :manifests
+  has_many :assemblies, through: :manifests
+end
+____________________________________________
+
+
+## The simplest rule of thumb is that you should set up a has_many :through relationship if you need to work with the relationship model as an independent entity. 
+
+## If you don't need to do anything with the relationship model, it may be simpler to set up a has_and_belongs_to_many relationship
+(though you'll need to remember to create the joining table in the database).
+
+## You should use has_many :through if you need validations, callbacks, or extra attributes on the join model.
+
+___________________________________________________________________
+
+############### Polymorphic Associations ###############
+
+A slightly more advanced twist on associations is the polymorphic association. With polymorphic associations, a model can belong to more than one other model, on a single association.
+
+(*)===> For example, you might have a picture model that belongs to either an employee model or a product model. 
+Here's how this could be declared:
+____________________________________________
+class Picture < ApplicationRecord
+  belongs_to :imageable, polymorphic: true
+end
+
+class Employee < ApplicationRecord
+  has_many :pictures, as: :imageable
+end
+
+class Product < ApplicationRecord
+  has_many :pictures, as: :imageable
+end
+____________________________________________
+
+## You can think of a polymorphic belongs_to declaration as setting up an interface that any other model can use. 
+
+## From an instance of the Employee model, you can retrieve a collection of pictures: @employee.pictures.
+
+## Similarly, you can retrieve @product.pictures.
+
+## If you have an instance of the Picture model, you can get to its parent via @picture.imageable. 
+
+
+(*)===> To make this work, you need to declare both a foreign key column and a type column in the model that declares the polymorphic interface:
+____________________________________________
+class CreatePictures < ActiveRecord::Migration[7.0]
+  def change
+    create_table :pictures do |t|
+      t.string :name
+      t.references :imageable, polymorphic: true
+      t.timestamps
+    end
+  end
+end
+____________________________________________
+
+---------
+employees
+---------
+Model: Employee
+has manry pictures, as> imageable
+
+id :integer
+name :string
+=========
+
+--------
+pictures
+-------
+Model: Picture
+belongs to imageable, polymorphic => true
+
+id :integer
+name :string
+imageable_id :integer
+imageable_type :string
+===========
+
+--------
+products
+--------
+Model: Product
+has many :pictures, as = imageabie
+
+id :integer
+name :string
+============
+
+___________________________________________________________________
+
+############### Self Joins ###############
+In designing a data model, you will sometimes find a model that should have a relation to itself. For example, you may want to store all employees in a single database model, but be able to trace relationships such as between manager and subordinates. 
+
+
+(*)===> This situation can be modeled with self-joining associations:
+____________________________________________
+class Employee < ApplicationRecord
+  has_many :subordinates, class_name: "Employee",
+                          foreign_key: "manager_id"
+
+  belongs_to :manager, class_name: "Employee", optional: true
+end
+____________________________________________
+
+## With this setup, you can retrieve @employee.subordinates and @employee.manager.
+
+
+(*)===> In your migrations/schema, you will add a references column to the model itself.
+____________________________________________
+class CreateEmployees < ActiveRecord::Migration[7.0]
+  def change
+    create_table :employees do |t|
+      t.references :manager, foreign_key: { to_table: :employees }
+      t.timestamps
+    end
+  end
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
+############### END ###############
 
 (*)===> 
 ____________________________________________
