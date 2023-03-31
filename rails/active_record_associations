@@ -2386,27 +2386,75 @@ ____________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
+############### Association Extensions ###############
 
-(*)===> 
+You're not limited to the functionality that Rails automatically builds into association proxy objects. You can also extend these objects through anonymous modules, adding new finders, creators, or other methods.
+ 
 ____________________________________________
+class Author < ApplicationRecord
+  has_many :books do
+    def find_by_book_prefix(book_number)
+      find_by(category_id: book_number[0..2])
+    end
+  end
+end
 ____________________________________________
 
-(*)===> 
+(*)===> If you have an extension that should be shared by many associations, you can use a named extension module. For example:
 ____________________________________________
+module FindRecentExtension
+  def find_recent
+    where("created_at > ?", 5.days.ago)
+  end
+end
+
+class Author < ApplicationRecord
+  has_many :books, -> { extending FindRecentExtension }
+end
+
+class Supplier < ApplicationRecord
+  has_many :deliveries, -> { extending FindRecentExtension }
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### proxy_association accessor ###############
 
-(*)===> 
+(*)===> proxy_association.owner returns the object that the association is a part of.
 ____________________________________________
+class PostsController < ApplicationController
+  def show
+    @post = Post.find(params[:id])
+    @user = @post.user
+    @owner = @post.proxy_association.owner
+  end
+end
 ____________________________________________
 
-(*)===> 
+(*)===> proxy_association.reflection returns the reflection object that describes the association.
+
+## The reflection object contains information about the association, such as the name of the association, the class name of the associated object, and the type of association (e.g., belongs_to, has_many, etc.).
 ____________________________________________
+<% @post.comments.each do |comment| %>
+  <p><%= comment.body %></p>
+  <p>Posted by <%= comment.user.name %></p>
+  <p>On <%= comment.created_at %></p>
+  <p>Association reflection: <%= comment.proxy_association.reflection.name %></p>
+<% end %>
+____________________________________________
+
+(*)===> proxy_association.target returns the associated object for belongs_to or has_one, or the collection of associated objects for has_many or has_and_belongs_to_many
+____________________________________________
+class UsersController < ApplicationController
+  def show
+    @user = User.find(params[:id])
+    @posts = @user.posts
+    @post_titles = @user.posts.map(&:title)
+    @target = @user.posts.proxy_association.target
+  end
+end
 ____________________________________________
 
 
