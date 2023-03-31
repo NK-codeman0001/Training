@@ -2201,55 +2201,122 @@ ___________________________________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
 
-(*)===> 
+
+___________________________________________________________________
+                 has_and_belongs_to_many Association Reference
+___________________________________________________________________
+
+The has_and_belongs_to_many association creates a many-to-many relationship with another model. In database terms, this associates two classes via an intermediate join table that includes foreign keys referring to each of the classes.
+
+___________________________________________________________________
+
+############### Methods Added by has_and_belongs_to_many ###############
+
+When you declare a has_and_belongs_to_many association, the declaring class automatically gains several methods related to the association:
+
+    collection
+    collection<<(object, ...)
+    collection.delete(object, ...)
+    collection.destroy(object, ...)
+    collection=(objects)
+    collection_singular_ids
+    collection_singular_ids=(ids)
+    collection.clear
+    collection.empty?
+    collection.size
+    collection.find(...)
+    collection.where(...)
+    collection.exists?(...)
+    collection.build(attributes = {})
+    collection.create(attributes = {})
+    collection.create!(attributes = {})
+    collection.reload
+
+___________________________________________________________________
+
+############### Options for has_and_belongs_to_many ###############
+
+
+The has_and_belongs_to_many association supports these options:
+
+    :association_foreign_key
+    :autosave
+    :class_name
+    :foreign_key
+    :join_table
+    :validate
+
+(*)===> :association_foreign_key
+The :association_foreign_key option is used in a has_and_belongs_to_many association to specify the name of the foreign key column used in the join table to reference the associated table.
+
+For example, if you have a Book model and a Tag model and they have a many-to-many association through a join table called books_tags, you can use the :association_foreign_key option to specify the name of the foreign key column that references the Tag model in the books_tags table.
+
+Here's an example:
 ____________________________________________
+class Book < ApplicationRecord
+  has_and_belongs_to_many :tags, foreign_key: 'book_id', association_foreign_key: 'tag_id', join_table: 'books_tags'
+end
+
+class Tag < ApplicationRecord
+  has_and_belongs_to_many :books, foreign_key: 'tag_id', association_foreign_key: 'book_id', join_table: 'books_tags'
+end
 ____________________________________________
 
-(*)===> 
+## n this example, the :association_foreign_key option is used to specify the name of the foreign key column in the books_tags table that references the Tag model. The :foreign_key option is used to specify the name of the foreign key column in the books_tags table that references the Book model.
+
+## With these options set, you can retrieve all the tags associated with a book like this:
+
+-----------------------
+@book = Book.find(1)
+@tags = @book.tags
+-----------------------
+## This will retrieve all the Tag records that are associated with the Book with an ID of 1.
+
+
+
+
+(*)===> :join_table
+If the default name of the join table, based on lexical ordering, is not what you want, you can use the :join_table option to override the default.
 ____________________________________________
+class User < ApplicationRecord
+  has_and_belongs_to_many :roles, join_table: 'users_roles'
+end
+
+class Role < ApplicationRecord
+  has_and_belongs_to_many :users, join_table: 'users_roles'
+end
 ____________________________________________
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### Scopes for has_and_belongs_to_many ###############
 
-(*)===> 
-____________________________________________
-____________________________________________
+You can use any of the standard querying methods inside the scope block. The following ones are discussed below:
 
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
+    where
+    extending
+    group
+    includes
+    limit
+    offset
+    order
+    readonly
+    select
+    distinct
 
 ___________________________________________________________________
 
-###############  ###############
+############### When are Objects Saved? ###############
 
-(*)===> 
-____________________________________________
-____________________________________________
+## When you assign an object to a has_and_belongs_to_many association, that object is automatically saved (in order to update the join table). If you assign multiple objects in one statement, then they are all saved.
 
-(*)===> 
-____________________________________________
-____________________________________________
+## If any of these saves fails due to validation errors, then the assignment statement returns false and the assignment itself is cancelled.
 
+## If the parent object (the one declaring the has_and_belongs_to_many association) is unsaved (that is, new_record? returns true) then the child objects are not saved when they are added. All unsaved members of the association will automatically be saved when the parent is saved.
+
+## If you want to assign an object to a has_and_belongs_to_many association without saving the object, use the collection.build method.
 
 ___________________________________________________________________
 
