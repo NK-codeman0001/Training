@@ -1447,6 +1447,8 @@ This can result in significant performance improvements when you frequently retr
 
 ##There's no need to use includes for immediate associations - that is, if you have Book belongs_to :author, then the author is eager-loaded automatically when it's needed.
 
+
+
 (*)===> readonly
 If you use readonly, then the associated object will be read-only when retrieved via the association.
 ____________________________________________
@@ -1496,80 +1498,308 @@ end
 ______________________________________________
 ___________________________________________________________________
 
-###############  ###############
 
-(*)===> 
+
+___________________________________________________________________
+                  belongs_to Association Reference
+___________________________________________________________________
+
+The has_one association creates a one-to-one match with another model. 
+In database terms, this association says that the other class contains the foreign key. 
+
+If this class contains the foreign key, then you should use belongs_to instead.
+
+___________________________________________________________________
+
+############### The has_one Association : Methods Added by has_one ###############
+
+When you declare a has_one association, the declaring class automatically gains 6 methods related to the association:
+
+    association
+    association=(associate)
+    build_association(attributes = {})
+    create_association(attributes = {})
+    create_association!(attributes = {})
+    reload_association
+
+___________________________________________________________________
+
+############### The has_one Association : Options for has_one ###############
+
+The has_one association supports these options:
+
+    :as
+    :autosave
+    :class_name
+    :dependent
+    :foreign_key
+    :inverse_of
+    :primary_key
+    :source
+    :source_type
+    :through
+    :touch
+    :validate
+
+
+(*)===> :as
+
+The :as option is used with has_one associations in Rails to specify a polymorphic association, which allows a single association to belong to multiple types of models. This can be useful in cases where multiple models share a common set of associated data.
 ____________________________________________
+class User < ApplicationRecord
+  has_one :profile, as: :profileable
+end
+
+class Company < ApplicationRecord
+  has_one :profile, as: :profileable
+end
+
+class Profile < ApplicationRecord
+  belongs_to :profileable, polymorphic: true
+end
 ____________________________________________
 
-(*)===> 
+## In this example, both the User and Company models have a has_one association with the Profile model, and the Profile model belongs to a polymorphic association called :profileable. The :as option is used to specify the name of the polymorphic association (:profileable), which will be used as the foreign key to store the associated object's type.
+
+
+(*)===> :dependent
+Controls what happens to the associated object when its owner is destroyed:
+
+()===> :destroy = causes the associated object to also be destroyed
 ____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :destroy
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "J.K. Rowling")
+book = author.books.create(title: "Harry Potter")
+
+author.destroy
+
+Book.exists?(book.id) #=> false
 ____________________________________________
+
+
+()===> :delete = causes the associated object to be deleted directly from the database (so callbacks will not execute)
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :delete
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "Stephen King")
+book = author.books.create(title: "The Shining")
+
+author.destroy
+
+Book.exists?(book.id) #=> false
+____________________________________________
+
+()===> :destroy_async = when the object is destroyed, an ActiveRecord::DestroyAssociationAsyncJob job is enqueued which will call destroy on its associated objects. Active Job must be set up for this to work.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :destroy_async
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "J.R.R. Tolkien")
+book = author.books.create(title: "The Lord of the Rings")
+
+author.destroy
+
+# Wait for the background job to complete...
+Book.exists?(book.id) #=> false
+____________________________________________
+
+
+()===> :nullify = causes the foreign key to be set to NULL. Polymorphic type column is also nullified on polymorphic associations. Callbacks are not executed.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :nullify
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "Agatha Christie")
+book = author.books.create(title: "Murder on the Orient Express")
+
+author.destroy
+
+book.reload
+book.author_id #=> nil
+____________________________________________
+
+()===> :restrict_with_exception = causes an ActiveRecord::DeleteRestrictionError exception to be raised if there is an associated record
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :restrict_with_exception
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "George R.R. Martin")
+book = author.books.create(title: "A Game of Thrones")
+
+begin
+  author.destroy
+rescue ActiveRecord::DeleteRestrictionError => e
+  puts e.message #=> "Cannot delete record because of dependent books"
+end
+____________________________________________
+
+
+()===> :restrict_with_error = causes an error to be added to the owner if there is an associated object
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, dependent: :restrict_with_error
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+
+author = Author.create(name: "Jane Austen")
+book = author.books.create(title: "Pride and Prejudice")
+
+author.destroy
+
+author.errors.full_messages #=> ["Cannot delete record because of dependent books"]
+____________________________________________
+
+
+
+
+
+(*)===> :source
+
+The :source option is used in a has_one :through association to specify the name of the source association. This allows you to specify a different association than the default association used to retrieve the associated object.
+____________________________________________
+class User < ApplicationRecord
+  has_many :orders
+  has_one :shipping_address, through: :last_order, source: :address
+  has_one :last_order, -> { order(created_at: :desc) }, class_name: "Order"
+end
+
+class Order < ApplicationRecord
+  belongs_to :user
+  has_one :address
+end
+
+class Address < ApplicationRecord
+  belongs_to :order
+end
+____________________________________________
+
+## In this example, a user has many orders and we want to define a shipping_address association that is associated with the most recent order for that user. 
+
+## We use has_one :through to define the association and set the :source option to specify that we want to use the address association on the Order model to retrieve the associated Address object.
+
+irb=> user = User.first
+irb=> user.orders.create
+irb=> order = user.orders.create
+irb=> order.build_address(street: "123 Main St", city: "Anytown")
+irb=> order.save
+irb=> user.shipping_address # returns the address for the most recent order
+
+## In this example, we create two orders for the user and associate an address with the second order. We then retrieve the shipping_address for the user, which is the address associated with the most recent order.
+
+## Note that the :source option is not required if the source association name is the same as the name of the association used to retrieve the associated object. In that case, Rails will use the default association name.
+
+(*)===> :source_type 
+
+The :source_type option specifies the source association type for a has_one :through association that proceeds through a polymorphic association.
+____________________________________________
+class Author < ApplicationRecord
+  has_one :book
+  has_one :hardback, through: :book, source: :format, source_type: "Hardback"
+  has_one :dust_jacket, through: :hardback
+end
+
+class Book < ApplicationRecord
+  belongs_to :format, polymorphic: true
+end
+
+class Paperback < ApplicationRecord; end
+
+class Hardback < ApplicationRecord
+  has_one :dust_jacket
+end
+
+class DustJacket < ApplicationRecord; end
+____________________________________________
+
+
+(*)===> :through
+
+The :through option in Rails is used to specify a "through" association in a has_many or has_one association. 
+
+It allows you to define a direct association between two models by using a third model as a "bridge".
+____________________________________________
+class User < ApplicationRecord
+  has_many :assignments
+  has_many :projects, through: :assignments
+end
+
+class Project < ApplicationRecord
+  has_many :assignments
+  has_many :users, through: :assignments
+end
+
+class Assignment < ApplicationRecord
+  belongs_to :user
+  belongs_to :project
+end
+____________________________________________
+
 
 
 ___________________________________________________________________
 
-###############  ###############
+############### The has_one Association : Scopes for has_one ###############
 
-(*)===> 
-____________________________________________
-____________________________________________
+You can use any of the standard querying methods inside the scope block. The following ones are discussed below:
 
-(*)===> 
-____________________________________________
-____________________________________________
-
+    where
+    includes
+    readonly
+    select
 
 ___________________________________________________________________
 
-###############  ###############
+############### The has_one Association : Do Any Associated Objects Exist? ###############
 
-(*)===> 
+(*)===> You can see if any associated objects exist by using the association.nil? method:
 ____________________________________________
+if @supplier.account.nil?
+  @msg = "No account found for this supplier"
+end
 ____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
 
 ___________________________________________________________________
 
-###############  ###############
+############### The has_one Association : When are Objects Saved? ###############
 
-(*)===> 
-____________________________________________
-____________________________________________
+## When you assign an object to a has_one association, that object is automatically saved (in order to update its foreign key). In addition, any object being replaced is also automatically saved, because its foreign key will change too.
 
-(*)===> 
-____________________________________________
-____________________________________________
+## If either of these saves fails due to validation errors, then the assignment statement returns false and the assignment itself is cancelled.
 
+## If the parent object (the one declaring the has_one association) is unsaved (that is, new_record? returns true) then the child objects are not saved. They will automatically when the parent object is saved.
 
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-
-___________________________________________________________________
-
-###############  ###############
-
-(*)===> 
-____________________________________________
-____________________________________________
-
-(*)===> 
-____________________________________________
-____________________________________________
+## If you want to assign an object to a has_one association without saving the object, use the build_association method.
 
 
 ___________________________________________________________________
