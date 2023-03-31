@@ -1501,7 +1501,7 @@ ___________________________________________________________________
 
 
 ___________________________________________________________________
-                  belongs_to Association Reference
+                  has_one Association Reference
 ___________________________________________________________________
 
 The has_one association creates a one-to-one match with another model. 
@@ -1804,6 +1804,429 @@ ___________________________________________________________________
 
 ___________________________________________________________________
 
+
+
+___________________________________________________________________
+                  has_many Association Reference
+___________________________________________________________________
+
+The has_many association creates a one-to-many relationship with another model. In database terms, this association says that the other class will have a foreign key that refers to instances of this class.
+___________________________________________________________________
+
+############### has_many Association Reference: Methods Added by has_many ###############
+
+## In all of these methods, collection is replaced with the symbol passed as the first argument to has_many, and 
+
+## collection_singular is replaced with the singularized version of that symbol. 
+
+For example, given the declaration:
+__________________________________________
+class Author < ApplicationRecord
+  has_many :books
+end
+__________________________________________
+
+Each instance of the Author model will have these methods:
+
+books
+books<<(object, ...)
+books.delete(object, ...)
+books.destroy(object, ...)
+books=(objects)
+book_ids
+book_ids=(ids)
+books.clear
+books.empty?
+books.size
+books.find(...)
+books.where(...)
+books.exists?(...)
+books.build(attributes = {}, ...)
+books.create(attributes = {})
+books.create!(attributes = {})
+books.reload
+
+
+
+
+(*)===> collection
+The collection method returns a Relation of all of the associated objects. If there are no associated objects, it returns an empty Relation.
+____________________________________________
+@books = @author.books
+____________________________________________
+
+
+(*)===> collection<<(object, ...)
+The collection<< method adds one or more objects to the collection by setting their foreign keys to the primary key of the calling model.
+____________________________________________
+@author.books << @book1
+____________________________________________
+
+
+(*)===> collection.delete(object, ...)
+The collection.delete method removes one or more objects from the collection by setting their foreign keys to NULL.
+____________________________________________
+@author.books.delete(@book1)
+____________________________________________
+## Additionally, objects will be destroyed if they're associated with dependent: :destroy, and deleted if they're associated with dependent: :delete_all.
+
+
+(*)===> collection.destroy(object, ...)
+The collection.destroy method removes one or more objects from the collection by running destroy on each object.
+____________________________________________
+@author.books.destroy(@book1)
+____________________________________________
+## Objects will always be removed from the database, ignoring the :dependent option.
+
+
+(*)===> collection=(objects)
+____________________________________________
+user = User.find(1)
+tasks = Task.where(completed: true)
+
+user.tasks = tasks
+____________________________________________
+## In this example, the user.tasks association will be replaced with the tasks that were returned by the Task.where query. 
+
+## Any tasks that were previously associated with the user but are not included in the new array will be removed, and any new tasks that are not already associated with the user will be added.
+
+
+(*)===> collection_singular_ids
+The collection_singular_ids method returns an array of the ids of the objects in the collection.
+____________________________________________
+@book_ids = @author.book_ids
+____________________________________________
+
+
+(*)===> collection_singular_ids=(ids)
+The collection_singular_ids= method makes the collection contain only the objects identified by the supplied primary key values, by adding and deleting as appropriate. The changes are persisted to the database.
+
+For example, consider a Book model that has many Authors through a BookAuthor join table:
+____________________________________________
+class Book < ApplicationRecord
+  has_many :book_authors
+  has_many :authors, through: :book_authors
+end
+
+class Author < ApplicationRecord
+  has_many :book_authors
+  has_many :books, through: :book_authors
+end
+
+class BookAuthor < ApplicationRecord
+  belongs_to :book
+  belongs_to :author
+end
+____________________________________________
+
+Suppose we want to set the authors of a book with a given ID to a specific set of authors identified by their IDs. We can do this using the collection_singular_ids= method:
+
+irb=> book = Book.find(1)
+irb=> author_ids = [2, 4, 6]
+irb=> book.author_ids = author_ids
+
+## This will set the authors of the book with ID 1 to the authors with IDs 2, 4, and 6. The collection_singular_ids= method will automatically add any new authors that are not currently associated with the book and remove any authors that are associated with the book but not in the supplied list.
+
+The changes are persisted to the database when the book is saved:
+
+irb=> book.save
+
+
+
+
+(*)===> collection.clear
+The collection.clear method removes all objects from the collection according to the strategy specified by the dependent option. 
+If no option is given, it follows the default strategy. 
+The default strategy for has_many :through associations is delete_all, and 
+for has_many associations is to set the foreign keys to NULL.
+
+____________________________________________
+@author.books.clear
+____________________________________________
+
+## Objects will be deleted if they're associated with dependent: :destroy or dependent: :destroy_async, just like dependent: :delete_all.
+
+
+(*)===> collection.empty?
+The collection.empty? method returns true if the collection does not contain any associated objects.
+____________________________________________
+<% if @author.books.empty? %>
+  No Books Found
+<% end %>
+____________________________________________
+
+
+(*)===> collection.size
+The collection.size method returns the number of objects in the collection.
+____________________________________________
+@book_count = @author.books.size
+____________________________________________
+
+
+
+(*)===> collection.find(...)
+The collection.find method finds objects within the collection's table.
+____________________________________________
+@available_book = @author.books.find(1)
+____________________________________________
+
+
+
+(*)===> collection.where(...)
+The collection.where method finds objects within the collection based on the conditions supplied but the objects are loaded lazily meaning that the database is queried only when the object(s) are accessed.
+____________________________________________
+@available_books = @author.books.where(available: true) # No query yet
+@available_book = @available_books.first # Now the database will be queried
+____________________________________________
+
+
+(*)===> collection.exists?(...)
+
+The collection.exists? method checks whether an object meeting the supplied conditions exists in the collection's table.
+____________________________________________
+user = User.find(1)
+user.posts.exists?(published: true)
+
+or
+
+user.posts.where(published: true).exists?
+____________________________________________
+
+
+
+(*)===> collection.build(attributes = {})
+
+the associated objects will not yet be saved.
+____________________________________________
+@book = @author.books.build(published_at: Time.now,
+                            book_number: "A12345")
+
+@books = @author.books.build([
+  { published_at: Time.now, book_number: "A12346" },
+  { published_at: Time.now, book_number: "A12347" }
+])
+____________________________________________
+
+
+(*)===> collection.create(attributes = {})
+
+the associated object will be saved.
+____________________________________________
+@book = @author.books.create(published_at: Time.now,
+                             book_number: "A12345")
+
+@books = @author.books.create([
+  { published_at: Time.now, book_number: "A12346" },
+  { published_at: Time.now, book_number: "A12347" }
+])
+____________________________________________
+
+
+
+(*)===> collection.create!(attributes = {})
+Does the same as collection.create above, but raises ActiveRecord::RecordInvalid if the record is invalid.
+
+
+
+(*)===> collection.reload
+The collection.reload method returns a Relation of all of the associated objects, forcing a database read. If there are no associated objects, it returns an empty Relation.
+____________________________________________
+@books = @author.books.reload
+____________________________________________
+
+
+___________________________________________________________________
+
+############### has_many Association Reference: Options for has_many ###############
+
+The has_many association supports these options:
+
+    :as
+    :autosave
+    :class_name
+    :counter_cache
+    :dependent
+    :foreign_key
+    :inverse_of
+    :primary_key
+    :source
+    :source_type
+    :through
+    :validate
+
+___________________________________________________________________
+
+############### has_many Association Reference: Scopes for has_many ###############
+
+There may be times when you wish to customize the query used by has_many. Such customizations can be achieved via a scope block. For example:
+________________________________________________
+class Author < ApplicationRecord
+  has_many :books, -> { where processed: true }
+end
+________________________________________________
+
+You can use any of the standard querying methods inside the scope block. The following ones are discussed below:
+
+    where
+    extending
+    group
+    includes
+    limit
+    offset
+    order
+    readonly
+    select
+    distinct
+
+
+
+(*)===> extending
+The extending method in Rails is used to add custom methods to an association object. It allows you to specify a named module that will be extended into the association proxy object. This module can contain custom methods that can be called on the association object.
+
+____________________________________________
+module BookExtension
+  def published
+    where(published: true)
+  end
+end
+
+class Author < ApplicationRecord
+  has_many :books, extending: BookExtension
+end
+____________________________________________
+
+## In the example above, we define a module BookExtension with a custom method published. We then use the extending option to add this module to the has_many :books association of the Author class.
+
+Now we can call the published method on an author's books association to retrieve only the published books:
+
+irb=> author = Author.first
+irb=> author.books.published # returns all published books for the author
+
+## The extending method can also be used with has_one and belongs_to associations.
+
+
+
+
+(*)===> group
+The group method supplies an attribute name to group the result set by, using a GROUP BY clause in the finder SQL.
+____________________________________________
+class Author < ApplicationRecord
+  has_many :chapters, -> { group 'books.id' },
+                      through: :books
+end
+____________________________________________
+
+
+
+
+(*)===> limit
+The limit method lets you restrict the total number of objects that will be fetched through an association.
+
+____________________________________________
+class Author < ApplicationRecord
+  has_many :recent_books,
+    -> { order('published_at desc').limit(100) },
+    class_name: "Book"
+end
+____________________________________________
+
+
+
+(*)===> offset
+
+The offset method lets you specify the starting offset for fetching objects via an association. 
+For example, -> { offset(11) } will skip the first 11 records.
+
+
+
+(*)===> order
+The order method dictates the order in which associated objects will be received (in the syntax used by an SQL ORDER BY clause).
+____________________________________________
+class Author < ApplicationRecord
+  has_many :books, -> { order "date_confirmed DESC" }
+end
+____________________________________________
+
+
+
+(*)===> distinct
+
+Use the distinct method to keep the collection free of duplicates. This is mostly useful together with the :through option.
+____________________________________________
+class Person
+  has_many :readings
+  has_many :articles, -> { distinct }, through: :readings
+end
+____________________________________________
+
+//with distinct
+irb> person = Person.create(name: 'Honda')
+irb> article = Article.create(name: 'a1')
+irb> person.articles << article
+irb> person.articles << article
+irb> person.articles.to_a
+=> [#<Article id: 7, name: "a1">]
+irb> Reading.all.to_a
+=> [#<Reading id: 16, person_id: 7, article_id: 7>, #<Reading id: 17, person_id: 7, article_id: 7>]
+
+## In the above case there are still two readings. However person.articles shows only one article because the collection loads only unique records.
+
+If you want to make sure that, upon insertion, all of the records in the persisted association are distinct (so that you can be sure that when you inspect the association that you will never find duplicate records), you should add a unique index on the table itself. For example, if you have a table named readings and you want to make sure the articles can only be added to a person once, you could add the following in a migration:
+
+------------------------------------------------
+add_index :readings, [:person_id, :article_id], unique: true
+------------------------------------------------
+
+irb> person = Person.create(name: 'Honda')
+irb> article = Article.create(name: 'a1')
+irb> person.articles << article
+irb> person.articles << article
+ActiveRecord::RecordNotUnique
+
+
+
+
+___________________________________________________________________
+
+############### has_many Association Reference: When are Objects Saved? ###############
+
+## When you assign an object to a has_many association, that object is automatically saved (in order to update its foreign key). If you assign multiple objects in one statement, then they are all saved.
+
+## If any of these saves fails due to validation errors, then the assignment statement returns false and the assignment itself is cancelled.
+
+## If the parent object (the one declaring the has_many association) is unsaved (that is, new_record? returns true) then the child objects are not saved when they are added. All unsaved members of the association will automatically be saved when the parent is saved.
+
+## If you want to assign an object to a has_many association without saving the object, use the collection.build method.
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
 ###############  ###############
 
 (*)===> 
@@ -1852,6 +2275,111 @@ ____________________________________________
 (*)===> 
 ____________________________________________
 ____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
 
 
 ___________________________________________________________________
