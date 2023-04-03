@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_03_071017) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_03_092731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.bigint "supplier_id"
+    t.string "account_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["supplier_id"], name: "index_accounts_on_supplier_id", unique: true
+  end
 
   create_table "articles", force: :cascade do |t|
     t.string "title"
@@ -57,6 +65,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_03_071017) do
     t.string "title"
   end
 
+  create_table "suppliers", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "gender"
@@ -71,6 +85,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_03_071017) do
     t.string "password"
   end
 
+  add_foreign_key "accounts", "suppliers"
   add_foreign_key "books", "authors"
   add_foreign_key "comments", "articles"
 end
