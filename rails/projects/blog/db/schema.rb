@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_29_092625) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_03_071017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -21,6 +21,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_29_092625) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status"
+  end
+
+  create_table "authors", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "books", force: :cascade do |t|
+    t.bigint "author_id"
+    t.string "name"
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_books_on_author_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -56,5 +71,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_29_092625) do
     t.string "password"
   end
 
+  add_foreign_key "books", "authors"
   add_foreign_key "comments", "articles"
 end
