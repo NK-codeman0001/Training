@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_04_053107) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_04_064745) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -49,6 +49,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_053107) do
     t.string "status"
   end
 
+  create_table "assemblies", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "assemblies_parts", id: false, force: :cascade do |t|
+    t.bigint "assembly_id", null: false
+    t.bigint "part_id", null: false
+  end
+
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -72,6 +83,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_053107) do
     t.datetime "updated_at", null: false
     t.string "status"
     t.index ["article_id"], name: "index_comments_on_article_id"
+  end
+
+  create_table "parts", force: :cascade do |t|
+    t.string "part_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "patients", force: :cascade do |t|
