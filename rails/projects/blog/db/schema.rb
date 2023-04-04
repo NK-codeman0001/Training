@@ -87,8 +87,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_085726) do
 
   create_table "employees", force: :cascade do |t|
     t.string "name"
+    t.bigint "manager_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["manager_id"], name: "index_employees_on_manager_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -156,4 +158,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_085726) do
   add_foreign_key "accounts", "suppliers"
   add_foreign_key "books", "authors"
   add_foreign_key "comments", "articles"
+  add_foreign_key "employees", "employees", column: "manager_id"
 end
