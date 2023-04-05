@@ -1513,23 +1513,91 @@ ____________________________________________
 
 ___________________________________________________________________
 
+############### Eager Loading Associations ###############
+
+===================================================================
+(*)===> includes : With includes, Active Record ensures that all of the specified associations are loaded using the minimum possible number of queries.
+
+____________________________________________
+books = Book.includes(:author).limit(10)
+
+books.each do |book|
+  puts book.author.last_name
+end
+____________________________________________
+____________________________________________
+SELECT books.* FROM books LIMIT 10
+SELECT authors.* FROM authors
+  WHERE authors.book_id IN (1,2,3,4,5,6,7,8,9,10)
+____________________________________________
+
+
+____________________________________________
+Author.includes(:books).where(books: { out_of_print: true })
+____________________________________________
+____________________________________________
+  SELECT authors.id AS t0_r0, ... books.updated_at AS t1_r5 FROM authors LEFT OUTER JOIN books ON books.author_id = authors.id WHERE (books.out_of_print = 1)
+____________________________________________
+
+## If there was no where condition, this would generate the normal set of two queries.
+
+
+// Using where like this will only work when you pass it a Hash. For SQL-fragments you need to use references to force joined tables:
+____________________________________________
+Author.includes(:books).where("books.out_of_print = true").references(:books)
+____________________________________________
+
+
+
+
+
+
+===================================================================
+(*)===> preload : With preload, Active Record loads each specified association using one query per association.
+____________________________________________
+books = Book.preload(:author).limit(10)
+
+books.each do |book|
+  puts book.author.last_name
+end
+____________________________________________
+____________________________________________
+SELECT books.* FROM books LIMIT 10
+SELECT authors.* FROM authors
+  WHERE authors.book_id IN (1,2,3,4,5,6,7,8,9,10)
+____________________________________________
+
+## unlike the includes method, it is not possible to specify conditions for preloaded associations.
+
+
+
+===================================================================
+(*)===> eager_load : With eager_load, Active Record loads all specified associations using a LEFT OUTER JOIN.
+
+____________________________________________
+books = Book.eager_load(:author).limit(10)
+
+books.each do |book|
+  puts book.author.last_name
+end
+____________________________________________
+## The above code will execute just 2 queries, as opposed to the 11 queries from the original case
+____________________________________________
+SELECT DISTINCT books.id FROM books LEFT OUTER JOIN authors ON authors.book_id = books.id LIMIT 10
+SELECT books.id AS t0_r0, books.last_name AS t0_r1, ...
+  FROM books LEFT OUTER JOIN authors ON authors.book_id = books.id
+  WHERE books.id IN (1,2,3,4,5,6,7,8,9,10)
+____________________________________________
+
+## like the includes method, you can specify conditions for eager loaded associations.
+
+
+
+
+
+___________________________________________________________________
+
 ###############  ###############
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
 ===================================================================
 (*)===> 
 ____________________________________________
