@@ -1812,15 +1812,59 @@ ____________________________________________
 
 ___________________________________________________________________
 
-###############  ###############
+############### Dynamic Finders & Enums ###############
 ===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
+(*)===> Dynamic Finders
+
+## For every field (also known as an attribute) you define in your table, Active Record provides a finder method. 
+
+## If you have a field called first_name on your Customer model for example, you get the instance method find_by_first_name for free from Active Record. 
+
+## If you also have a locked field on the Customer model, you also get find_by_locked method.
+
+## You can specify an exclamation point (!) on the end of the dynamic finders to get them to raise an ActiveRecord::RecordNotFound error if they do not return any records, like Customer.find_by_first_name!("Ryan")
+
+## If you want to find both by first_name and orders_count, you can chain these finders together by simply typing "and" between the fields. 
+For example, Customer.find_by_first_name_and_orders_count("Ryan", 5).
+
+
 
 ===================================================================
-(*)===> 
+(*)===> Enums
+
+Declaring an enum will:
+
+    Create scopes that can be used to find all objects that have or do not have one of the enum values
+    Create an instance method that can be used to determine if an object has a particular value for the enum
+    Create an instance method that can be used to change the enum value of an object
+
+For example, given this enum declaration:
 ____________________________________________
+class Order < ApplicationRecord
+  enum :status, [:shipped, :being_packaged, :complete, :cancelled]
+end
+____________________________________________
+
+____________________________________________
+irb> Order.shipped
+=> #<ActiveRecord::Relation> # all orders with status == :shipped
+irb> Order.not_shipped
+=> #<ActiveRecord::Relation> # all orders with status != :shipped
+____________________________________________
+
+____________________________________________
+irb> order = Order.shipped.first
+irb> order.shipped?
+=> true
+irb> order.complete?
+=> false
+____________________________________________
+
+____________________________________________
+irb> order = Order.first
+irb> order.shipped!
+UPDATE "orders" SET "status" = ?, "updated_at" = ? WHERE "orders"."id" = ?  [["status", 0], ["updated_at", "2019-01-24 07:13:08.524320"], ["id", 1]]
+=> true
 ____________________________________________
 
 ===================================================================
