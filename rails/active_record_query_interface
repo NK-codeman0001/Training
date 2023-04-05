@@ -1370,7 +1370,6 @@ ___________________________________________________________________
 
 ###############  Null Relation & Readonly Objects ###############
 ===================================================================
-(*)===> 
 ____________________________________________
 Book.none # returns an empty Relation and fires no queries.
 ____________________________________________
@@ -1405,15 +1404,116 @@ customer.visits += 1
 customer.save
 ____________________________________________
 
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
+
+
+___________________________________________________________________
+
+###############  Joining Tables ###############
+
+Active Record provides two finder methods for specifying JOIN clauses on the resulting SQL:
+
+joins and left_outer_joins. 
+
+While joins should be used for INNER JOIN or custom queries, 
+left_outer_joins is used for queries using LEFT OUTER JOIN.
 
 ===================================================================
-(*)===> 
+(*)===> joins
+
+
+//  Using a String SQL Fragment
+____________________________________________
+Author.joins("INNER JOIN books ON books.author_id = authors.id AND books.out_of_print = FALSE")
 ____________________________________________
 ____________________________________________
+SELECT authors.* FROM authors INNER JOIN books ON books.author_id = authors.id AND books.out_of_print = FALSE
+____________________________________________
+
+
+
+//Joining a Single Association
+____________________________________________
+Book.joins(:reviews)
+____________________________________________
+____________________________________________
+SELECT books.* FROM books
+  INNER JOIN reviews ON reviews.book_id = books.id
+____________________________________________
+
+
+
+// Joining Multiple Associations
+____________________________________________
+Book.joins(:author, :reviews)
+____________________________________________
+____________________________________________
+SELECT books.* FROM books
+  INNER JOIN authors ON authors.id = books.author_id
+  INNER JOIN reviews ON reviews.book_id = books.id
+____________________________________________
+
+
+
+
+// Joining Nested Associations (Single Level)
+____________________________________________
+Book.joins(reviews: :customer)
+____________________________________________
+____________________________________________
+SELECT books.* FROM books
+  INNER JOIN reviews ON reviews.book_id = books.id
+  INNER JOIN customers ON customers.id = reviews.customer_id
+____________________________________________
+
+
+
+// Joining Nested Associations (Multiple Level)
+____________________________________________
+Author.joins(books: [{ reviews: { customer: :orders } }, :supplier] )
+____________________________________________
+____________________________________________
+SELECT * FROM authors
+  INNER JOIN books ON books.author_id = authors.id
+  INNER JOIN reviews ON reviews.book_id = books.id
+  INNER JOIN customers ON customers.id = reviews.customer_id
+  INNER JOIN orders ON orders.customer_id = customers.id
+INNER JOIN suppliers ON suppliers.id = books.supplier_id
+____________________________________________
+
+
+
+// Specifying Conditions on the Joined Tables
+____________________________________________
+time_range = (Time.now.midnight - 1.day)..Time.now.midnight
+Customer.joins(:orders).where('orders.created_at' => time_range).distinct
+____________________________________________
+                  or
+____________________________________________
+time_range = (Time.now.midnight - 1.day)..Time.now.midnight
+Customer.joins(:orders).where(orders: { created_at: time_range }).distinct
+____________________________________________
+
+## This will find all customers who have orders that were created yesterday, using a BETWEEN SQL expression to compare created_at.
+
+
+
+
+===================================================================
+(*)===> left_outer_joins
+____________________________________________
+Customer.left_outer_joins(:reviews).distinct.select('customers.*, COUNT(reviews.*) AS reviews_count').group('customers.id')
+____________________________________________
+____________________________________________
+SELECT DISTINCT customers.*, COUNT(reviews.*) AS reviews_count FROM customers
+LEFT OUTER JOIN reviews ON reviews.customer_id = customers.id GROUP BY customers.id
+____________________________________________
+
+
+
+
+___________________________________________________________________
+
+###############  ###############
 
 ===================================================================
 (*)===> 
