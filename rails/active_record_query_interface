@@ -804,15 +804,173 @@ ____________________________________________
 
 ## The find_by! method behaves exactly like find_by, except that it will raise ActiveRecord::RecordNotFound if no matching record is found. 
 
-===================================================================
-(*)===>
+___________________________________________________________________
+
+############### Retrieving Multiple Objects in Batches ###############
+
+## The find_each and find_in_batches methods are intended for use in the batch processing of a large number of records that wouldn't fit in memory all at once. 
+
+If you just need to loop over a thousand records the regular find methods are the preferred option.
+
+(*)===> find_each
+
+The find_each method retrieves records in batches and then yields each one to the block. 
+
+In the following example, find_each retrieves customers in batches of 1000 and yields them to the block one by one:
 ____________________________________________
+Customer.find_each do |customer|
+  NewsMailer.weekly(customer).deliver_now
+end
 ____________________________________________
 
+
+find_each works on model classes, as seen above, and also on relations:
+____________________________________________
+Customer.where(weekly_subscriber: true).find_each do |customer|
+  NewsMailer.weekly(customer).deliver_now
+end
+____________________________________________
+
+          Options for find_each
+
+ :batch_size
+
+The :batch_size option allows you to specify the number of records to be retrieved in each batch, before being passed individually to the block. 
+
+For example, to retrieve records in batches of 5000:
+____________________________________________
+Customer.find_each(batch_size: 5000) do |customer|
+  NewsMailer.weekly(customer).deliver_now
+end
+____________________________________________
+
+
+:start
+
+By default, records are fetched in ascending order of the primary key. 
+The :start option allows you to configure the first ID of the sequence whenever the lowest ID is not the one you need.
+
+This would be useful, for example, if you wanted to resume an interrupted batch process, provided you saved the last processed ID as a checkpoint.
+
+For example, to send newsletters only to customers with the primary key starting from 2000:
+____________________________________________
+Customer.find_each(start: 2000) do |customer|
+  NewsMailer.weekly(customer).deliver_now
+end
+____________________________________________
+
+
+
+
+:finish
+
+Similar to the :start option, :finish allows you to configure the last ID of the sequence whenever the highest ID is not the one you need. 
+This would be useful, for example, if you wanted to run a batch process using a subset of records based on :start and :finish.
+
+For example, to send newsletters only to customers with the primary key starting from 2000 up to 10000:
+____________________________________________
+Customer.find_each(start: 2000, finish: 10000) do |customer|
+  NewsMailer.weekly(customer).deliver_now
+end
+____________________________________________
+
+
+:error_on_ignore
+The :error_on_ignore option is used to override the application configuration and specify whether an error should be raised when an order is present in the relation.
+
+By default, Rails ignores the order clause when using the includes method to eagerly load associations. This behavior can be changed globally in the application configuration by setting config.active_record.raise_on_order_by_clause to true. However, if you only want to change this behavior for a specific relation, you can pass the :error_on_ignore option to the includes method.
+
+When :error_on_ignore is set to true, Rails will raise an ActiveRecord::StatementInvalid error if an order clause is present in the relation and is being ignored by the includes method. Here's an example:
+
+____________________________________________
+class Post < ActiveRecord::Base
+  has_many :comments
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :post
+end
+
+# Assume there are 10 posts in the database, each with 5 comments
+
+# This will eagerly load all comments for the posts, ignoring any order clause on the comments association
+posts = Post.includes(:comments)
+
+# This will raise an ActiveRecord::StatementInvalid error because the order clause on the comments association is being ignored
+posts = Post.includes(:comments).order('comments.created_at DESC').merge(Comment.order('created_at ASC').limit(5)).references(:comments).error_on_ignore(true)
+____________________________________________
+
+
 ===================================================================
-(*)===>
+(*)===> find_in_batches
+
+The find_in_batches method is similar to find_each,
+since both retrieve batches of records. 
+
+The difference is that find_in_batches yields batches to the block as an array of models, instead of individually. 
+
+The following example will yield to the supplied block an array of up to 1000 customers at a time, with the final block containing any remaining customers:
+
 ____________________________________________
+# Give add_customers an array of 1000 customers at a time.
+Customer.find_in_batches do |customers|
+  export.add_customers(customers)
+end
 ____________________________________________
+
+
+find_in_batches works on model classes, as seen above, and also on relations:
+____________________________________________
+# Give add_customers an array of 1000 recently active customers at a time.
+Customer.recently_active.find_in_batches do |customers|
+  export.add_customers(customers)
+end
+____________________________________________
+
+
+       Options for find_in_batches
+
+
+       
+:batch_size
+
+Just like for find_each, batch_size establishes how many records will be retrieved in each group. 
+
+For example, retrieving batches of 2500 records can be specified as:
+____________________________________________
+Customer.find_in_batches(batch_size: 2500) do |customers|
+  export.add_customers(customers)
+end
+____________________________________________
+
+
+:start
+
+____________________________________________
+Customer.find_in_batches(batch_size: 2500, start: 5000) do |customers|
+  export.add_customers(customers)
+end
+____________________________________________
+
+
+:finish
+____________________________________________
+Customer.find_in_batches(finish: 7000) do |customers|
+  export.add_customers(customers)
+end
+____________________________________________
+
+
+
+:error_on_ignore
+____________________________________________
+The error_on_ignore option overrides the application config to specify if an error should be raised when a specific order is present in the relation.
+____________________________________________
+
+
+___________________________________________________________________
+
+###############  ###############
 
 ===================================================================
 (*)===> 
