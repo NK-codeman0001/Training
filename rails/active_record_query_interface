@@ -1,0 +1,935 @@
+---------------------------------------------------------------------
+               			Active Record Query Interface
+---------------------------------------------------------------------
+Active Record will perform queries on the database for you and is compatible with most database systems, including MySQL, MariaDB, PostgreSQL, and SQLite. Regardless of which database system you're using, the Active Record method format will always be the same.
+
+## All of the following models use id as the primary key, unless specified otherwise.
+
+___________________________________________________________________
+
+    Retrieving Objects from the Database
+___________________________________________________________________
+
+############### Retrieving a Single Object ###############
+Active Record provides several finder methods
+
+(*)===> annotate : Adds an SQL comment to queries generated from this relation.
+____________________________________________
+User.annotate("selecting user names").select(:name)
+# SELECT "users"."name" FROM "users" /* selecting user names */
+
+User.annotate("selecting", "user", "names").select(:name)
+# SELECT "users"."name" FROM "users" /* selecting */ /* user */ /* names */
+____________________________________________
+
+
+===================================================================
+(*)===> find : Using the find method, you can retrieve the object corresponding to the specified primary key that matches any supplied options. 
+
+Find by id - This can either be a specific id (1), 
+a list of ids (1, 5, 6), or an array of ids ([5, 6, 10]). 
+
+If one or more records cannot be found for the requested ids, then ActiveRecord::RecordNotFound will be raised. 
+If the primary key is an integer, find by id coerces its arguments by using to_i.
+
+____________________________________________
+Person.find(1)          # returns the object for ID = 1
+Person.find("1")        # returns the object for ID = 1
+Person.find("31-sarah") # returns the object for ID = 31
+Person.find(1, 2, 6)    # returns an array for objects with IDs in (1, 2, 6)
+Person.find([7, 17])    # returns an array for objects with IDs in (7, 17)
+Person.find([1])        # returns an array for the object with ID = 1
+Person.where("administrator = 1").order("created_on DESC").find(1)
+____________________________________________
+
+
+===================================================================
+(*)===> create_with : Sets attributes to be used when creating new records from a relation object.
+____________________________________________
+users = User.where(name: 'Oscar')
+users.new.name # => 'Oscar'
+
+users = users.create_with(name: 'DHH')
+users.new.name # => 'DHH'
+____________________________________________
+
+
+You can pass nil to create_with to reset attributes:
+____________________________________________
+users = users.create_with(nil)
+users.new.name # => 'Oscar'
+____________________________________________
+
+
+
+===================================================================
+(*)===> distinct : Specifies whether the records should be unique or not. 
+
+For example:
+____________________________________________
+User.select(:name)
+# Might return two records with the same name
+
+User.select(:name).distinct
+# Returns 1 record per distinct name
+
+User.select(:name).distinct.distinct(false)
+# You can also remove the uniqueness
+____________________________________________
+
+
+===================================================================
+(*)===> eager_load : loads associated records in a single query
+Forces eager loading by performing a LEFT OUTER JOIN on args:
+____________________________________________
+User.eager_load(:posts)
+# SELECT "users"."id" AS t0_r0, "users"."name" AS t0_r1, ...
+# FROM "users" LEFT OUTER JOIN "posts" ON "posts"."user_id" =
+# "users"."id"
+____________________________________________
+
+===================================================================
+(*)===> extending : adds methods to a relation object
+____________________________________________
+# Example
+User.where(name: 'John').extending(User::CustomMethods)
+
+# Result
+# [Custom methods added to the relation object]
+____________________________________________
+
+Used to extend a scope with additional methods, either through a module or through a block provided.
+
+The object returned is a relation, which can be further extended.
+
+
+  ==> Using a module
+    ____________________________________________
+    module Pagination
+      def page(number)
+        # pagination code goes here
+      end
+    end
+
+    scope = Model.all.extending(Pagination)
+    scope.page(params[:page])
+    ____________________________________________
+
+            or
+ 
+  You can also pass a list of modules:
+    ____________________________________________
+     scope = Model.all.extending(Pagination, SomethingElse)
+    ____________________________________________
+
+
+  ==> Using a block
+    ____________________________________________
+    scope = Model.all.extending do
+      def page(number)
+        # pagination code goes here
+      end
+    end
+    scope.page(params[:page])
+    ____________________________________________
+
+                      or
+  You can also use a block and a module list:
+    ____________________________________________
+    scope = Model.all.extending(Pagination) do
+      def per_page(number)
+        # pagination code goes here
+      end
+    end
+    ____________________________________________
+
+
+===================================================================
+(*)===> extract_associated
+Extracts a named association from the relation. The named association is first preloaded, then the individual association records are collected from the relation. 
+
+Like so:
+____________________________________________
+account.memberships.extract_associated(:user)
+# => Returns collection of User records
+____________________________________________
+
+This is short-hand for:
+____________________________________________
+account.memberships.preload(:user).collect(&:user)
+____________________________________________
+
+
+
+===================================================================
+(*)===> from : 
+
+Specifies the table from which the records will be fetched. For example:
+
+____________________________________________
+Topic.select('title').from('posts')
+# SELECT title FROM posts
+____________________________________________
+
+
+Can accept other relation objects. For example:
+____________________________________________
+Topic.select('title').from(Topic.approved)
+# SELECT title FROM (SELECT * FROM topics WHERE approved = 't') subquery
+____________________________________________
+
+
+Passing a second argument (string or symbol), creates the alias for the SQL from clause. Otherwise the alias “subquery” is used:
+____________________________________________
+Topic.select('a.title').from(Topic.approved, :a)
+# SELECT a.title FROM (SELECT * FROM topics WHERE approved = 't') a
+____________________________________________
+
+
+It does not add multiple arguments to the SQL from clause. The last from chained is the one used:
+____________________________________________
+Topic.select('title').from(Topic.approved).from(Topic.inactive)
+# SELECT title FROM (SELECT topics.* FROM topics WHERE topics.active = 'f') subquery
+____________________________________________
+
+
+
+For multiple arguments for the SQL from clause, you can pass a string with the exact elements in the SQL from list:
+
+____________________________________________
+color = "red"
+Color
+  .from("colors c, JSONB_ARRAY_ELEMENTS(colored_things) AS colorvalues(colorvalue)")
+  .where("colorvalue->>'color' = ?", color)
+  .select("c.*").to_a
+# SELECT c.*
+# FROM colors c, JSONB_ARRAY_ELEMENTS(colored_things) AS colorvalues(colorvalue)
+# WHERE (colorvalue->>'color' = 'red')
+____________________________________________
+
+
+
+===================================================================
+(*)===> group : 
+
+Allows to specify a group attribute:
+____________________________________________
+User.group(:name)
+# SELECT "users".* FROM "users" GROUP BY name
+____________________________________________
+
+
+Returns an array with distinct records based on the group attribute:
+____________________________________________
+User.select([:id, :name])
+# => [#<User id: 1, name: "Oscar">, #<User id: 2, name: "Oscar">, #<User id: 3, name: "Foo">]
+____________________________________________
+
+____________________________________________
+User.group(:name)
+# => [#<User id: 3, name: "Foo", ...>, #<User id: 2, name: "Oscar", ...>]
+____________________________________________
+
+____________________________________________
+User.group('name AS grouped_name, age')
+# => [#<User id: 3, name: "Foo", age: 21, ...>, #<User id: 2, name: "Oscar", age: 21, ...>, #<User id: 5, name: "Foo", age: 23, ...>]
+____________________________________________
+
+
+Passing in an array of attributes to group by is also supported.
+____________________________________________
+User.select([:id, :first_name]).group(:id, :first_name).first(3)
+# => [#<User id: 1, first_name: "Bill">, #<User id: 2, first_name: "Earl">, #<User id: 3, first_name: "Beto">]
+____________________________________________
+
+
+
+
+===================================================================
+(*)===> having : Allows to specify a HAVING clause. Note that you can't use HAVING without also specifying a GROUP clause.
+____________________________________________
+Order.having('SUM(price) > 30').group('user_id')
+____________________________________________
+
+
+
+===================================================================
+(*)===> includes : 
+
+Specify relationships to be included in the result set. For example:
+____________________________________________
+users = User.includes(:address)
+users.each do |user|
+  user.address.city
+end
+____________________________________________
+
+allows you to access the address attribute of the User model without firing an additional query. This will often result in a performance improvement over a simple join.
+
+
+You can also specify multiple relationships, like this:
+____________________________________________
+users = User.includes(:address, :friends)
+____________________________________________
+
+
+Loading nested relationships is possible using a Hash:
+____________________________________________
+users = User.includes(:address, friends: [:address, :followers])
+____________________________________________
+
+
+===Conditions===
+If you want to add string conditions to your included models, you'll have to explicitly reference them. 
+For example:
+____________________________________________
+User.includes(:posts).where('posts.name = ?', 'example')
+____________________________________________
+
+Will throw an error, but this will work:
+____________________________________________
+User.includes(:posts).where('posts.name = ?', 'example').references(:posts)
+____________________________________________
+
+## Note that includes works with association names while references needs the actual table name.
+
+If you pass the conditions via hash, you don't need to call references explicitly, as where references the tables for you. 
+For example, this will work correctly:
+____________________________________________
+User.includes(:posts).where(posts: { name: 'example' })
+____________________________________________
+
+
+
+===================================================================
+(*)===> joins : 
+
+Performs JOINs on args. The given symbol(s) should match the name of the association(s).
+____________________________________________
+User.joins(:posts)
+# SELECT "users".*
+# FROM "users"
+# INNER JOIN "posts" ON "posts"."user_id" = "users"."id"
+____________________________________________
+
+
+Multiple joins:
+____________________________________________
+User.joins(:posts, :account)
+# SELECT "users".*
+# FROM "users"
+# INNER JOIN "posts" ON "posts"."user_id" = "users"."id"
+# INNER JOIN "accounts" ON "accounts"."id" = "users"."account_id"
+____________________________________________
+
+
+Nested joins:
+____________________________________________
+User.joins(posts: [:comments])
+# SELECT "users".*
+# FROM "users"
+# INNER JOIN "posts" ON "posts"."user_id" = "users"."id"
+# INNER JOIN "comments" ON "comments"."post_id" = "posts"."id"
+____________________________________________
+
+You can use strings in order to customize your joins:
+____________________________________________
+User.joins("LEFT JOIN bookmarks ON bookmarks.bookmarkable_type = 'Post' AND bookmarks.user_id = users.id")
+# SELECT "users".* FROM "users" LEFT JOIN bookmarks ON bookmarks.bookmarkable_type = 'Post' AND bookmarks.user_id = users.id
+____________________________________________
+
+
+
+===================================================================
+(*)===> left_outer_joins || left_joins
+
+Performs LEFT OUTER JOINs on args.
+____________________________________________
+User.left_outer_joins(:posts)
+=> SELECT "users".* FROM "users" LEFT OUTER JOIN "posts" ON "posts"."user_id" = "users"."id"
+____________________________________________
+
+
+
+===================================================================
+(*)===> limit : Specifies a limit for the number of records to retrieve.
+____________________________________________
+User.limit(10) # generated SQL has 'LIMIT 10'
+
+User.limit(10).limit(20) # generated SQL has 'LIMIT 20'
+____________________________________________
+
+
+
+===================================================================
+(*)===> lock : This method locks the selected records in the database to prevent other transactions from modifying them until the current transaction is complete. 
+
+Here's an example:
+____________________________________________
+User.where(name: 'John').lock
+____________________________________________
+
+This generates the following SQL query:
+____________________________________________
+SELECT "users".* FROM "users" WHERE "users"."name" = 'John' FOR UPDATE
+____________________________________________
+
+
+
+===================================================================
+(*)===> none : Returns a chainable relation with zero records.
+
+The returned relation implements the Null Object pattern. It is an object with defined null behavior and always returns an empty array of records without querying the database.
+
+Any subsequent condition chained to the returned relation will continue generating an empty relation and will not fire any query to the database.
+
+Used in cases where a method or scope could return zero records but the result needs to be chainable.
+
+For example:
+____________________________________________
+User.limit(10) # generated SQL has 'LIMIT 10'
+
+User.limit(10).limit(20) # generated SQL has 'LIMIT 20'
+____________________________________________
+
+
+
+===================================================================
+(*)===> offset : 
+
+Specifies the number of rows to skip before returning rows.
+____________________________________________
+User.offset(10) # generated SQL has "OFFSET 10"
+____________________________________________
+
+Should be used with order.
+____________________________________________
+User.offset(10).order("name ASC")
+____________________________________________
+
+
+
+===================================================================
+(*)===> optimizer_hints : Specify optimizer hints to be used in the SELECT statement.
+
+Example (for PostgreSQL with pg_hint_plan):
+____________________________________________
+Topic.optimizer_hints("SeqScan(topics)", "Parallel(topics 8)")
+# SELECT /*+ SeqScan(topics) Parallel(topics 8) ____________________________________________
+
+
+
+===================================================================
+(*)===> order : Applies an ORDER BY clause to a query.
+
+order accepts arguments in one of several formats.
+
+==> symbols
+____________________________________________
+User.order(:name)
+# SELECT "users".* FROM "users" ORDER BY "users"."name" ASC
+____________________________________________
+
+____________________________________________
+User.order(email: :desc)
+# SELECT "users".* FROM "users" ORDER BY "users"."email" DESC
+____________________________________________
+
+____________________________________________
+User.order(:name, email: :desc)
+# SELECT "users".* FROM "users" ORDER BY "users"."name" ASC, "users"."email" DESC
+____________________________________________
+
+
+
+==> strings
+____________________________________________
+User.order('name')
+# SELECT "users".* FROM "users" ORDER BY name
+
+User.order('name DESC')
+# SELECT "users".* FROM "users" ORDER BY name DESC
+
+User.order('name DESC, email')
+# SELECT "users".* FROM "users" ORDER BY name DESC, email
+____________________________________________
+
+
+==> Arel
+
+If you need to pass in complicated expressions that you have verified are safe for the database, you can use Arel.
+____________________________________________
+User.order(Arel.sql('end_date - start_date'))
+# SELECT "users".* FROM "users" ORDER BY end_date - start_date
+____________________________________________
+
+
+Custom query syntax, like JSON columns for Postgres, is supported in this way.
+____________________________________________
+User.order(Arel.sql("payload->>'kind'"))
+# SELECT "users".* FROM "users" ORDER BY payload->>'kind'
+____________________________________________
+
+
+
+===================================================================
+(*)===> preload : Allows preloading of args, in the same way that includes does.
+
+____________________________________________
+User.preload(:posts)
+# SELECT "posts".* FROM "posts" WHERE "posts"."user_id" IN (1, 2, 3)
+____________________________________________
+
+
+===================================================================
+(*)===> readonly :  This method prevents the resulting records from being modified and raises an exception if you try to save them. 
+
+Here's an example:
+____________________________________________
+User.readonly.where(name: 'John')
+____________________________________________
+
+
+This generates the following SQL query:
+____________________________________________
+SELECT "users".* FROM "users" WHERE "users"."name" = 'John' FOR READ ONLY
+____________________________________________
+
+
+
+===================================================================
+(*)===> references : : This method includes associated tables in the query to avoid ambiguous column references. 
+
+Here's an example:
+____________________________________________
+User.includes(:posts).where("posts.name = 'foo'")
+# Doesn't JOIN the posts table, resulting in an error.
+
+User.includes(:posts).where("posts.name = 'foo'").references(:posts)
+# Query now knows the string references posts, so adds a JOIN
+____________________________________________
+
+
+===================================================================
+(*)===> reorder : 
+
+Replaces any existing order defined on the relation with the specified order.
+
+____________________________________________
+User.order('email DESC').reorder('id ASC') # generated SQL has 'ORDER BY id ASC'
+____________________________________________
+
+
+Subsequent calls to order on the same relation will be appended. For example:
+____________________________________________
+User.order('email DESC').reorder('id ASC').order('name ASC')
+
+## generates a query with 'ORDER BY id ASC, name ASC'.
+____________________________________________
+
+
+
+===================================================================
+(*)===> reselect : Allows you to change a previously set select statement.
+____________________________________________
+Post.select(:title, :body)
+# SELECT `posts`.`title`, `posts`.`body` FROM `posts`
+
+Post.select(:title, :body).reselect(:created_at)
+# SELECT `posts`.`created_at` FROM `posts`
+____________________________________________
+
+
+
+===================================================================
+(*)===> reverse_order : Reverse the existing order clause on the relation.
+____________________________________________
+User.order('name ASC').reverse_order # generated SQL has 'ORDER BY name DESC'
+____________________________________________
+
+
+===================================================================
+(*)===> select
+
+____________________________________________
+Model.all.select { |m| m.field == value }____________________________________________
+
+## This will build an array of objects from the database for the scope, converting them into an array and iterating through them using Array#select.
+
+
+____________________________________________
+Model.select(:field)
+# => [#<Model id: nil, field: "value">]
+____________________________________________
+## Modifies the SELECT statement for the query so that only certain fields are retrieved:
+
+____________________________________________
+Model.select(:field, :other_field, :and_one_more)
+# => [#<Model id: nil, field: "value", other_field: "value", and_one_more: "value">]
+____________________________________________
+
+____________________________________________
+Model.select('field AS field_one', 'other_field AS field_two')
+# => [#<Model id: nil, field: "value", other_field: "value">]
+____________________________________________
+
+## If an alias was specified, it will be accessible from the resulting objects:
+____________________________________________
+Model.select('field AS field_one').first.field_one
+# => "value"
+____________________________________________
+
+## Accessing attributes of an object that do not have fields retrieved by a select except id will throw ActiveModel::MissingAttributeError:
+____________________________________________
+Model.select(:field).first.other_field
+# => ActiveModel::MissingAttributeError: missing attribute: other_field
+____________________________________________
+
+
+
+===================================================================
+(*)===> where : Returns a new relation, which is the result of filtering the current relation according to the conditions in the arguments.
+
+
+==> string
+____________________________________________
+Client.where("orders_count = '2'")
+# SELECT * from clients where orders_count = '2';
+____________________________________________
+
+==> array
+____________________________________________
+User.where(["name = ? and email = ?", "Joe", "joe@example.com"])
+# SELECT * FROM users WHERE name = 'Joe' AND email = 'joe@example.com';
+____________________________________________
+
+____________________________________________
+User.where(["name = :name and email = :email", { name: "Joe", email: "joe@example.com" }])
+# SELECT * FROM users WHERE name = 'Joe' AND email = 'joe@example.com';
+____________________________________________
+
+____________________________________________
+User.where(["name = '%s' and email = '%s'", "Joe", "joe@example.com"])
+# SELECT * FROM users WHERE name = 'Joe' AND email = 'joe@example.com';
+____________________________________________
+
+____________________________________________
+User.where("name = :name and email = :email", { name: "Joe", email: "joe@example.com" })
+# SELECT * FROM users WHERE name = 'Joe' AND email = 'joe@example.com';
+____________________________________________
+
+
+==> hash
+____________________________________________
+User.where(name: "Joe", email: "joe@example.com")
+# SELECT * FROM users WHERE name = 'Joe' AND email = 'joe@example.com'
+
+User.where(name: ["Alice", "Bob"])
+# SELECT * FROM users WHERE name IN ('Alice', 'Bob')
+
+User.where(created_at: (Time.now.midnight - 1.day)..Time.now.midnight)
+# SELECT * FROM users WHERE (created_at BETWEEN '2012-06-09 07:00:00.000000' AND '2012-06-10 07:00:00.000000')
+____________________________________________
+
+
+In the case of a belongs_to relationship, an association key can be used to specify the model if an ActiveRecord object is used as the value.
+____________________________________________
+author = Author.find(1)
+
+# The following queries will be equivalent:
+Post.where(author: author)
+Post.where(author_id: author)
+____________________________________________
+
+
+This also works with polymorphic belongs_to relationships:
+____________________________________________
+treasure = Treasure.create(name: 'gold coins')
+treasure.price_estimates << PriceEstimate.create(price: 125)
+
+# The following queries will be equivalent:
+PriceEstimate.where(estimate_of: treasure)
+PriceEstimate.where(estimate_of_type: 'Treasure', estimate_of_id: treasure)
+____________________________________________
+
+
+==> Joins
+____________________________________________
+User.joins(:posts).where("posts.created_at < ?", Time.now)
+____________________________________________
+
+____________________________________________
+User.joins(:posts).where("posts.published" => true)
+User.joins(:posts).where(posts: { published: true })
+____________________________________________
+
+
+==> no argument
+
+## Chaining with WhereChain#not:
+____________________________________________
+User.where.not(name: "Jon")
+# SELECT * FROM users WHERE name != 'Jon'
+____________________________________________
+
+
+## Chaining with WhereChain#associated:
+____________________________________________
+Post.where.associated(:author)
+# SELECT "posts".* FROM "posts"
+# INNER JOIN "authors" ON "authors"."id" = "posts"."author_id"
+# WHERE "authors"."id" IS NOT NULL
+____________________________________________
+
+## Chaining with WhereChain#missing:
+____________________________________________
+Post.where.missing(:author)
+# SELECT "posts".* FROM "posts"
+# LEFT OUTER JOIN "authors" ON "authors"."id" = "posts"."author_id"
+# WHERE "authors"."id" IS NULL
+____________________________________________
+
+
+==> blank condition
+If the condition is any blank-ish object, then where is a no-op and returns the current relation.
+
+
+
+===================================================================
+(*)===> take
+
+The take method retrieves a record without any implicit ordering. 
+____________________________________________
+irb> customer = Customer.take
+=> #<Customer id: 1, first_name: "Lifo">
+____________________________________________
+
+The SQL equivalent of the above is:
+____________________________________________
+SELECT * FROM customers LIMIT 1
+____________________________________________
+
+## The take method returns nil if no record is found and no exception will be raised.
+
+____________________________________________
+irb> customers = Customer.take(2)
+=> [#<Customer id: 1, first_name: "Lifo">, #<Customer id: 220, first_name: "Sara">]
+____________________________________________
+
+##  The take! method behaves exactly like take, except that it will raise ActiveRecord::RecordNotFound if no matching record is found.
+
+
+
+
+===================================================================
+(*)===> first : The first method finds the first record ordered by primary key (default). 
+____________________________________________
+irb> customer = Customer.first
+=> #<Customer id: 1, first_name: "Lifo">
+____________________________________________
+
+The SQL equivalent of the above is:
+____________________________________________
+SELECT * FROM customers ORDER BY customers.id ASC LIMIT 1
+____________________________________________
+
+## The first method returns nil if no matching record is found and no exception will be raised
+
+____________________________________________
+irb> customers = Customer.first(3)
+=> [#<Customer id: 1, first_name: "Lifo">, #<Customer id: 2, first_name: "Fifo">, #<Customer id: 3, first_name: "Filo">]
+____________________________________________
+
+____________________________________________
+irb> customer = Customer.order(:first_name).first
+=> #<Customer id: 2, first_name: "Fifo">
+____________________________________________
+
+## The first! method behaves exactly like first, except that it will raise ActiveRecord::RecordNotFound if no matching record is found.
+
+
+===================================================================
+(*)===> last : The last method finds the last record ordered by primary key (default).
+
+____________________________________________
+irb> customer = Customer.last
+=> #<Customer id: 221, first_name: "Russel">
+____________________________________________
+
+The SQL equivalent of the above is:
+____________________________________________
+SELECT * FROM customers ORDER BY customers.id DESC LIMIT 1
+____________________________________________
+
+## The last method returns nil if no matching record is found and no exception will be raised.
+
+## If your default scope contains an order method, last will return the last record according to this ordering.
+
+
+____________________________________________
+irb> customers = Customer.last(3)
+=> [#<Customer id: 219, first_name: "James">, #<Customer id: 220, first_name: "Sara">, #<Customer id: 221, first_name: "Russel">]
+____________________________________________
+
+____________________________________________
+irb> customer = Customer.order(:first_name).last
+=> #<Customer id: 220, first_name: "Sara">
+____________________________________________
+
+## The last! method behaves exactly like last, except that it will raise ActiveRecord::RecordNotFound if no matching record is found.
+
+
+
+===================================================================
+(*)===> find_by : The find_by method finds the first record matching some conditions. 
+
+____________________________________________
+irb> Customer.find_by first_name: 'Lifo'
+=> #<Customer id: 1, first_name: "Lifo">
+
+irb> Customer.find_by first_name: 'Jon'
+=> nil
+____________________________________________
+
+
+It is equivalent to writing:
+____________________________________________
+Customer.where(first_name: 'Lifo').take
+____________________________________________
+
+The SQL equivalent of the above is:
+____________________________________________
+SELECT * FROM customers WHERE (customers.first_name = 'Lifo') LIMIT 1
+____________________________________________
+
+## The find_by! method behaves exactly like find_by, except that it will raise ActiveRecord::RecordNotFound if no matching record is found. 
+
+===================================================================
+(*)===>
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===>
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+===================================================================
+(*)===> 
+____________________________________________
+____________________________________________
+
+
+
+___________________________________________________________________
+
+############### END ###############
+
+(*)===>
+____________________________________________
+____________________________________________
+
+(*)===>
+____________________________________________
+____________________________________________
+
+(*)===> 
+____________________________________________
+____________________________________________
+
+
