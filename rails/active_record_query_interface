@@ -1867,15 +1867,75 @@ UPDATE "orders" SET "status" = ?, "updated_at" = ? WHERE "orders"."id" = ?  [["s
 => true
 ____________________________________________
 
+
+
+
+___________________________________________________________________
+
+############### Find or Build a New Object ###############
 ===================================================================
-(*)===> 
+(*)===> find_or_create_by
+
+The find_or_create_by method checks whether a record with the specified attributes exists. If it doesn't, then create is called. Let's see an example.
+
+Suppose you want to find a customer named "Andy", and if there's none, create one. You can do so by running:
 ____________________________________________
+irb> Customer.find_or_create_by(first_name: 'Andy')
+=> #<Customer id: 5, first_name: "Andy", last_name: nil, title: nil, visits: 0, orders_count: nil, lock_version: 0, created_at: "2019-01-17 07:06:45", updated_at: "2019-01-17 07:06:45">
 ____________________________________________
 
+____________________________________________
+SELECT * FROM customers WHERE (customers.first_name = 'Andy') LIMIT 1
+BEGIN
+INSERT INTO customers (created_at, first_name, locked, orders_count, updated_at) VALUES ('2011-08-30 05:22:57', 'Andy', 1, NULL, '2011-08-30 05:22:57')
+COMMIT
+____________________________________________
+
+## find_or_create_by returns either the record that already exists or the new record. In our case, we didn't already have a customer named Andy so the record is created and returned.
+
+
+// we want to find the customer named "Andy", or if that customer doesn't exist, create a customer named "Andy" which is not locked.
+____________________________________________
+Customer.create_with(locked: false).find_or_create_by(first_name: 'Andy')
+____________________________________________
+
+or block method
+____________________________________________
+Customer.find_or_create_by(first_name: 'Andy') do |c|
+  c.locked = false
+end
+____________________________________________
+
+## The block will only be executed if the customer is being created. The second time we run this code, the block will be ignored.
+
+
+
 ===================================================================
-(*)===> 
+(*)===> find_or_initialize_by
+
+The find_or_initialize_by method will work just like find_or_create_by but it will call new instead of create. 
 ____________________________________________
+irb> nina = Customer.find_or_initialize_by(first_name: 'Nina')
+=> #<Customer id: nil, first_name: "Nina", orders_count: 0, locked: true, created_at: "2011-08-30 06:09:27", updated_at: "2011-08-30 06:09:27">
+
+irb> nina.persisted?
+=> false
+
+irb> nina.new_record?
+=> true
 ____________________________________________
+
+//Because the object is not yet stored in the database, the SQL generated looks like this:
+____________________________________________
+SELECT * FROM customers WHERE (customers.first_name = 'Nina') LIMIT 1
+____________________________________________
+
+// When you want to save it to the database, just call save:
+____________________________________________
+irb> nina.save
+=> true
+____________________________________________
+
 
 ===================================================================
 (*)===> 
