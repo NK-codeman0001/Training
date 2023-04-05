@@ -970,38 +970,185 @@ ____________________________________________
 
 ___________________________________________________________________
 
+############### Conditions ###############
+
+===================================================================
+(*)===> Pure String Conditions
+____________________________________________
+Book.where("title = 'Introduction to Algorithms'")
+____________________________________________
+
+## Building your own conditions as pure strings can leave you vulnerable to SQL injection exploits. 
+
+For example, 
+Book.where("title LIKE '%#{params[:title]}%'")
+is not safe.
+
+
+===================================================================
+(*)===> Array Conditions
+____________________________________________
+Book.where("title = ?", params[:title])
+____________________________________________
+
+____________________________________________
+Book.where("title = ? AND out_of_print = ?", params[:title], false)
+____________________________________________
+
+
+
+
+This code is highly preferable:
+____________________________________________
+Book.where("title = ?", params[:title])
+____________________________________________
+to this code:
+____________________________________________
+Book.where("title = #{params[:title]}")
+____________________________________________
+because of argument safety. 
+Putting the variable directly into the conditions string will pass the variable to the database as-is. 
+This means that it will be an unescaped variable directly from a user who may have malicious intent. 
+If you do this, you put your entire database at risk because once a user finds out they can exploit your database they can do just about anything to it. 
+Never ever put your arguments directly inside the conditions string.
+
+
+
+// Placeholder Conditions
+____________________________________________
+Book.where("created_at >= :start_date AND created_at <= :end_date",
+  {start_date: params[:start_date], end_date: params[:end_date]})
+____________________________________________
+
+
+
+// Conditions That Use LIKE
+____________________________________________
+Book.where("title LIKE ?", params[:title] + "%")
+____________________________________________
+In the above code, the intent is to match titles that start with a user-specified string. 
+However, any occurrences of % or _ in params[:title] will be treated as wildcards, leading to surprising query results. 
+In some circumstances, this may also prevent the database from using an intended index, leading to a much slower query.
+
+To avoid these problems, use sanitize_sql_like to escape wildcard characters in the relevant portion of the argument:
+____________________________________________
+Book.where("title LIKE ?",
+  Book.sanitize_sql_like(params[:title]) + "%")
+____________________________________________
+
+
+
+===================================================================
+(*)===> Hash Conditions
+
+// Equality Conditions
+____________________________________________
+Book.where(out_of_print: true)
+____________________________________________
+ or
+____________________________________________
+Book.where('out_of_print' => true)
+____________________________________________
+ 
+
+This will generate SQL like this:
+____________________________________________
+SELECT * FROM books WHERE (books.out_of_print = 1)
+____________________________________________
+
+
+
+// In the case of a belongs_to relationship, an association key can be used to specify the model if an Active Record object is used as the value. 
+This method works with polymorphic relationships as well.
+____________________________________________
+author = Author.first
+Book.where(author: author)
+Author.joins(:books).where(books: { author: author })
+____________________________________________
+
+
+
+
+// Range Conditions
+____________________________________________
+Book.where(created_at: (Time.now.midnight - 1.day)..Time.now.midnight)
+____________________________________________
+____________________________________________
+SELECT * FROM books WHERE (books.created_at BETWEEN '2008-12-21 00:00:00' AND '2008-12-22 00:00:00')
+____________________________________________
+
+
+____________________________________________
+Book.where(created_at: (Time.now.midnight - 1.day)..)
+____________________________________________
+____________________________________________
+SELECT * FROM books WHERE books.created_at >= '2008-12-21 00:00:00'
+____________________________________________
+
+
+// Subset Conditions
+____________________________________________
+Customer.where(orders_count: [1,3,5])
+____________________________________________
+____________________________________________
+SELECT * FROM customers WHERE (customers.orders_count IN (1,3,5))
+____________________________________________
+
+
+
+===================================================================
+(*)===> NOT Conditions
+____________________________________________
+Customer.where.not(orders_count: [1,3,5])
+____________________________________________
+____________________________________________
+SELECT * FROM customers WHERE (customers.orders_count NOT IN (1,3,5))
+____________________________________________
+
+
+____________________________________________
+Customer.create!(nullable_contry: nil)
+Customer.where.not(nullable_country: "UK")
+=> []
+# But
+Customer.create!(nullable_contry: "UK")
+Customer.where.not(nullable_country: nil)
+=> [#<Customer id: 2, nullable_contry: "UK">]
+____________________________________________
+
+===================================================================
+(*)===> OR Conditions
+____________________________________________
+Customer.where(last_name: 'Smith').or(Customer.where(orders_count: [1,3,5]))
+____________________________________________
+____________________________________________
+SELECT * FROM customers WHERE (customers.last_name = 'Smith' OR customers.orders_count IN (1,3,5))
+____________________________________________
+
+
+
+
+
+===================================================================
+(*)===>  AND Conditions
+____________________________________________
+Customer.where(last_name: 'Smith').where(orders_count: [1,3,5]))
+____________________________________________
+____________________________________________
+SELECT * FROM customers WHERE customers.last_name = 'Smith' AND customers.orders_count IN (1,3,5)
+____________________________________________
+
+
+____________________________________________
+Customer.where(id: [1, 2]).and(Customer.where(id: [2, 3]))
+____________________________________________
+____________________________________________
+SELECT * FROM customers WHERE (customers.id IN (1, 2) AND customers.id IN (2, 3))
+____________________________________________
+
+
+
 ###############  ###############
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
-===================================================================
-(*)===> 
-____________________________________________
-____________________________________________
-
 ===================================================================
 (*)===> 
 ____________________________________________
