@@ -2080,8 +2080,8 @@ You can use any of the standard querying methods inside the scope block. The fol
 
 
 
-(*)===> extending
-The extending method in Rails is used to add custom methods to an association object. It allows you to specify a named module that will be extended into the association proxy object. This module can contain custom methods that can be called on the association object.
+(*)===> extend
+The extend method in Rails is used to add custom methods to an association object. It allows you to specify a named module that will be extended into the association proxy object. This module can contain custom methods that can be called on the association object.
 
 ____________________________________________
 module BookExtension
@@ -2091,7 +2091,7 @@ module BookExtension
 end
 
 class Author < ApplicationRecord
-  has_many :books, extending: BookExtension
+  has_many :books, extend: BookExtension
 end
 ____________________________________________
 
