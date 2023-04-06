@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_04_085726) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_06_070318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -153,6 +153,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_085726) do
     t.string "country"
     t.string "t_size"
     t.string "password"
+  end
+
+  create_table "vehicles", force: :cascade do |t|
+    t.string "type"
+    t.string "color"
+    t.decimal "price", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "accounts", "suppliers"
