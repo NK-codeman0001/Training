@@ -5,6 +5,7 @@ module BookExtension
 end
 
 class Author < ApplicationRecord
+  enum :gender, [:male, :female]
   # has_many :books
   # has_many :books, validate: true
   has_many :books, extend: BookExtension, before_add: :before_add_func
