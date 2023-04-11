@@ -1,0 +1,15 @@
+<%= form_with model:model_name, url: route_path do |form|%>
+  <%# if form.object.errors.any? %>
+    <%#= form.object.errors.full_messages %>
+  <%#end%>
+  <div>
+  <%= form.label :title%>
+  <%= form.text_field :title%>
+  </div>
+
+  <div>
+  <%= form.label :body%>
+  <%= form.text_area :body%>
+  </div>
+<%= form.submit%>
+<%end%>
