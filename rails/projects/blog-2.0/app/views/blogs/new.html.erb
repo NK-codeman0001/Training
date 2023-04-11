@@ -1,0 +1,16 @@
+<h1>Add New Blog To Your Collection</h1>
+<%= form_with model:@blog, url: new_path do |form|%>
+  <%# if form.object.errors.any? %>
+    <%#= form.object.errors.full_messages %>
+  <%#end%>
+  <div>
+  <%= form.label :title%>
+  <%= form.text_field :title%>
+  </div>
+
+  <div>
+  <%= form.label :body%>
+  <%= form.text_area :body%>
+  </div>
+<%= form.submit%>
+<%end%>

@@ -8,11 +8,15 @@ class BlogsController < ApplicationController
   end
 
   def new
-  
+    @blog = Blog.new
   end
 
   def create
-  
+    @blog = Blog.new(blog_params)
+    if @blog.save
+      redirect_to root_path
+    end
+    # render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -29,8 +33,8 @@ class BlogsController < ApplicationController
 
   private 
 
-  def post_params
-    params.require(:title,:body)
+  def blog_params
+    params.require(:blog).permit(:title,:body)
     
   end
 end
