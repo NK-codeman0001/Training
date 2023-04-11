@@ -1,0 +1,289 @@
+---------------------------------------------------------------------
+               			Deployment of Rails Project
+---------------------------------------------------------------------
+___________________________________________________________________
+
+              How to deploy a Ruby on Rails application to AWS EC2 with Nginx, Unicorn, and PostgreSQL
+___________________________________________________________________
+
+===================================================================
+(1)===> Create an AWS EC2 instance:
+
+____________________________________________
+    (*) Log in to your AWS account and navigate to the EC2 dashboard
+    (*) Click on the "Launch Instance" button 
+    (*) Choose an Amazon Machine Image (AMI) with Ubuntu as the operating system.
+    (*) Select the instance type and configure the instance settings.
+    (*) Add storage as needed.
+    (*)Configure security group settings to allow SSH and HTTP traffic.
+____________________________________________
+
+
+
+===================================================================
+(2)===> SSH into the EC2 instance:
+____________________________________________
+    (*) Use your preferred terminal application to connect to the instance.
+    (*) Use the following command: 
+    ```ssh -i <path_to_key_file> ubuntu@<public_dns>```
+____________________________________________
+
+
+
+===================================================================
+(3)===> Install dependencies:
+____________________________________________
+    (*) Update the package list: sudo apt-get update
+    (*) Install build-essential, git, node.js, and other dependencies: 
+    ```sudo apt-get install build-essential git nodejs postgresql libpq-dev imagemagick postgresql-contrib build-essential libssl-dev libreadline-dev zlib1g-dev```
+____________________________________________
+
+
+===================================================================
+
+(4)===> Install RVM (Ruby Version Manager) and Ruby:
+____________________________________________
+    (*) Install GPG keys for RVM: 
+    ```gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3```
+    
+    (*) Install RVM: 
+    ```\curl -sSL https://get.rvm.io | bash -s stable```
+    
+    (*) Reload RVM: 
+    ```source ~/.rvm/scripts/rvm```
+    
+    (*) Install Ruby: 
+    ```rvm install <ruby_version>```
+    
+    (*) Set default Ruby version: 
+    ```rvm use <ruby_version> --default```
+    
+    (*) Install Unicorn using the following command: 
+    ```gem install unicorn.```
+____________________________________________
+
+===================================================================
+(5)===> Install and configure PostgreSQL:
+____________________________________________
+    (*) Create a new PostgreSQL user: 
+    ```sudo -u postgres createuser -s <username>```
+    
+    (*) Create a new PostgreSQL database: 
+    ```sudo -u postgres createdb <database_name>```
+    
+    (*) Configure PostgreSQL to allow password authentication: 
+    ```sudo nano /etc/postgresql/<version>/main/pg_hba.conf```
+        
+         =>Find the line that reads 
+         `local all postgres peer`
+         
+         =>Change "peer" to "md5"
+    
+    (*) Restart PostgreSQL: 
+    ```sudo service postgresql restart```
+____________________________________________
+
+===================================================================
+(6)===> Clone the Rails application:
+____________________________________________
+    (*) Use Git to clone the repository: 
+    ```git clone <repository_url>```
+    
+    (*) Navigate to the application directory: 
+    ```cd <application_directory>```
+____________________________________________
+
+
+===================================================================
+(7)===> Install application dependencies:
+____________________________________________
+    (*) Install Bundler: 
+    ```gem install bundler```
+    
+    (*) Install application dependencies: 
+    ```bundle install --without development test```
+____________________________________________
+
+
+===================================================================
+(8)===> Configure the application:
+____________________________________________
+    (*) Copy the example configuration file: 
+    ```cp config/database.yml.example config/database.yml```
+    
+    (*) Edit the configuration file with the PostgreSQL database settings: 
+    ```nano config/database.yml```
+    
+    (*) Configure secrets.yml file for production environment: 
+    ```cp config/secrets.yml.example config/secrets.yml```
+     and update with appropriate values.
+____________________________________________
+                OR
+(*) Create a new database.yml file in the config directory and set the PostgreSQL credentials:             
+____________________________________________
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  port: <%= ENV['DATABASE_PORT'] %>
+
+development:
+  <<: *default
+  database: <%= ENV['DATABASE_NAME'] %>_development
+
+test:
+  <<: *default
+  database: <%= ENV['DATABASE_NAME'] %>_test
+
+production:
+  <<: *default
+  database: <%= ENV['DATABASE_NAME'] %>_production
+
+____________________________________________
+
+
+===================================================================
+(9)===> Precompile assets:
+____________________________________________
+(*) Precompile the application assets: 
+```RAILS_ENV=production bundle exec rake assets:precompile```
+____________________________________________
+
+
+===================================================================
+(10)===> Install and configure Nginx:
+____________________________________________
+    (*) Install Nginx: 
+    ```sudo apt-get install nginx```
+    (*) Create a new Nginx configuration file: 
+    ```sudo nano /etc/nginx/sites-available/<application_name>```
+    
+    (*) Edit the file with the following configuration:
+____________________________________________
+upstream unicorn_server {
+    server unix:/tmp/unicorn.<application_name>.sock fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name <server_name>;
+
+    location / {
+        proxy_pass http://unicorn_server;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+    
+    location /assets {
+        expires max;
+        add_header Cache-Control public;
+    }
+    
+    error
+
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+===================================================================
+(1)===> 
+____________________________________________
+____________________________________________
+
+
+___________________________________________________________________
+############### END ###############
+
