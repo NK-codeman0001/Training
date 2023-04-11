@@ -3,6 +3,10 @@ class BlogsController < ApplicationController
     @blogs = Blog.all.order(created_at: :desc)
   end
 
+  def show
+    @blog = Blog.find(params[:id])
+  end
+
   def new
   
   end
