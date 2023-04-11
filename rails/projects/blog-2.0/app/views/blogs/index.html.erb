@@ -1,0 +1,9 @@
+<h1>My Blogs</h1>
+<ol>
+<% @blogs.each do |blog| %>
+  <div>
+  <h2><li> <%=blog.title%></h2>
+  <p><%=blog.body%></p>
+  </div>
+<%end%>
+</ol>
