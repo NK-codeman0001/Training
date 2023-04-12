@@ -4,6 +4,6 @@
   </div>
   <div>
   <%= button_to "Edit", blog_path, method: :get %>
-  <%= button_to "Delete", show_path, method: :delete %>
-  <%= button_to "#{@blog.archived ? "Unarchive" : "Archive"}", show_path, method: :patch%>
+  <%= button_to "Delete", show_path, method: :delete, data: {turbo_confirm: "You want to delete Blog: #{@blog.title}"}%>
+  <%= button_to "#{ @blog.archived ? "Unarchive" : "Archive"}", show_path, method: :patch%>
   </div>
