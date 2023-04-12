@@ -3,6 +3,6 @@
   <p><%=@blog.body%></p>
   </div>
   <div>
-  <%= button_to "Edit", "/edit/#{@blog.id}", method: :get %>
-  <%= button_to "Delete", url_for(id:@blog.id), method: :delete %>
+  <%= button_to "Edit", blog_path, method: :get %>
+  <%= button_to "Delete", show_path, method: :delete %>
   </div>

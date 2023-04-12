@@ -4,11 +4,14 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
   root "blogs#index"
-  get "/new", to:"blogs#new"
-  get "/:id", to:"blogs#show"
-  get "/edit/:id", to: "blogs#edit"
-  patch "/:id", to: "blogs#update"
-  post "/new", to:"blogs#create"
-  delete "/:id", to: "blogs#destroy"
+  post "/blogs", to:"blogs#create"
+  get "/blogs/new", to:"blogs#new"
+  get "/blogs/:id", to:"blogs#show", as: :show
+  delete "/blogs/:id", to: "blogs#destroy"
+  get "/blogs/:id/edit", to: "blogs#edit", as: :blog
+  patch "/blogs/:id/edit", to: "blogs#update"
+  
+  #This will match any GET request with an unmatched path
+  # get "*path", to: "blogs#index"
   
 end

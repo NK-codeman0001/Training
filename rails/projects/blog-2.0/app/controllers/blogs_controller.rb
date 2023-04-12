@@ -4,7 +4,7 @@ class BlogsController < ApplicationController
   end
 
   def show
-    Blog.find(params[:id]).exist?
+    @blog = Blog.find(params[:id])
   rescue ActiveRecord::RecordNotFound
       redirect_to root_path
   end
@@ -29,7 +29,7 @@ class BlogsController < ApplicationController
   def update
     @blog = Blog.find(params[:id])
     if @blog.update(blog_params)
-      redirect_to "/#{@blog.id}"
+      redirect_to show_path
     else
       render :edit, status: :unprocessable_entity
     end
@@ -38,7 +38,7 @@ class BlogsController < ApplicationController
   def destroy
     @blog = Blog.find(params[:id])
     if @blog.destroy
-      redirect_to "/#{@blog.id}"
+      redirect_to root_path
     else
       render :edit, status: :unprocessable_entity
     end

@@ -1,3 +1,4 @@
 <h1>Edit Blog</h1>
-<%= render partial: "form", locals: {model_name: @blog, route_path: "/#{@blog.id}"} %>
-<%= button_to "Delete", url_for(id:@blog.id), method: :delete %>
+<%= render partial: "form", locals: {model_name: @blog} %>
+<div>
+ <%= button_to "Delete", show_path, method: :delete %>
