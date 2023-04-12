@@ -16,7 +16,7 @@ class BlogsController < ApplicationController
   def create
     @blog = Blog.new(blog_params)
     if @blog.save
-      redirect_to show_path
+      redirect_to show_path(@blog)
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class BlogsController < ApplicationController
   def update
     @blog = Blog.find(params[:id])
     if @blog.update(blog_params)
-      redirect_to show_path
+      redirect_to show_path(@blog)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -48,9 +48,9 @@ class BlogsController < ApplicationController
     @blog = Blog.find(params[:id])
     @blog.toggle!(:archived)
     if @blog.save
-      redirect_to show_path
+      redirect_to show_path(@blog)
     else
-      render :new, status: :unprocessable_entity
+      render :show, status: :unprocessable_entity
     end
 
   end
@@ -58,7 +58,7 @@ class BlogsController < ApplicationController
   private 
 
   def blog_params
-    params.require(:blog).permit(:title,:body)
+    params.require(:blog).permit(:title,:body,:archived)
     
   end
 end
