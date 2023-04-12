@@ -1,9 +1,11 @@
 <h1>My Blogs</h1>
 <ol>
 <% @blogs.each do |blog| %>
+  <% unless blog.archived%>
   <div>
   <h2><li> <%=link_to blog.title, show_path(blog) %></h2>
   <p><%=blog.body%></p>
   </div>
+  <%end%>
 <%end%>
 </ol>

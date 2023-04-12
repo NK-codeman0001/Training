@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   delete "/blogs/:id", to: "blogs#destroy"
   get "/blogs/:id/edit", to: "blogs#edit", as: :blog
   patch "/blogs/:id/edit", to: "blogs#update"
+  patch "/blogs/:id", to: "blogs#archive"
   
   #This will match any GET request with an unmatched path
   # get "*path", to: "blogs#index"
