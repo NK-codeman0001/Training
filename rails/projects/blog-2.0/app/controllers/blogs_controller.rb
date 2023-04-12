@@ -1,10 +1,11 @@
 class BlogsController < ApplicationController
+
+  before_action :set_blog, except: [:index, :new, :create]
   def index    
     @blogs = Blog.all.order(created_at: :desc)
   end
 
   def show
-    @blog = Blog.find(params[:id])
   rescue ActiveRecord::RecordNotFound
       redirect_to root_path
   end
@@ -23,11 +24,9 @@ class BlogsController < ApplicationController
   end
 
   def edit
-    @blog = Blog.find(params[:id])
   end
 
   def update
-    @blog = Blog.find(params[:id])
     if @blog.update(blog_params)
       redirect_to show_path(@blog)
     else
@@ -36,7 +35,6 @@ class BlogsController < ApplicationController
   end
 
   def destroy
-    @blog = Blog.find(params[:id])
     if @blog.destroy
       redirect_to root_path
     else
@@ -44,8 +42,7 @@ class BlogsController < ApplicationController
     end
   end
 
-  def archive
-    @blog = Blog.find(params[:id])
+  def archive    
     @blog.toggle!(:archived)
     if @blog.save
       redirect_to show_path(@blog)
@@ -56,6 +53,10 @@ class BlogsController < ApplicationController
   end
 
   private 
+
+  def set_blog
+    @blog = Blog.find(params[:id])
+  end
 
   def blog_params
     params.require(:blog).permit(:title,:body,:archived)
