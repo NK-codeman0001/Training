@@ -2,3 +2,7 @@
   <h1> <%=@blog.title%></h2>
   <p><%=@blog.body%></p>
   </div>
+  <div>
+  <%= button_to "Edit", "/edit/#{@blog.id}", method: :get %>
+  <%= button_to "Delete", url_for(id:@blog.id), method: :delete %>
+  </div>

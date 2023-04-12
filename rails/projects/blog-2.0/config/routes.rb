@@ -9,5 +9,6 @@ Rails.application.routes.draw do
   get "/edit/:id", to: "blogs#edit"
   patch "/:id", to: "blogs#update"
   post "/new", to:"blogs#create"
+  delete "/:id", to: "blogs#destroy"
   
 end
