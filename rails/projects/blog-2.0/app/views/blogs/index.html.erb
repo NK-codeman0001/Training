@@ -2,7 +2,7 @@
 <ol>
 <% @blogs.each do |blog| %>
   <div>
-  <h2><li> <%=blog.title%></h2>
+  <h2><li> <%=link_to blog.title, show_path(blog) %></h2>
   <p><%=blog.body%></p>
   </div>
 <%end%>
