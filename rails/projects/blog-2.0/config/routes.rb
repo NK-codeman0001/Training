@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   root "blogs#index"
   get "/new", to:"blogs#new"
   get "/:id", to:"blogs#show"
+  get "/edit/:id", to: "blogs#edit"
+  patch "/:id", to: "blogs#update"
   post "/new", to:"blogs#create"
   
 end
