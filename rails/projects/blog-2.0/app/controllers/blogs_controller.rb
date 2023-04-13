@@ -7,8 +7,6 @@ class BlogsController < ApplicationController
   end
 
   def show
-  rescue ActiveRecord::RecordNotFound
-      redirect_to root_path
   end
 
   def new
@@ -57,10 +55,12 @@ class BlogsController < ApplicationController
 
   def set_blog
     @blog = Blog.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path
   end
 
   def blog_params
-    params.require(:blog).permit(:title,:body,:archived)
+    params.require(:blog).permit(:title,:body,:archived,:published_at)
     
   end
 end
