@@ -1,7 +1,13 @@
 <%= form_with model:model_name do |form|%>
-  <%# if form.object.errors.any? %>
-    <%#= form.object.errors.full_messages %>
-  <%#end%>
+  <div style="color: red;" >
+    <% if form.object.errors.any? %>
+    <ul>
+      <% form.object.errors.each do |err| %>
+        <li><%= err.full_message%><br>
+      <% end %>
+    </ul>
+    <%end%>
+  </div>
   <div>
   <%= form.label :title%>
   <%= form.text_field :title%>
