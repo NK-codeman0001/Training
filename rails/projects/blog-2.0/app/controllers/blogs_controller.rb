@@ -1,9 +1,35 @@
 class BlogsController < ApplicationController
-  
-  before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_blog, except: [:index, :new, :create]
+  before_action :check_admin, except: [:index, :show]
+  before_action :authenticate_user!
+  before_action :set_blog, except: [:index, :new, :create, :scheduled, :draft, :archived]
   def index    
-    @blogs = user_signed_in? ? Blog.all.order(created_at: :desc) : Blog.all.published.order(created_at: :desc)
+    @blogs = Blog.all.published.order(published_at: :desc)
+    # @pagy, @records = pagy(Product.all)
+    @pagy, @blogs = pagy(@blogs)
+    rescue Pagy::OverflowError
+      redirect_to root_path(page: 1)
+
+  end
+
+  def scheduled
+    @blogs = Blog.all.scheduled.order(published_at: :desc)
+    @pagy, @blogs = pagy(@blogs)
+    rescue Pagy::OverflowError
+      redirect_to root_path(page: 1)
+  end
+
+  def draft
+    @blogs = Blog.all.draft.order(created_at: :desc)
+    @pagy, @blogs = pagy(@blogs)
+    rescue Pagy::OverflowError
+      redirect_to root_path(page: 1)
+  end
+
+  def archived
+    @blogs = Blog.all.archived.order(updated_at: :desc)
+    @pagy, @blogs = pagy(@blogs)
+    rescue Pagy::OverflowError
+      redirect_to root_path(page: 1)
   end
 
   def show
@@ -52,6 +78,11 @@ class BlogsController < ApplicationController
   end
 
   private 
+  def check_admin
+    if user_signed_in? && current_user && current_user.is_admin==false
+      redirect_to root_path
+    end
+  end
 
   def set_blog
     @blog = user_signed_in? ? Blog.find(params[:id]) : Blog.published.find(params[:id])
@@ -60,7 +91,7 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    params.require(:blog).permit(:title,:body,:archived,:published_at)
+    params.require(:blog).permit(:title,:content,:archived,:published_at)
     
   end
 end

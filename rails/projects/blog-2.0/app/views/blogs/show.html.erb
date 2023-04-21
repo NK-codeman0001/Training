@@ -1,11 +1,22 @@
   <div>
-  <h1> <%=@blog.title%></h2>
-  <p><%=@blog.body%></p>
+  <h2> <%=@blog.title%></h2>
+  <p><%=@blog.content%></p>
   </div>
-   <% if user_signed_in?%>
+   <% if current_user.is_admin?%>
     <div>
     <%= button_to "Edit", edit_blog_path, method: :get %>
-    <%= button_to "Delete", blog_path, method: :delete, data: {turbo_confirm: "You want to delete Blog: #{@blog.title}"}%>
+    <%#= button_to "Delete", blog_path, method: :delete, data: {turbo_confirm: "You want to delete Blog: #{@blog.title}"}%>
     <%= button_to "#{ @blog.archived ? "Unarchive" : "Archive"}", archive_blog_path(@blog), method: :patch%>
     </div>
   <%end%>
+  <div>
+    <hr>
+    <%= render partial: "comments/form"%>
+  </div>
+  <div>
+    <%if true%>
+    <h4>Comments: <small><%=@blog.comments.where(is_archived: false).count%><small></h4>
+    <hr>
+    <%= render @blog.comments.order(created_at: :desc) %>
+    <%end%>
+  </div>
