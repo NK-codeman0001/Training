@@ -164,12 +164,12 @@ ____________________________________________
     (*) Edit the file with the following configuration:
 ____________________________________________
 upstream unicorn_server {
-    server unix:/tmp/unicorn.<application_name>.sock fail_timeout=0;
+    server unix:/tmp/unicorn.bloggits.sock fail_timeout=0;
 }
 
 server {
     listen 80;
-    server_name <server_name>;
+    server_name 172.31.39.37;
 
     location / {
         proxy_pass http://unicorn_server;
