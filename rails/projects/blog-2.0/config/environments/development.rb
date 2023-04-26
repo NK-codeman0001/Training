@@ -81,6 +81,13 @@ Rails.application.configure do
     user_name: "neeraj.kumar@berylsystems.com",
     password: "21DF69B603096C45B23456A4C43CFE45EC45"
   }
+  
+  # Allow requests to a723-103-81-213-196.ngrok-free.app
+  # config.hosts << "a723-103-81-213-196.ngrok-free.app"
+  # config.hosts << "d9d1-103-81-213-196.ngrok-free.app"
+  # config.hosts << /.*\.103-81-213-196\.ngrok-free\.app/
+    # Allow requests from any host
+  Rails.application.config.hosts.clear
 
 end
 

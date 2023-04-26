@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users, path_names: {sign_in: "login", sign_out: "logout"}
+  devise_for :users, path_names: {sign_in: "login", sign_out: "logout"}, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
+
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -11,12 +13,22 @@ Rails.application.routes.draw do
   # delete "/blogs/:id", to: "blogs#destroy"
   # get "/blogs/:id/edit", to: "blogs#edit", as: :blog
   # patch "/blogs/:id/edit", to: "blogs#update"
+  get "/blogs/:id/shared", to: "blogs#share_blog", as: :share
   get "/blogs/scheduled", to: "blogs#scheduled", as: :scheduled
   get "/blogs/draft", to: "blogs#draft", as: :draft
   get "/blogs/archived", to: "blogs#archived", as: :archived
   patch "/blogs/:id/archive", to: "blogs#archive", as: :archive_blog
+  # get "/blogs/search", to: "blogs#search", as: :search
+  
+
   resources :blogs do
+    collection do
+      get :search
+      patch :bulk_archive_blogs 
+      
+    end
     resources :comments, only: [:create, :update]
+    
   end
   root "blogs#index"
 

@@ -1,9 +1,11 @@
 class BlogsController < ApplicationController
-  before_action :check_admin, except: [:index, :show]
+  skip_before_action :verify_authenticity_token
+
+  before_action :check_admin, except: [:index, :show, :share_blog, :search]
   before_action :authenticate_user!
-  before_action :set_blog, except: [:index, :new, :create, :scheduled, :draft, :archived]
+  before_action :set_blog, except: [:index, :new, :create, :scheduled, :draft, :archived, :bulk_archive_blogs, :search]
   def index    
-    @blogs = Blog.all.published.order(published_at: :desc)
+    @blogs = Blog.all.published.where(archived: false).search(params[:search]).order(published_at: :desc)
     # @pagy, @records = pagy(Product.all)
     @pagy, @blogs = pagy(@blogs)
     rescue Pagy::OverflowError
@@ -11,6 +13,7 @@ class BlogsController < ApplicationController
 
   end
 
+ 
   def scheduled
     @blogs = Blog.all.scheduled.order(published_at: :desc)
     @pagy, @blogs = pagy(@blogs)
@@ -67,6 +70,14 @@ class BlogsController < ApplicationController
     end
   end
 
+  def share_blog
+    # BlogMailer.share_blog(@blog, current_user).deliver_later
+    BlogMailer.with(user: current_user, blog: @blog).share_blog(@blog, current_user).deliver_later
+    # Any key-value pair passed to with just becomes the params for the mailer action. So with(user: @user, account: @user.account) makes params[:user] and params[:account] available in the mailer action. Just like controllers have params.
+
+    redirect_to blog_path(@blog)
+  end
+
   def archive    
     @blog.toggle!(:archived)
     if @blog.save
@@ -75,6 +86,32 @@ class BlogsController < ApplicationController
       render :show, status: :unprocessable_entity
     end
 
+  end
+
+  def bulk_archive_blogs
+    respond_to do |format|
+      @blogs = Blog.where(id: params[:blog_ids])
+      @blogs.update_all(archived: true)
+
+      format.js
+    end
+  end
+
+  def search
+    # Debugger
+    # @posts = Blog.where("LOWER(title) LIKE ?", "%#{params[:search].downcase}%")
+
+    respond_to do |format|
+      # @posts = Blog.where("LOWER(title) LIKE ?", "%#{params[:search].downcase}%")
+      @posts = Blog.all.published.where(archived: false).order(published_at: :desc).where("LOWER(title) LIKE ?", "%#{params[:search].downcase}%")
+      @post_count = @posts.count
+      @pagy, @posts = pagy(@posts)
+    # rescue Pagy::OverflowError
+    #   redirect_to root_path(page: 1)
+      format.js
+    end
+    rescue Pagy::OverflowError
+      redirect_to root_path(page: 1)
   end
 
   private 

@@ -3,3 +3,60 @@ import "@hotwired/turbo-rails"
 import "controllers"
 import "trix"
 import "@rails/actiontext"
+
+$(document).ready(function(){
+  var counter = 0;
+  $('.blog-select-check').on('click',function(){
+    if($(this).prop('checked')){
+      counter +=1;
+      //$('#archive-blogs').css('display','block');
+      $('#archive-blogs').show();
+    }
+    else {
+      counter -=1;
+      if(counter <=0){
+    //$('#archive-blogs').css('display','none');
+      $('#archive-blogs').hide();
+      }
+    }
+  });
+
+  $('#archive-blogs').on('click', function(){
+    var blogIds = [];
+    $('.blog-select-check').each(function(){
+      if($(this).prop('checked')){
+        blogIds.push($(this).data('blog-id'))
+      }
+    });
+
+    $.ajax({
+      url: 'blogs/bulk_archive_blogs',
+      type: 'PATCH',
+      data: {blog_ids: blogIds}
+    });
+  });
+
+  // $("#search_field").on("keyup", function() {
+  //   var value = $(this).val().toLowerCase();
+  //   $("#blogs li").filter(function() {
+  //     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  //   });
+  // });
+
+  $("#search_field" ).on( "keyup", function() {
+    // alert($("#search_field").text);
+    var searchKey = $("#search_field").val();
+    
+
+    $.ajax({
+      url: 'blogs/search',
+      type: 'GET',
+      data: {search: searchKey}
+    });
+  });
+
+
+
+
+
+});
