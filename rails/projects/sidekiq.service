@@ -1,0 +1,17 @@
+[Unit]
+Description=sidekiq
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/bloggits
+Environment="PATH=/usr/local/rvm/gems/ruby-3.2.1/bin:/usr/local/rvm/gems/ruby-3.2.1@global/bin:/usr/local/rvm/rubies/ruby-3.2.1/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+ExecStart=/bin/bash -lc 'bundle exec sidekiq -e development'
+Restart=always
+SyslogIdentifier=sidekiq
+
+[Install]
+WantedBy=multi-user.target
+
