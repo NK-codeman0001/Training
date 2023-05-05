@@ -1,0 +1,270 @@
+Nokogiri (鋸) makes it easy and painless to work with XML and HTML from Ruby. 
+
+Installing Nokogiri
+
+Nokogiri includes its own updated and patched copies of libxml2 and libxslt libraries. By default, installation of Nokogiri will use these copies. Alternatively, you may install using your operating system's built-in libraries or other custom versions of these libraries.
+
+----------------------------------------------------------------
+Install with included libraries (RECOMMENDED)
+
+Ubuntu / Debian
+Install Nokogiri on a brand new Ubuntu system with these commands:
+
+==> sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev libgmp
+==> gem install nokogiri
+
+
+Note for RVM users: you may require libgmp, consider running sudo apt-get install libgmp-dev.
+
+
+----------------------------------------------------------------
+
+
+
+Here is an example:
+
+----------------------------------------------------------------
+require 'nokogiri'
+require 'open-uri'
+
+# Get a Nokogiri::HTML4::Document for the page we’re interested in...
+
+doc = Nokogiri::HTML4(URI.open('http://www.google.com/search?q=tenderlove'))
+
+# Do funky things with it using Nokogiri::XML::Node methods...
+
+####
+# Search for nodes by css
+doc.css('h3.r a.l').each do |link|
+  puts link.content
+end
+----------------------------------------------------------------
+
+
+
+Parsing an HTML / XML Document
+
+----------------------------------------------------------------
+From the Internets
+
+require 'open-uri'
+doc = Nokogiri::HTML(URI.open("http://www.threescompany.com/"))
+
+characters = @doc.css("sitcoms name") # => ["<name>Married with Children</name>", "<name>Perfect Strangers</name>"]
+
+@doc.css("dramas name").first # => "<name>The A-Team</name>"
+@doc.at_css("dramas name")    # => "<name>The A-Team</name>"
+@doc.css('title') # => ["<title>Example Feed</title>", "<title>Atom-Powered Robots Run Amok</title>"]
+
+
+----------------------------------------------------------------
+
+
+
+
+
+
+Parsing HTML:
+
+You can use Nokogiri to parse an HTML document using the `Nokogiri::HTML` method. 
+
+This will return a Nokogiri::HTML::Document object that you can manipulate. For example:
+
+----------------------------------------------------------------
+require 'nokogiri'
+require 'open-uri'
+
+doc = Nokogiri::HTML(open('http://example.com'))
+----------------------------------------------------------------
+
+This code will open the webpage at http://example.com and create a Nokogiri::HTML::Document object called `doc` that you can work with.
+
+
+
+
+
+Searching for elements: 
+You can search for specific elements in the HTML document using CSS selectors or XPath expressions. 
+
+For example, to find all links on the page, you could do:
+----------------------------------------------------------------
+links = doc.css('a')
+----------------------------------------------------------------
+
+
+This will return a Nokogiri::XML::NodeSet object containing all the links on the page.
+
+
+
+
+Extracting data: 
+
+Once you have found the elements you're interested in, you can extract their content using the `text` or `attribute` methods. For example, to extract the text of the first link on the page, you could do:
+
+----------------------------------------------------------------
+first_link = links.first
+puts first_link.text
+----------------------------------------------------------------
+
+This will print the text of the first link to the console.
+
+
+
+
+Modifying the document: 
+You can also use Nokogiri to modify the HTML document. For example, to add a new link to the page, you could do:
+
+----------------------------------------------------------------
+new_link = Nokogiri::XML::Node.new('a', doc)
+new_link['href'] = 'http://www.example.com'
+new_link.content = 'New Link'
+
+doc.at('body').add_child(new_link)
+----------------------------------------------------------------
+
+This will create a new link with the href 'http://www.example.com' and the content 'New Link' and add it to the end of the body of the HTML document.
+
+
+
+
+some examples and useful methods for web scraping with Nokogiri
+----------------------------------------------------------------
+==> intros = doc.css('p.intro')
+ 
+==> first_link = links.first
+href = first_link.attribute('href').value
+
+==> email_regex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i
+email_addresses = doc.to_s.scan(email_regex)
+
+==> 
+
+----------------------------------------------------------------
+require 'open-uri'
+
+doc.css('a').each do |link|
+  url = link.attribute('href').value
+  page = Nokogiri::HTML(open(url))
+  # Scrape the content of the page here
+end
+----------------------------------------------------------------
+
+
+==> Nokogiri::HTML
+
+----------------------------------------------------------------
+require 'nokogiri'
+require 'open-uri'
+
+doc = Nokogiri::HTML(open('http://example.com'))
+----------------------------------------------------------------
+
+
+
+==> Nokogiri::XML
+
+
+----------------------------------------------------------------
+require 'nokogiri'
+
+xml = '<root><element>content</element></root>'
+doc = Nokogiri::XML(xml)
+----------------------------------------------------------------
+
+This code will create an XML document as a string, parse it into a Nokogiri::XML::Document object called `doc`, and allow you to manipulate the document.
+
+
+
+==> css
+
+----------------------------------------------------------------
+paragraphs = doc.css('p')
+----------------------------------------------------------------
+
+
+==> xpath
+
+The `xpath` method is used to search for elements in an HTML or XML document using XPath expressions. For example:
+
+
+----------------------------------------------------------------
+paragraphs = doc.xpath('//p')
+
+----------------------------------------------------------------
+
+This code will search for all `p` elements in the HTML document and return a Nokogiri::XML::NodeSet object containing all matching elements.
+
+
+
+==> text
+
+----------------------------------------------------------------
+paragraph = doc.css('p').first
+content = paragraph.text
+----------------------------------------------------------------
+
+
+
+==> attribute
+----------------------------------------------------------------
+link = doc.css('a').first
+href = link.attribute('href').value
+----------------------------------------------------------------
+
+This code will select the first `a` element in the HTML document and extract the value of its `href` attribute as a string.
+
+
+
+==> attr
+
+The `attr` method is a shorthand for `attribute('attribute_name').value`. For example:
+----------------------------------------------------------------
+link = doc.css('a').first
+href = link.attr('href')
+----------------------------------------------------------------
+
+
+==> to_s
+----------------------------------------------------------------
+paragraph = doc.css('p').first
+puts paragraph.to_s
+----------------------------------------------------------------
+This code will select the first `p` element in the HTML document and print its entire HTML content to the console.
+
+
+
+==> inner_text
+
+The `inner_text` method is used to extract the text content of an element and all its child elements. For example:
+----------------------------------------------------------------
+paragraph = doc.css('p').first
+content = paragraph.inner_text
+----------------------------------------------------------------
+
+
+
+----------------------------------------------------------------
+
+s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

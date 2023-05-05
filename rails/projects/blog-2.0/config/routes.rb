@@ -45,6 +45,6 @@ Rails.application.routes.draw do
   #This will match any GET request with an unmatched path
   # get "*path", to: "blogs#index"
 
-  get '*path' => redirect('/404.html')
+  get '*path' => redirect('/')
   
 end
