@@ -1,0 +1,175 @@
+Mechanize
+Mechanize is a Ruby library that makes automated web interactions easy.
+
+
+1. Installing Mechanize: 
+----------------------------------------------------------------
+sudo gem install mechanize
+----------------------------------------------------------------
+
+
+
+
+2. Basic usage:
+----------------------------------------------------------------
+   require 'mechanize'
+   
+   agent = Mechanize.new
+   page = agent.get("http://www.example.com")
+   puts page.body
+----------------------------------------------------------------
+
+
+
+3. Navigating web pages: 
+Once you have a page object, you can use its methods to navigate to other pages, submit forms, and click links. For example, you can follow a link with a specific text:
+
+----------------------------------------------------------------
+   link = page.link_with(text: "Click here")
+   page = link.click
+----------------------------------------------------------------
+
+
+
+
+4. Submitting forms: 
+To submit a form, you first need to get the form object from the page. Then, you can set its fields and submit it. For example:
+
+----------------------------------------------------------------
+   form = page.forms.first
+   form.field_with(name: "username").value = "myusername"
+   form.field_with(name: "password").value = "mypassword"
+   page = form.submit
+----------------------------------------------------------------
+
+
+
+
+
+5. Extracting data: 
+
+Mechanize makes it easy to extract data from web pages using its `search` method, which takes a CSS or XPath selector and returns a list of matching elements. For example, you can extract all the links on a page like this:
+
+----------------------------------------------------------------
+   links = page.search("a")
+   links.each do |link|
+     puts link.text
+   end
+----------------------------------------------------------------
+
+
+
+
+6. Handling errors: 
+
+Mechanize can raise various exceptions if something goes wrong, such as `Mechanize::ResponseCodeError` if a page returns an error status code, or `Mechanize::FormNotFoundError` if a form can't be found on a page. You should handle these exceptions in your code to gracefully handle errors.
+
+
+
+
+7. Cookies and sessions: 
+Mechanize automatically handles cookies and sessions for you. You can access the cookie jar object with `agent.cookie_jar`, and you can set and get cookies with its methods.
+
+
+
+
+
+
+----------------------------------------------------------------
+LOGIN A FORM
+----------------------------------------------------------------
+
+require 'mechanize'
+
+agent = Mechanize.new
+page = agent.get("http://www.example.com/login")
+
+# Find the login form on the page
+form = page.form_with(:action => "/users/login")
+
+# Set the username and password fields in the form
+form.set_fields(:'user[username]' => 'admin.user', :'user[password]' => 'changeit')
+
+# Submit the form
+page = form.submit
+
+# Now you should be logged in and can access the protected pages on the website
+----------------------------------------------------------------
+
+
+
+
+----------------------------------------------------------------
+Loop Through pages
+----------------------------------------------------------------
+require 'mechanize'
+
+agent = Mechanize.new
+full_link="https://rubyonrails.org/blog"
+# 158 pages
+loop do
+  page = agent.get(full_link)
+
+  # Select all blog post titles on the current page
+  titles = page.search('.blog__post a').map(&:text)
+
+  # Print the titles
+  puts titles
+
+  # Break out of the loop if there are no more pages
+  element = page.search('.blog__pagination').first
+  break if element.nil?
+  link = element.at('a')[:href]
+  full_link = URI.join(page.uri, link).to_s
+end
+----------------------------------------------------------------
+
+
+----------------------------------------------------------------
+Parse a complete website and its componants
+----------------------------------------------------------------
+desc "Fetch all rails blogs - Mechanize"
+task :fetch_all_rails_blogs => :environment do
+
+  require 'mechanize'
+
+  agent = Mechanize.new
+  full_link="https://rubyonrails.org/blog"  # 158 pages
+  loop do
+    page = agent.get(full_link)
+  
+    # Select all blog post titles on the current page
+    titles = page.search('.blog__post a').map(&:text)
+    blog_links = page.search('.blog__post').map{|post| post.at('a')[:href]}
+    
+    
+    blog_links.each do |link|
+      # fetch the blog page
+      full_blog_link = URI.join(page.uri, link)
+      blog_page = agent.get(full_blog_link)
+
+      # use Nokogiri to scrape the blog title, author name, and publication date
+      # author = blog_page.css('h6').text.strip
+      title = blog_page.css('h2').text.strip
+      content = blog_page.css('.common-content--post').text.strip
+      date = Date.parse(blog_page.css('.common-headline h5').text.strip)
+
+      blog = Blog.where(title: title).first_or_initialize
+      blog.update(
+      content: content,
+      published_at: date
+      )
+    end
+    
+  
+    # Break out of the loop if there are no more pages
+    element = page.search('.blog__pagination').first
+    break if element.nil?
+    link = element.at('a')[:href]
+    full_link = URI.join(page.uri, link).to_s
+  
+  end
+  
+end
+----------------------------------------------------------------
+
