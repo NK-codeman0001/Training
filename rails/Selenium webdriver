@@ -1,0 +1,363 @@
+Selenium webdriver
+
+Selenium implements the W3C WebDriver protocol to automate popular browsers. It aims to mimic the behaviour of a real user as it interacts with the application's HTML. It's primarily intended for web application testing, but any web-based task can automated.
+
+
+----------------------------------------------------------------
+Installation
+----------------------------------------------------------------
+1) Install extension for chrome or firefox
+   https://www.selenium.dev/selenium-ide/
+   
+2) Selenium on Rails : http://svn.openqa.org/svn/selenium-on-rails/stable/selenium-on-rails
+
+3) Selenium for Ruby:
+  gem install selenium-webdriver
+----------------------------------------------------------------
+
+   
+
+
+
+
+
+----------------------------------------------------------------
+Write your first Selenium script
+----------------------------------------------------------------
+1) Require webdrivers in your project:
+    require 'selenium-webdrivers'
+    
+2) Start the session  
+    driver = Selenium::WebDriver.for :chrome 
+    
+3) Take action on browser 
+    driver.get('https://www.selenium.dev/selenium/web/web-form.html')
+    or
+    driver.navigate.to 'https://www.example.com'
+
+    
+4) Request browser information 
+    title = driver.title
+    
+5) Establish Waiting Strategy 
+    driver.manage.timeouts.implicit_wait = 500
+    
+    # Wait for an element to appear
+        wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+        element = wait.until { driver.find_element(:name => "q") }
+
+
+6) Find an element 
+    text_box = driver.find_element(name: 'my-text')
+    submit_button = driver.find_element(tag_name: 'button')
+    
+7) Take action on element 
+    text_box.send_keys('Selenium')
+    submit_button.click
+    
+8) Request element information 
+    value = message.text
+
+9) Executing JavaScript Code
+    driver.execute_script("alert('Hello, World!');")
+
+
+10) End the session 
+    driver.quit
+----------------------------------------------------------------
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+Browser navigation
+----------------------------------------------------------------   
+1) Navigate to 
+driver.navigate.to 'https://selenium.dev'
+
+2) Back
+driver.navigate.back
+
+3) Forward 
+driver.navigate.forward
+
+4) Refresh 
+driver.navigate.refresh
+----------------------------------------------------------------   
+
+
+----------------------------------------------------------------   
+Get browser information 
+----------------------------------------------------------------   
+1) Get title 
+driver.title
+
+2) Get current URL 
+driver.current_url
+
+3) page_source: Returns the source code of the current web page.
+driver.page_source
+
+4) window_handle: Returns the handle of the current window.
+    # Get the handle of the current window and print it
+      puts driver.window_handle
+
+    #output-> E8EEDBF324E5ED488D783B6CA3B48BD9
+      
+A window handle stores the unique address of the browser windows. It is just a pointer to a window whose return type is alphanumeric. The window handle in Selenium helps in handling multiple windows and child windows. Each browser window has a unique window handle value through which it can be identified.
+
+----------------------------------------------------------------   
+
+
+
+
+----------------------------------------------------------------   
+driver methods
+----------------------------------------------------------------   
+1) get(url) - Navigates to the specified URL.
+    driver.get 'https://www.example.com'
+ 
+2) find_element(locator) - Finds the first element on the page matching the specified locator.
+    element = driver.find_element(:name, 'q')
+
+3) find_elements(locator) - Finds all elements on the page matching the specified locator.
+    elements = driver.find_elements(:tag_name, 'a')
+
+4) switch_to.frame(id_or_element) - Switches to the specified frame.
+      iframe = driver.find_element(:id, 'iframe')
+      driver.switch_to.frame(iframe)
+
+      # Return to the top level
+      driver.switch_to.default_content
+
+
+5) close - Closes the current window.
+      driver.close
+
+6) capabilities: Returns a hash containing information about the driver's capabilities.
+
+
+````
+# Get the driver capabilities and print them
+caps = driver.capabilities
+puts caps
+
+# Get the browser name and version from the capabilities hash
+browser_name = caps[:browser_name]
+browser_version = caps[:version]
+puts "Browser: #{browser_name} (version #{browser_version})"
+
+# Get the platform name and version from the capabilities hash
+platform_name = caps[:platform_name]
+platform_version = caps[:platform_version]
+puts "Platform: #{platform_name} (version #{platform_version})"
+
+# Check if the driver supports JavaScript
+supports_js = caps['javascript_enabled']
+puts "JavaScript supported: #{supports_js}"
+
+# Check if the driver supports taking screenshots
+supports_screenshot = caps['takesScreenshot']
+puts "Screenshots supported: #{supports_screenshot}"
+```` 
+    #output-> #<Selenium::WebDriver::Remote::Capabilities:0x00007f3158648a80>
+              Browser: chrome (version )
+              Platform: linux (version )
+              JavaScript supported: 
+              Screenshots supported: 
+----------------------------------------------------------------   
+
+
+
+
+
+
+
+----------------------------------------------------------------   
+Running Selenium Headless
+----------------------------------------------------------------   
+
+require 'selenium-webdriver'
+
+# Set the options to run Chrome in headless mode
+  options = Selenium::WebDriver::Chrome::Options.new
+  options.add_argument('--headless')
+
+# Create a new WebDriver instance with the headless options
+  driver = Selenium::WebDriver.for :chrome, options: options
+
+
+  driver.get 'https://www.example.com'
+  puts driver.title
+  driver.quit
+
+----------------------------------------------------------------   
+
+
+----------------------------------------------------------------   
+JavaScript alerts, prompts and confirmations
+----------------------------------------------------------------   
+# Click the link to activate the alert
+driver.find_element(:link_text, 'See a sample confirm').click
+
+
+# Store the alert reference in a variable
+alert = driver.switch_to.alert
+
+# Store the alert text in a variable
+alert_text = alert.text
+
+//for Alerts & Confirmation
+# Press on Cancel button
+alert.dismiss          
+  
+//for Prompts
+# Type a message
+alert.send_keys("selenium")
+
+# Press on Ok button
+alert.accept
+----------------------------------------------------------------   
+  
+
+
+
+
+
+----------------------------------------------------------------   
+Working with cookies
+----------------------------------------------------------------   
+
+require 'selenium-webdriver'
+driver = Selenium::WebDriver.for :chrome
+
+begin
+  driver.get 'https://www.example.com'
+  
+  
+  # Adds the cookie into current browser context
+  driver.manage.add_cookie(name: "foo", value: "bar")
+  driver.manage.add_cookie(name: "test1", value: "cookie1")
+  driver.manage.add_cookie(name: "test2", value: "cookie2")
+
+
+  # Get cookie details with named cookie 'foo'
+  puts driver.manage.cookie_named('foo')
+
+
+  # Get all available cookies
+  puts driver.manage.all_cookies
+  
+  
+  # delete a cookie with name 'test1'
+  driver.manage.delete_cookie('test1')
+  
+  
+  # deletes all cookies
+  driver.manage.delete_all_cookies
+  
+  
+ensure
+  driver.quit
+end
+
+----------------------------------------------------------------   
+
+
+
+
+
+
+----------------------------------------------------------------   
+Working with windows and tabs
+----------------------------------------------------------------   
+                    ==Window management== 
+1) Get window size 
+
+    # Access each dimension individually
+width = driver.manage.window.size.width
+height = driver.manage.window.size.height
+
+    # Or store the dimensions and query them later
+size = driver.manage.window.size
+width1 = size.width
+height1 = size.height
+
+
+
+  
+2) Set window size 
+
+    driver.manage.window.resize_to(1024,768)
+
+
+3) Get window position 
+
+    #Access each dimension individually
+x = driver.manage.window.position.x
+y = driver.manage.window.position.y
+
+    # Or store the dimensions and query them later
+rect  = driver.manage.window.rect
+x1 = rect.x
+y1 = rect.y
+
+  
+4) Set window position 
+
+    driver.manage.window.move_to(0,0)
+
+
+5) Maximize window 
+
+    driver.manage.window.maximize
+
+
+6) Minimize window 
+
+    driver.manage.window.minimize
+
+
+7) Fullscreen window 
+
+    driver.manage.window.full_screen
+
+
+8) TakeScreenshot 
+
+# Takes and Stores the screenshot in specified path
+  driver.save_screenshot('./image.png')
+
+
+9) TakeElementScreenshot 
+  
+  ele = driver.find_element(:css, 'h1')
+
+    # Takes and Stores the element screenshot in specified path
+  ele.save_screenshot('./image.jpg')
+
+
+10) Print Page 
+
+      base64encodedContent = driver.print_page(orientation: 'landscape')
+
+
+----------------------------------------------------------------   
+
+
+
+
+
+
+
+
+
+
+
+
+
+

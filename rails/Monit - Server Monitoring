@@ -1,0 +1,331 @@
+                          ==========  
+                            Monit
+                          =========
+---------------------------------------------------------------------
+Why to use it
+---------------------------------------------------------------------
+1) Automate Monitoring: Monit can automatically monitor your servers and alert you when a problem arises.
+
+2) Process and Service Management: Monit can manage processes and services on your servers. It can automatically restart a process or service if it fails, or take other actions to ensure that they are running properly.
+
+3) Resource Monitoring: Monit can monitor system resources such as CPU usage, memory usage, and disk space. It can alert you when resource usage exceeds certain thresholds, allowing you to take action before performance is affected.
+
+4) Customizable Alerts: Monit allows you to configure alerts to be sent via email, SMS, or other methods.
+
+5) Security: Monit can also help improve the security of your servers. It can monitor for unusual system activity, such as unauthorized login attempts or changes to critical files, and alert you if it detects any suspicious activity.
+
+---------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------
+How to use it
+---------------------------------------------------------------------
+
+1) Install Monit: You'll first need to install Monit on your server.
+      ```````````````````````````
+      sudo apt-get install monit
+      ```````````````````````````
+          
+2) Configure Monit: Once Monit is installed, you'll need to configure it to monitor the processes and services you want to monitor. This is done by editing the Monit configuration file, which is usually located at /etc/monit/monitrc. In this file, you can specify what processes and services you want to monitor, set thresholds for system resource usage, and configure alerts.
+
+3) Start Monit: After you've configured Monit, you can start the Monit daemon by running the monit command. This will start Monit and begin monitoring your processes and services.
+
+4) Monitor Processes and Services: Monit will automatically monitor the processes and services you've specified in the configuration file. If a process or service fails or is not running as expected, Monit will take action according to the rules you've set. For example, it may restart the process or service, or send you an alert.
+
+5) Monitor System Resources
+6) Receive Alerts
+7) Manage Processes and Services
+
+
+
+---------------------------------------------------------------------
+
+
+
+                          
+---------------------------------------------------------------------
+Installation
+---------------------------------------------------------------------
+
+1) sudo apt-get install monit
+
+2) sudo vim /etc/monit/monitrc
+      set daemon 30  // set checkservice to 30secs
+      
+3) cd /etc/monit/conf.d
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Its integration
+---------------------------------------------------------------------
+1) Install Monit:
+
+  run the command: 
+    sudo apt-get update && sudo apt-get install monit
+  
+  Once the installation is complete, verify that Monit is installed by running the command: 
+    monit -V
+
+
+2) Configure /etc/monit/monitrc:
+  Open the Monit configuration file for editing
+    sudo nano /etc/monit/monitrc
+
+3) Create and Configure /etc/monit/conf.d/process_name.conf
+    sudo nano /etc/monit/conf.d/process_name.conf
+
+
+3) Start Monit:
+
+sudo service monit start
+sudo service monit status
+
+4) Test Monit:
+
+  To test that Monit is working properly, you can intentionally stop a monitored process or service and verify that Monit detects the issue and takes appropriate action. 
+For example, you can stop the Apache process by running the command: sudo service apache2 stop
+
+  Wait for a few seconds, and then check the Monit status using the command: sudo monit status
+  
+  You should see that Monit has detected the issue with the Apache process and has tried to restart it.
+  
+---------------------------------------------------------------------
+
+
+
+
+
+---------------------------------------------------------------------
+Automatically Start Monit when system boots - using Linux:systemd
+---------------------------------------------------------------------
+1) Install Monit as root:
+
+============
+./configure
+make
+make install
+============
+
+
+2) Add monit service configuration to systemd:
+
+============================================================
+# This file is systemd template for monit service. To
+# register monit with systemd, place the monit.service file
+# to the /lib/systemd/system/ directory and then start it
+# using systemctl (see below).
+#
+# Enable monit to start on boot: 
+#         systemctl enable monit.service
+#
+# Start monit immediately: 
+#         systemctl start monit.service
+#
+# Stop monit:
+#         systemctl stop monit.service
+#
+# Status:
+#         systemctl status monit.service
+
+[Unit]
+Description=Pro-active monitoring utility for unix systems
+After=network-online.target
+Documentation=man:monit(1) https://mmonit.com/wiki/Monit/HowTo 
+
+[Service]
+Type=simple
+KillMode=process
+ExecStart=/usr/local/bin/monit -I
+ExecStop=/usr/local/bin/monit quit
+ExecReload=/usr/local/bin/monit reload
+Restart = on-abnormal
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+===============================================================
+
+
+3) Enable and start monit:
+
+===============================
+systemctl enable monit.service
+systemctl start monit.service
+===============================
+
+---------------------------------------------------------------------
+
+
+
+
+
+
+---------------------------------------------------------------------
+Configure Monit for Puma:
+---------------------------------------------------------------------
+# Monitor Puma process
+check process puma with pidfile /home/ubuntu/bloggits/tmp/pids/server.pid
+  start program = "/bin/su - ubuntu -c 'cd /home/ubuntu/bloggits && pumactl -F config/puma.rb start'" with timeout 60 seconds
+  stop program  = "/bin/su - ubuntu -c 'cd /home/ubuntu/bloggits && pumactl -F config/puma.rb stop'"
+
+  if failed host localhost port 3000 protocol http
+    then restart
+    
+##Not working
+  #start program = "/bin/bash -c 'cd /home/ubuntu/bloggits && bundle exec puma -C /home/ubuntu/bloggits/config/puma.rb'"
+  #stop program = "/bin/bash -c 'cd /home/ubuntu/bloggits && bundle exec pumactl -P /home/ubuntu/bloggits/tmp/pids/server.pid stop'"
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Configure Monit for Sidekiq  ## Depricated
+---------------------------------------------------------------------
+## Monit not work Sidekiq Version 7+ we have to use systemd for it as it will not create pid file
+
+# Monitor Sidekiq process
+check process sidekiq with pidfile /home/ubuntu/bloggits/tmp/pids/sidekiq.pid
+  start program = "/bin/bash -c 'cd /home/ubuntu/bloggits && bundle exec sidekiq -C /home/ubuntu/bloggits/config/sidekiq.yml'"
+  stop program = "/bin/bash -c 'cd /home/ubuntu/bloggits && bundle exec sidekiqctl stop /home/ubuntu/bloggits/tmp/pids/sidekiq.pid'"
+  if 3 restarts within 5 cycles then timeout
+
+---------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------
+Use PUMA as systemd
+---------------------------------------------------------------------
+
+Create service file:
+
+[Unit]
+Description=Puma HTTP Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/bloggits
+ExecStart=/bin/bash -lc 'bundle exec puma -C /home/ubuntu/bloggits/config/puma.rb /path/to/app/config.ru'
+PIDFile=/home/ubuntu/bloggits/tmp/pids/server.pid
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+Then enable it all:
+
+# After installing or making changes to puma.service
+sudo systemctl daemon-reload
+
+# Enable so it starts on boot
+sudo systemctl enable puma.service
+
+# Initial start up.
+sudo systemctl start puma.service
+
+# Check status
+sudo systemctl status puma.service
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Configure Monit alerting: (not working)
+---------------------------------------------------------------------
+
+# Set alert email
+set mailserver smtp.elasticemail.com port 2525
+    username "neeraj.kumar@berylsystems.com"
+    password "21DF69B603096C45B23456A4C43CFE45EC45"
+    using tlsv1
+
+set alert neeraj.kumar@berylsystems.com
+
+---------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------
+Commands for Monit
+---------------------------------------------------------------------
+
+Here are some basic commands you can use with Monit:
+
+1. Start Monit:
+
+```
+sudo systemctl start monit
+```
+
+2. Stop Monit:
+
+```
+sudo systemctl stop monit
+```
+
+3. Restart Monit:
+
+```
+sudo systemctl restart monit
+```
+
+4. Check Monit status:
+
+```
+sudo systemctl status monit
+```
+
+5. Reload Monit configuration:
+
+```
+sudo monit reload
+```
+
+6. Check Monit configuration syntax:
+
+```
+sudo monit -t
+```
+
+7. Check Monit version:
+
+```
+sudo monit -V
+```
+
+8. Manually trigger a Monit check:
+
+```
+sudo monit monitor all
+```
+
+9. Stop monitoring all processes:
+
+```
+sudo monit unmonitor all
+```
+
+10. Start monitoring a specific process:
+
+```
+sudo monit monitor processname
+```
+
+11. Stop monitoring a specific process:
+
+```
+sudo monit unmonitor processname
+```
+
+---------------------------------------------------------------------
+
