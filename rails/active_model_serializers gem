@@ -1,0 +1,186 @@
+---------------------------------------------------------------------
+                      Active Model Serializers
+---------------------------------------------------------------------
+
+1) add gem 'active_model_serializers'
+    bundle add 'active_model_serializers'
+
+2) create serailizers
+    rails g serializer blog
+    rails g serializer comment
+    
+  
+3) pass json respnose in blow controller -show action
+   def show
+    #@blog = Article.find(params[:id])
+      respond_to do |format|
+        format.html
+        format.json { render json: @article }
+      end
+   end
+    
+visit http://127.0.0.1:3000/blogs/145.json
+
+4) add scope to pass controller varaibles to serializer
+//in application controller  
+  class ApplicationController < ActionController::Base
+  -------
+  serialization_scope :view_context
+  -------
+  end
+    
+
+
+5) Edit serializer files
+
+# In /app/serializers/blog_serializer.rb
+
+class BlogSerializer < ActiveModel::Serializer
+  include Rails.application.routes.url_helpers
+
+  attributes :id, :title, :content, :url
+  delegate :current_user, to: :scope
+  # has_rich_text :content
+  has_many :comments
+  def url
+    blog_url(object, host: 'localhost:3000') if current_user.is_admin
+  end
+end
+
+
+
+# In /app/serializers/comment_serializer.rb
+
+class CommentSerializer < ActiveModel::Serializer
+  attributes :id, :content
+end
+
+
+
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+---------------------------------------------------------------------
+To pass url link of current object
+---------------------------------------------------------------------
+1) class BlogSerializer < ActiveModel::Serializer
+'''''''''''''''''''''''''''''''''''''''''''''''
+  include Rails.application.routes.url_helpers  
+'''''''''''''''''''''''''''''''''''''''''''''''
+
+                                   '''''''
+  attributes :id, :title, :content, :url
+  # has_rich_text :content         '''''''
+  has_many :comments
+  
+  '''''''''''''''''''''''''''''''''''''''''''
+  def url
+    blog_url(object, host: 'localhost:3000')
+  end
+  '''''''''''''''''''''''''''''''''''''''''''
+end
+
+---------------------------------------------------------------------
+
+
+
+
+
+---------------------------------------------------------------------
+How to add check admin condition
+---------------------------------------------------------------------
+## In controller
+def show
+    respond_to do |format|
+      format.html                       '''''''''''''''''''''       
+      format.json { render json: @blog, scope: current_user }
+    end                                 '''''''''''''''''''''
+end
+
+
+## In Serializer
+class BlogSerializer < ActiveModel::Serializer
+  include Rails.application.routes.url_helpers
+
+  attributes :id, :title, :content, :url
+  # has_rich_text :content
+  has_many :comments
+  def url                                   ''''''''''''''''''''''''
+    blog_url(object, host: 'localhost:3000') if current_user.is_admin
+  end                                       ''''''''''''''''''''''''  
+end
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------
+Pass Json data of serializer to html data-attributes
+---------------------------------------------------------------------
+
+## In Application Controller - add line
+
+class ApplicationController < ActionController::Base
+  -------
+  serialization_scope :view_context
+  -------
+  end
+
+
+## In Blog Controller show action
+
+
+
+## In blog serializer
+class BlogSerializer < ActiveModel::Serializer
+  include Rails.application.routes.url_helpers
+
+  attributes :id, :title, :content, :url
+  ''''''''''''''''''''''''''''''''''
+  delegate :current_user, to: :scope
+  ''''''''''''''''''''''''''''''''''
+  # has_rich_text :content
+  has_many :comments
+  def url
+    blog_url(object, host: 'localhost:3000') if current_user.is_admin
+  end
+end
+
+
+
+## Create helper funtion to user Serializer Outside Controller
+
+//in application helper
+module ApplicationHelper
+  ------    
+  ''''''''''''''''''''''''''''''''''''
+  def json_for(target, options = {})
+    options[:scope] ||= self
+    options[:url_options] ||= url_options
+    ActiveModelSerializers::SerializableResource.new(target, options).to_json
+  end
+  '''''''''''''''''''''''''''''''''''''''
+  ------
+end
+
+
+
+## In show html erb file add data attribut
+<div ..... id="blog_id_<%= @blog.id%>" data-blog="<%= json_for @blog %>">
+---------
+  
+
+
+
+
+---------------------------------------------------------------------
