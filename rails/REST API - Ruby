@@ -1,0 +1,114 @@
+---------------------------------------------------------------------
+                          What is REST?
+---------------------------------------------------------------------
+
+Representational State Transfer (REST) is an architectural pattern. 
+For a system to be RESTful, it must be stateless. 
+
+This does not mean that the client and server cannot have any knowledge of each other, but simply that the entirety of an interaction is encapsulated in the request and response exchange.
+
+This is in contrast to a technology like websockets where the client and server maintain a connection between request response cycles.
+
+---------------------------------------------------------------------
+
+
+---------------------------------------------------------------------
+HTTP Response codes
+---------------------------------------------------------------------
+200 OK
+
+201 Created
+
+404 Not found
+
+406 Not Acceptable
+
+500 Internal Server Error
+
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Resources
+---------------------------------------------------------------------
+The Rails team have defined a number of special methods in the controllers that define resources
+
+Method    	Resource  	    Verb	      Explanation
+index	    /posts.xml	      GET	    Returns all items
+show	    /posts/1.xml	    GET 	  Return a single item with id = 1
+create	  /posts.xml  	    POST    Create an item
+update	  /posts/1.xml	    PUT	    Update item with id = 1
+delete	  /posts/1.xml	    DELETE	Delete item with id = 1
+
+---------------------------------------------------------------------
+
+
+
+
+
+---------------------------------------------------------------------
+Steps to Login to Rails API with devise
+---------------------------------------------------------------------
+1) Get CSRF Token using `GET` request to `login page'
+
+2) Copy the csrf token
+
+3) create new `POST` request to `login page` with
+
+Body->raw-> json
+
+`````````````````````````````
+{
+  "user": {
+    "username": "admin.user",
+    "password": "changeit"
+  }
+}
+````````````````````````````
+
+In Head Add key-value
+```````````````````````````
+Content-Type - application/json
+X-CSRF-Token - <CSRF TOKEN From Step 2>
+``````````````````````````
+
+4) Now Access other links
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Steps to Create a blog through Rails API with form_with 
+---------------------------------------------------------------------
+1) Get CSRF Token & Authentication token of form using `GET` request to `create blog page'
+
+2) create new `POST` request to `create new blog` with
+
+//notes routes can be checked using comman: rails routes -g blog
+
+
+In  Body->x-www-form-urlencoded
+
+   ````````````````````````````````````````````````````````````````````````
+    Key                         Value
+    blog[title]                 Hello from postman
+    blog[content]               test for api post
+    blog[published_at]          2023/May/1
+    blog[archived]              false
+    blog[authenticity_token]    <Authentication token of form from step 1>
+   `````````````````````````````````````````````````````````````````````````
+
+3) In Headers
+
+    `````````````````````````````````````````````````
+    Content-Type - application/x-www-form-urlencoded
+    X-CSRF-Token - <CSRF TOKEN From Step 1>
+    ``````````````````````````````````````````````````
+
+4) Send the POST Request
+
+---------------------------------------------------------------------
+
