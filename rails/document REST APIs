@@ -1,0 +1,178 @@
+---------------------------------------------------------------------
+How to document REST APIs with Swagger and Ruby on Rails
+---------------------------------------------------------------------
+1) Create Rails application skeleton
+2) Create a model with fields
+3) Create a CRUD controller using scaffold_controller generator
+
+4) Setup rswag gem
+      Add rswag and rspec-rails gems to Gemfile
+        ''''''''''''''''''''''''''''''''''''''
+          group :development, :test do
+              gem 'rspec-rails', '~> 3.5'
+          end
+          
+          gem 'rswag'
+        ''''''''''''''''''''''''''''''''''''''
+        
+5) Install with bundler
+
+      "bundle install"
+
+6) Run generator
+    ------------------------------
+    rails generate rspec:install
+    rails g rswag:install
+    -----------------------------
+    
+7) Create an integration spec to describe and test your API
+---------------------------------------------------
+# spec/integration/pets_spec.rb
+require 'swagger_helper'
+
+describe 'Pets API' do
+
+  path '/api/v1/pets' do
+
+    post 'Creates a pet' do
+      tags 'Pets'
+      consumes 'application/json', 'application/xml'
+      parameter name: :pet, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string },
+          photo_url: { type: :string },
+          status: { type: :string }
+        },
+        required: [ 'name', 'status' ]
+      }
+
+      response '201', 'pet created' do
+        let(:pet) { { name: 'Dodo', status: 'available' } }
+        run_test!
+      end
+
+      response '422', 'invalid request' do
+        let(:pet) { { name: 'foo' } }
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/pets/{id}' do
+
+    get 'Retrieves a pet' do
+      tags 'Pets'
+      produces 'application/json', 'application/xml'
+      parameter name: :id, :in => :path, :type => :string
+
+      response '200', 'name found' do
+        schema type: :object,
+          properties: {
+            id: { type: :integer, },
+            name: { type: :string },
+            photo_url: { type: :string },
+            status: { type: :string }
+          },
+          required: [ 'id', 'name', 'status' ]
+
+        let(:id) { Pet.create(name: 'foo', status: 'bar', photo_url: 'http://example.com/avatar.jpg').id }
+        run_test!
+      end
+
+      response '404', 'pet not found' do
+        let(:id) { 'invalid' }
+        run_test!
+      end
+    end
+  end
+end
+---------------------------------------------------
+8) Generate the Swagger JSON file(s)
+
+  "rake rswag:specs:swaggerize"
+
+9) Spin up your app and check out the awesome, auto-generated docs at
+
+    "http://localhost:3000/api-docs"
+
+-------------------------------------------------------------------
+
+
+        
+        
+
+
+
+
+-------------------------------------------------------------------
+How to Create an integrating spec to describe and test API
+-------------------------------------------------------------------
+1) In Config Intilizer
+    #rswag_api.rb
+    
+    ---------------------------------------------------------------
+      Rswag::Api.configure do |c|
+        c.swagger_root = Rails.root.to_s + '/bloggit_api'
+      end
+    ---------------------------------------------------------------
+
+   #rswag_ui.rb
+
+    ---------------------------------------------------------------
+      Rswag::Ui.configure do |c|
+        c.swagger_endpoint '/api-docs/v1/bloggit_api.yaml', 'Bloggit API V1 Docs'
+      end
+    ---------------------------------------------------------------
+
+2) In spec
+
+  #rails_helper.rb 
+        No change
+
+  
+  #spec_helper.rb
+        No change
+        
+  #swagger_helper.rb
+
+    ---------------------------------------------------------------
+      require 'rails_helper'
+
+      RSpec.configure do |config|
+         config.swagger_root = Rails.root.join('bloggits_api').to_s
+
+         config.swagger_docs = {
+            'v1/bloggit_api.yaml' => {
+            openapi: '3.0.1',
+            info: {
+              title: 'Bloggit V1',
+              version: 'v1'
+             },
+            paths: {},
+            servers: [
+              {
+                url: 'http://35.161.77.27/blogs',
+                variables: {
+                  defaultHost: {
+                    default: 'http://35.161.77.27/blogs'
+                  }
+                }
+             }
+            ]
+          }
+        }
+      
+        config.swagger_format = :yaml
+      end
+    ---------------------------------------------------------------
+
+3)Create A folder intgration (or request or api) in spec
+4)Create a file blogs_spec.rb in spec/integration/
+5)Edit blogs_spec.rb to config the documents
+6) Run "rake rswag:specs:swaggerize" and reload the app.
+
+
+
+
+
