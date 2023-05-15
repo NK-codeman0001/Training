@@ -1,0 +1,24 @@
+---------------------------------------------------------------------
+                    Agile in Software Engineering
+---------------------------------------------------------------------
+
+-> Move Quickly
+
+-> Large Project -> Small Chunks (Iterations) -> Release -> Feedback -> Enhance -> Re-release 
+
+-> SCRUM
+
+
+
+#How to be good ROR developer
+
+-> Learn to FOCUS FOR LONG PERIOD OF TIME.
+-> Create High Priority tasks for feature required by User
+->Planning of any feature before jumping into execution. 
+This was a major undertaking and we had a strict deadline, yet before getting to code anything, we spent 1-2 days only on the planning. Writing everything on pen and paper, to breakdown the feature into sub tasks, designs.. so that we had a clear picture in mind from day 1 what the end result is going to look like. If your documentation, planning and scoping of any project is done right, writing code is the most easy task.
+
+-> Implements test  for every features
+
+Important Git Repos:
+  Ruby Bookmarks => https://github.com/dreikanter/ruby-bookmarks
+
