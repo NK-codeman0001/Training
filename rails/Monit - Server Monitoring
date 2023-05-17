@@ -164,6 +164,41 @@ systemctl start monit.service
 
 
 
+
+---------------------------------------------------------------------
+Configure Monit for Unicorn:
+---------------------------------------------------------------------
+# Monitor Unicorn process
+
+check process unicorn with pidfile /home/ubuntu/bloggits/tmp/pids/unicorn.pid
+  start program = "/bin/su - ubuntu -c 'cd /home/ubuntu/bloggits && bundle exec unicorn -c config/unicorn.rb -E development -D'"
+  stop program = "/bin/su - ubuntu -c 'kill -QUIT `cat /home/ubuntu/bloggits/tmp/pids/unicorn.pid`'"
+  if totalmem > 300.0 MB for 5 cycles then restart
+  if cpu > 70% for 5 cycles then restart
+
+---------------------------------------------------------------------
+
+
+
+
+
+---------------------------------------------------------------------
+Configure Monit for Redis:
+---------------------------------------------------------------------
+# Monitor Redis process
+check process redis-server with pidfile /var/run/redis/redis-server.pid
+    start program = "/etc/init.d/redis-server start"
+    stop program = "/etc/init.d/redis-server stop"
+    if failed port 6379 protocol redis then restart
+    if 5 restarts within 5 cycles then timeout
+---------------------------------------------------------------------
+
+
+
+
+
+
+
 ---------------------------------------------------------------------
 Configure Monit for Puma:
 ---------------------------------------------------------------------
@@ -273,7 +308,7 @@ sudo systemctl start monit
 sudo systemctl stop monit
 ```
 
-3. Restart Monit:
+3. Restart Monit: (2)
 
 ```
 sudo systemctl restart monit
@@ -285,16 +320,16 @@ sudo systemctl restart monit
 sudo systemctl status monit
 ```
 
-5. Reload Monit configuration:
+5. Reload Monit configuration: (1)
 
 ```
 sudo monit reload
 ```
 
-6. Check Monit configuration syntax:
+6. Check Monit configuration syntax: (0)
 
 ```
-sudo monit -t
+sudo monit -t 
 ```
 
 7. Check Monit version:
@@ -326,6 +361,14 @@ sudo monit monitor processname
 ```
 sudo monit unmonitor processname
 ```
+
+12. Monitoring status of all process: (4)
+
+```
+sudo monit status
+```
+
+
 
 ---------------------------------------------------------------------
 
