@@ -1,0 +1,82 @@
+---------------------------------------------------------------------
+       RailsAdmin: https://github.com/railsadminteam/rails_admin
+---------------------------------------------------------------------
+Installation:
+1) On your gemfile: gem 'rails_admin', '~> 3.0'
+2) Run bundle install
+3) Run rails g rails_admin:install
+4) Provide a namespace for the routes when asked
+5) Start a server rails s and administer your data at /admin. (if you chose default namespace: /admin)
+---------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------
+Error1: ActiveRecord::Encryption::Errors::Configuration in RailsAdmin::Main#index
+---------------------------------------------------------------------
+Soln: https://stackoverflow.com/questions/71161225/rails-7-encryption-configuration-not-correctly-set
+
+s1) GET THE KEYS:
+  First run this command
+  ``````````````````````````````
+  bin/rails db:encryption:init
+  `````````````````````````````
+  
+  This will generate the following
+
+```````````````````````````````````````````````````````````````
+Add this entry to the credentials of the target environment: 
+
+active_record_encryption:
+  primary_key: j3dIJLm8YOCAj8rEuJ2ZIKYtXGVKybuN
+  deterministic_key: GjIS2CWV7YVltRXX1nXjetioXTXAYL5J
+  key_derivation_salt: Za2d2AWDK9GQWX9EAJc8DNbBSVa1cIG6
+```````````````````````````````````````````````````````````````
+
+s2) COPY THE KEY IN RAILS CREDENTIALS
+
+      EDITOR='code --wait' rails credentials:edit
+
+  Paste below code in it:
+  
+  -------------------------------------------------------
+  active_record_encryption:
+  primary_key: j3dIJLm8YOCAj8rEuJ2ZIKYtXGVKybuN
+  deterministic_key: GjIS2CWV7YVltRXX1nXjetioXTXAYL5J
+  key_derivation_salt: Za2d2AWDK9GQWX9EAJc8DNbBSVa1cIG6
+  -------------------------------------------------------
+
+  save and exit
+
+s3) ADD BELOW CODE IN APPLICATION.RB
+
+--------------------------------------------------------------------
+config.active_record.encryption.primary_key = Rails.application.credentials[:active_record_encryption][:primary_key]
+config.active_record.encryption.deterministic_key = Rails.application.credentials[:active_record_encryption][:deterministic_key]
+config.active_record.encryption.key_derivation_salt = Rails.application.credentials[:active_record_encryption][:key_derivation_salt] 
+--------------------------------------------------------------------
+
+s4) SAVE AND RERUN THE RAILS SERVER
+
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+---------------------------------------------------------------------
+Error2: ActiveRecord::Encryption::Errors::Decryption
+---------------------------------------------------------------------
+Soln: https://stackoverflow.com/questions/74503127/rails-7-encryption-email-devise-error
+
+S1) ADD THE BELOW LINE IN APPLICATION.RB
+    ----------------------------------------------------------------
+    config.active_record.encryption.support_unencrypted_data = true
+    ----------------------------------------------------------------
+
+S2) SAVE AND RELOAD THE SERVER
+---------------------------------------------------------------------
+

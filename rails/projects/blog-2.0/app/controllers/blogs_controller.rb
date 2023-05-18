@@ -4,8 +4,6 @@ class BlogsController < ApplicationController
   before_action :check_admin, except: [:index, :show, :share_blog, :search]
   before_action :authenticate_user!
   before_action :set_blog, except: [:index, :new, :create, :scheduled, :draft, :archived, :bulk_archive_blogs, :search]
-
-  api! 'List all blogs'
   def index    
     @blogs = Blog.all.published.where(archived: false).search(params[:search]).order(published_at: :desc)
     # @pagy, @records = pagy(Product.all)
@@ -22,7 +20,7 @@ class BlogsController < ApplicationController
     
   end
 
-  api! 'List scheduled blogs'
+ 
   def scheduled
     @blogs = Blog.all.scheduled.order(published_at: :desc)
     @pagy, @blogs = pagy(@blogs)
@@ -38,7 +36,6 @@ class BlogsController < ApplicationController
    
   end
 
-  api! 'List draft blogs'
   def draft
     @blogs = Blog.all.draft.order(created_at: :desc)
     @pagy, @blogs = pagy(@blogs) 
@@ -54,8 +51,6 @@ class BlogsController < ApplicationController
    
   end
 
-
-  api! 'List archived blogs'
   def archived
     @blogs = Blog.all.archived.order(updated_at: :desc)
     @pagy, @blogs = pagy(@blogs)
@@ -70,7 +65,6 @@ class BlogsController < ApplicationController
     redirect_to root_path(page: 1), :status => 404
   end
 
-  api! 'Show a specific blog'
   def show
       respond_to do |format|
         format.html
@@ -82,13 +76,6 @@ class BlogsController < ApplicationController
     @blog = Blog.new
   end
 
-  api! 'Create a new blog'
-  param :blog, Hash, required: true do
-    param :title, String, desc: 'Title of the blog'
-    param :content, String, desc: 'Content of the blog'
-    param :archived, [true, false], desc: 'Archived status of the blog'
-    param :published_at, Date, desc: 'Publication date of the blog'
-  end
   def create
     if BlogCreateJob.perform_async(blog_params.as_json)
       # render :json => {success: blog_params.as_json}, :status => 201
@@ -101,14 +88,6 @@ class BlogsController < ApplicationController
   def edit
   end
 
-  api! 'Update a specific blog'
-  param :id, Integer, desc: 'ID of the blog', required: true
-  param :blog, Hash, required: true do
-    param :title, String, desc: 'Title of the blog'
-    param :content, String, desc: 'Content of the blog'
-    param :archived, [true, false], desc: 'Archived status of the blog'
-    param :published_at, Date, desc: 'Publication date of the blog'
-  end
   def update
     if !BlogUpdateJob.perform_async(params[:id], blog_params.as_json).nil?
       redirect_to blog_path(@blog), :status => 202
@@ -118,7 +97,6 @@ class BlogsController < ApplicationController
     end
   end
 
-  api! 'Delete a specific blog'
   def destroy
     if @blog.destroy
       redirect_to root_path
@@ -127,7 +105,6 @@ class BlogsController < ApplicationController
     end
   end
 
-  api! 'Share a blog'
   def share_blog
     # BlogMailer.share_blog(@blog, current_user).deliver_later
     BlogMailer.with(user: current_user, blog: @blog).share_blog(@blog, current_user).deliver_later
@@ -136,7 +113,6 @@ class BlogsController < ApplicationController
     redirect_to blog_path(@blog)
   end
 
-  api! 'Archive a blog'
   def archive    
     if !BlogArchiveJob.perform_async(params[:id]).nil?
       redirect_to blog_path(@blog), :status => 202
@@ -146,7 +122,6 @@ class BlogsController < ApplicationController
 
   end
 
-  api! 'Bulk archive blogs'
   def bulk_archive_blogs
     respond_to do |format|
       @blogs = Blog.where(id: params[:blog_ids])
@@ -156,7 +131,6 @@ class BlogsController < ApplicationController
     end
   end
 
-  api! 'Search blogs'
   def search
     # Debugger
     # @posts = Blog.where("LOWER(title) LIKE ?", "%#{params[:search].downcase}%")
