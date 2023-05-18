@@ -1,0 +1,194 @@
+---------------------------------------------------------------------
+                      Pretty URLs with FriendlyId
+---------------------------------------------------------------------
+
+Resources:
+
+(*) Railscast: http://railscasts.com/episodes/314-pretty-urls-with-friendlyid?autoplay=true
+
+(*) Browse Source Code: https://github.com/railscasts/314-pretty-urls-with-friendlyid
+
+(*) FriendlyId: https://github.com/norman/friendly_id
+
+---------------------------------------------------------------------
+
+
+
+
+
+---------------------------------------------------------------------
+  Installation
+---------------------------------------------------------------------
+1) bundle add 'friendly_id'
+
+2) In /app/models/blog.rb
+
+class Blog < ApplicationRecord
+  -----------------
+  extend FriendlyId
+  friendly_id :title
+  -----------------
+end
+
+
+3) Add below in required action of controller
+
+#in my case its show of blogcontroller
+         ---------
+    Blog.friendly.find(params[:id])
+         ---------
+         
+4) Reload the server
+---------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------
+Other Features
+---------------------------------------------------------------------
+
+=========================> Using Slugs <===========================
+make url with A%20B%20C to A-B-C
+
+1) $ rails g migration add_slug_to_blogs slug:string
+
+
+2) Edit /db/migrate/..._add_slug_to_blogs.rb
+
+  -------------------------------------------------
+  class AddSlugToBlogs < ActiveRecord::Migration
+    def change
+      add_column :blogs, :slug, :string
+      add_index :blogs, :slug
+    end
+  end
+  -------------------------------------------------
+
+3) rails db:migrate
+
+
+4) Add below code in blog Model
+class Blog < ApplicationRecord
+  --------------------------------
+  extend FriendlyId
+  friendly_id :title, use: :slugged
+  --------------------------------
+end
+
+
+5) Add slug in older blogs
+
+in rails console: "rails c"
+  -------------------------------------------
+  1.9.2-p290 :001 > Blog.find_each(&:save)
+  1.9.2-p290 :002 >blog.each do |b|
+                    b.update(slug: b.title.parameterize)
+                   end
+  -------------------------------------------
+
+
+
+
+
+================> Handling Changed Article Names <==================
+
+If we edit an article and alter its name its slug will be updated as well.
+
+1) to handle this we can add below code with slug
+
+//it will make the url remain same
+
+class Blog < ApplicationRecord
+  extend FriendlyId
+  friendly_id :title, use: :slugged
+  ------------------------------------
+  def should_generate_new_friendly_id?
+    new_record?
+  end
+  ------------------------------------
+end
+
+
+2) If want to store all changed and current slug of particular record we can use history feature of this gem
+
+  a)   
+    class Blog < ApplicationRecord
+      extend FriendlyId
+                              --------------------
+      friendly_id :title, use: [:slugged, :history]
+                              --------------------
+    end
+
+
+  b) 
+    $ rails g friendly_id
+    
+    $rails db:migrate
+
+
+  c) For good practice we must return 301 status code and redirect to new url of that blog.
+      
+      in /app/controllers/blogs_controller.rb
+      
+        def show
+          if request.path != blog_path(@blog)
+            redirect_to @blog, status: :moved_permanently
+          end
+        end
+
+---------------------------------------------------------------------
+
+
+
+
+
+
+---------------------------------------------------------------------
+IMP NOTES
+---------------------------------------------------------------------
+=> REPLACE EVERY FIND BY [PARAMS: ID WITH]
+    
+    ------------------------------------------
+    <MODEL_NAME>.friendly.<find(blog_id)>
+        or
+    <MODEL_NAME>.friendly.<find(params[:id])>
+    ------------------------------------------
+    
+    
+==> if Sidekiq is used we need to change its code as 
+
+#example in update
+
+class BlogUpdateJob
+  include Sidekiq::Job
+
+  def perform(blog_id, params)
+    # Do something
+    -----------------------------------
+    blog = Blog.friendly.find(blog_id)
+    blog.update(params)
+    blog.slug = blog.title.parameterize
+    blog.save!
+    -----------------------------------
+  end
+end
+
+
+#example in create
+
+class BlogCreateJob
+  include Sidekiq::Job
+
+  def perform(blog_params)
+    # Do something
+    blog = Blog.new(blog_params)
+    ----------------------------------
+    blog.slug = blog.title.parameterize
+    blog.save!
+    ----------------------------------
+  end
+end
+
+    
+---------------------------------------------------------------------
+

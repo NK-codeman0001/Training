@@ -80,3 +80,21 @@ S1) ADD THE BELOW LINE IN APPLICATION.RB
 S2) SAVE AND RELOAD THE SERVER
 ---------------------------------------------------------------------
 
+
+
+
+
+
+---------------------------------------------------------------------
+Error3: Sprockets::Rails::Helper::AssetNotFound in Blogs#index
+---------------------------------------------------------------------
+Soln: comment line 10 of application.html.erb
+
+    <%
+=begin%>
+ <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %> 
+<%
+=end%>
+
+---------------------------------------------------------------------
+
